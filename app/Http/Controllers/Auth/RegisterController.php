@@ -31,6 +31,6 @@ class RegisterController extends Controller
 
         Auth::login($user);
 
-        return redirect()->route('user.profile');
+        return redirect()->route('user.show', ['id' => Auth::user()->id]);
     }
 }

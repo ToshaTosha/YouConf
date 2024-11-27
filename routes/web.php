@@ -1,8 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-
 use Inertia\Inertia;
+use Laravel\Socialite\Facades\Socialite;
+use App\Http\Controllers\Auth\LoginController;
+use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\UserController;
 
 Route::get('/', function () {
     return Inertia::render('Home');
@@ -12,29 +15,18 @@ Route::get('/about', function () {
     return Inertia::render('About');
 });
 
-use App\Http\Controllers\Auth\LoginController;
+Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+Route::post('/login', [LoginController::class, 'login']);
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
-Route::get('login', function () {
-    return view('auth.login');
-})->name('login');
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
 
-Route::post('login', [LoginController::class, 'login']);
+Route::get('/auth/vk', function () {
+    return Socialite::driver('vkontakte')->redirect();
+});
+Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
 
-Route::get('auth/vk', [LoginController::class, 'redirectToProvider'])->name('auth.vk');
-Route::get('auth/vk/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
-
-use App\Http\Controllers\Auth\RegisterController;
-
-Route::get('register', [RegisterController::class, 'showRegistrationForm'])->name('register.form');
-Route::post('register', [RegisterController::class, 'register'])->name('register');
-
-Route::get('user/profile', function () {
-    return view('user.profile');
-})->name('user.profile');
-
-use Illuminate\Support\Facades\Auth;
-
-Route::post('logout', function () {
-    Auth::logout();
-    return redirect()->route('login');
-})->name('logout');
+Route::middleware(['auth'])->group(function () {
+    Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
+});
