@@ -35,9 +35,10 @@ class LoginController extends Controller
 
     public function handleProviderCallback()
     {
+        Log::info('handleProviderCallback called');
         try {
             $user = Socialite::driver('vkontakte')->user();
-            $authUser = User::where('id', $user->getId())->first();
+            $authUser = User::where('vk_id', $user->getId())->first();
 
             if (!$authUser) {
                 $authUser = User::create([

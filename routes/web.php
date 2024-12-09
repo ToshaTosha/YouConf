@@ -6,6 +6,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserController;
+use Illuminate\Support\Facades\Log;
 
 Route::get('/', function () {
     return Inertia::render('Home');
@@ -23,6 +24,7 @@ Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->na
 Route::post('/register', [RegisterController::class, 'register']);
 
 Route::get('/auth/vk', function () {
+    Log::info('/auth/vk');
     return Socialite::driver('vkontakte')->redirect();
 });
 Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
