@@ -10,7 +10,7 @@
         "laravel/framework": "^11.9",
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
-        "moonshine/moonshine": "^2.23",
+        "moonshine/moonshine": "^3.0",
         "socialiteproviders/vkontakte": "^5.0"
     },
     "require-dev": {
