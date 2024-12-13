@@ -13,11 +13,12 @@ use MoonShine\Laravel\Forms\LoginForm;
 use MoonShine\Laravel\Http\Middleware\Authenticate;
 use MoonShine\Laravel\Http\Middleware\ChangeLocale;
 use MoonShine\Laravel\Layouts\AppLayout;
-use MoonShine\Laravel\Models\MoonshineUser;
+use App\Models\User;
 use MoonShine\Laravel\Pages\Dashboard;
 use MoonShine\Laravel\Pages\ErrorPage;
 use MoonShine\Laravel\Pages\LoginPage;
 use MoonShine\Laravel\Pages\ProfilePage;
+use \App\Http\Middleware\CheckOrganizerRole;
 
 return [
     'title' => env('MOONSHINE_TITLE', 'MoonShine'),
@@ -50,6 +51,7 @@ return [
         VerifyCsrfToken::class,
         SubstituteBindings::class,
         ChangeLocale::class,
+        CheckOrganizerRole::class,
     ],
 
     // Storage
@@ -59,9 +61,9 @@ return [
 
     // Authentication and profile
     'auth' => [
-        'enabled' => true,
+        'enabled' => false,
         'guard' => 'moonshine',
-        'model' => MoonshineUser::class,
+        'model' => User::class,
         'middleware' => Authenticate::class,
         'pipelines' => [],
     ],

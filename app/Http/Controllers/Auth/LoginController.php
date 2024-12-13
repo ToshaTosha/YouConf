@@ -14,6 +14,9 @@ class LoginController extends Controller
 {
     public function showLoginForm()
     {
+        if (Auth::check()) {
+            return redirect()->route('user.show', ['id' => 10]);
+        }
         return Inertia::render('Auth/Login');
     }
 
@@ -25,7 +28,7 @@ class LoginController extends Controller
         ]);
 
         if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('user.show', ['id' => Auth::user()->id]);
+            return redirect()->route('user.show', ['id' => 10]);
         }
 
         return back()->withErrors([

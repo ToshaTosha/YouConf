@@ -12,23 +12,18 @@ createInertiaApp({
 
         try {
             const page = await import(pagePath);
+            page.default.layout = page.default.layout || Layout
             return page.default;
         } catch (error) {
             console.error(`Component not found: ${pagePath}`, error);
             return null;
         }
     },
-    setup({ el, app, props }) {
-        const App = {
-            render() {
-                return h(Layout, null, {
-                    default: () => h(app, props),
-                });
-            },
-        };
-
-        createApp(App).mount(el);
-    },
+    setup({ el, app, props, plugin }) {
+        createApp({ render: () => h(app, props) })
+          .use(plugin)
+          .mount(el)
+      },
 });
 
 // InertiaProgress.init();
