@@ -17,12 +17,15 @@ Route::get('/about', function () {
     return Inertia::render('About');
 });
 
-Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
-Route::post('/login', [LoginController::class, 'login']);
-Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
+Route::middleware('guest')->group(function () {
+    Route::get('/login', [LoginController::class, 'showLoginForm'])->name('login');
+    Route::post('/login', [LoginController::class, 'login']);
 
-Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
-Route::post('/register', [RegisterController::class, 'register']);
+    Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+    Route::post('/register', [RegisterController::class, 'register']);
+});
+
+Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::get('/auth/vk', function () {
     return Socialite::driver('vkontakte')->redirect();
@@ -30,6 +33,5 @@ Route::get('/auth/vk', function () {
 Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
 
 Route::middleware(['auth'])->group(function () {
-    Log::info(Auth::user());
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
 });

@@ -39,7 +39,7 @@ class HandleInertiaRequests extends Middleware
     {
         return array_merge(parent::share($request), [
             'user_data' => fn() => Auth::user(),
-            'isAdmin' => fn() => Auth::user()->hasRole('organizer')
+            'roles' => fn() => Auth::check() ? Auth::user()->getRoleNames() : [],
         ]);
     }
 }
