@@ -68,7 +68,7 @@ return [
 
     'auth' => [
         'enable' => true,
-        'middleware' => Authenticate::class,
+        'middleware' => [],
         'fields' => [
             'username' => 'email',
             'password' => 'password',
