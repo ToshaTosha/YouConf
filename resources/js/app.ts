@@ -40,32 +40,6 @@ const resolveLayout = (page) => {
 createInertiaApp({
     resolve: async (name) => {
         const page = await resolvePageComponent(name);
-
-<<<<<<< HEAD
-        try {
-            const page = await import(pagePath);
-            page.default.layout = page.default.layout || Layout
-            return page.default;
-        } catch (error) {
-            console.error(`Component not found: ${pagePath}`, error);
-            return null;
-        }
-    },
-    setup({ el, app, props, plugin }) {
-        createApp({ render: () => h(app, props) })
-          .use(plugin)
-          .mount(el)
-      },
-=======
-        // Если страница не найдена, возвращаем компонент для ошибки 404
-        // if (page === NotFound) {
-        //     return {
-        //         default: NotFound,
-        //         layout: DefaultLayout, // Используем макет по умолчанию для ошибки 404
-        //     };
-        // }
-
-        // Возвращаем страницу с указанным макетом
         return {
             default: page,
             layout: resolveLayout(page),
@@ -85,7 +59,6 @@ createInertiaApp({
         vueApp.use(plugin);
         vueApp.mount(el);
     },
->>>>>>> some-fix
 });
 
 // InertiaProgress.init();

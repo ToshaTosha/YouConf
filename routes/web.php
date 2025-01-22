@@ -6,6 +6,7 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserController;
+use App\Models\Section;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Facades\Auth;
 
@@ -35,3 +36,8 @@ Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'
 Route::middleware(['auth'])->group(function () {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
 });
+
+use App\Http\Controllers\SectionController;
+
+Route::get('/sections', [SectionController::class, 'index']);
+Route::get('/sections/{section}', [SectionController::class, 'show']);
