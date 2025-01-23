@@ -33,9 +33,11 @@ Route::get('/auth/vk', function () {
 });
 Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
 
-Route::middleware(['auth'])->group(function () {
-    Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
-});
+// Route::middleware(['auth'])->group(function () {
+//     Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
+// });
+
+Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
 
 use App\Http\Controllers\SectionController;
 
