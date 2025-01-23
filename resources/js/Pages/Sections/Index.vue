@@ -6,34 +6,24 @@
         v-for="section in sections"
         :key="section.id"
         class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
-        @click="navigateToSsection(section.id)"
       >
+        <Link :href="`/sections/${section.id}`">View User</Link>
         <h3 class="text-lg font-bold">{{ section.name }}</h3>
         <p class="text-gray-600">{{ section.description }}</p>
-        <p class="text-sm text-gray-500 mt-2">
-          Дата: {{ formatDate(section.start_date) }} -
-          {{ formatDate(section.end_date) }}
-        </p>
       </div>
     </div>
   </div>
 </template>
 
-<script setup>
-import { defineProps } from 'vue'
-//import { router } from '@inertiajs/vue3'
+<script>
+import { Link } from '@inertiajs/inertia-vue3'
 
-const props = defineProps({
-  sections: Array,
-})
-
-console.log('sections', props.sections)
-
-const navigateToSsection = (sectionId) => {
-  router.visit(`/sections/${sectionId}`)
-}
-
-const formatDate = (dateString) => {
-  return new Date(dateString).toLocaleDateString()
+export default {
+  components: {
+    Link,
+  },
+  props: {
+    sections: Array,
+  },
 }
 </script>

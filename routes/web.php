@@ -42,4 +42,4 @@ Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
 use App\Http\Controllers\SectionController;
 
 Route::get('/sections', [SectionController::class, 'index']);
-Route::get('/sections/{section}', [SectionController::class, 'show']);
+Route::get('/sections/{section}', [SectionController::class, 'show'])->name('user.show');

@@ -39,6 +39,9 @@
         <a href="/contacts" class="text-gray-700 hover:text-blue-600">
           Контакты
         </a>
+        <a href="/sections" class="text-gray-700 hover:text-blue-600">
+          Секции
+        </a>
       </div>
     </nav>
 
