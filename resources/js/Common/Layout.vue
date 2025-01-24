@@ -22,9 +22,12 @@
             </a>
           </template>
           <template v-else>
-            <a class="bg-white text-blue-600 px-4 py-2 rounded">
+            <Link
+              href="/login"
+              class="bg-white text-blue-600 px-4 py-2 rounded"
+            >
               Войти
-            </a>
+            </Link>
           </template>
         </div>
       </div>
@@ -60,8 +63,12 @@
 </template>
 
 <script>
+import { Link } from '@inertiajs/inertia-vue3'
 export default {
   name: 'Layout',
+  components: {
+    Link,
+  },
   computed: {
     auth() {
       return this.$page.props?.auth?.user
