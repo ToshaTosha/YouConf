@@ -14,7 +14,6 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(HandleInertiaRequests::class);
-        $middleware->append(HandleAuth::class);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         //

@@ -10,51 +10,53 @@ use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
 
+namespace App\Http\Controllers\Auth;
+
+use App\Http\Controllers\Controller;
+use Illuminate\Http\Request;
+use Inertia\Inertia;
+use Illuminate\Support\Facades\Auth;
+use Laravel\Socialite\Facades\Socialite;
+use App\Models\User;
+use Illuminate\Support\Facades\Log;
+
 class LoginController extends Controller
 {
+
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect()->route('user.show', ['id' => 10]);
+            return redirect()->route('user.show', ['id' => Auth::user()->id]);
         }
         return Inertia::render('Auth/Login');
     }
 
-    public function login(Request $request)
-    {
-        $request->validate([
-            'email' => 'required|email',
-            'password' => 'required',
-        ]);
-
-        if (Auth::attempt($request->only('email', 'password'))) {
-            return redirect()->route('user.show', ['id' => 10]);
-        }
-
-        return back()->withErrors([
-            'email' => 'The provided credentials do not match our records.',
-        ]);
-    }
-
     public function handleProviderCallback()
     {
-        Log::info('handleProviderCallback called');
         try {
             $user = Socialite::driver('vkontakte')->user();
-            $authUser = User::where('vk_id', $user->getId())->first();
+            Log::info($user->user);
 
+            // Поиск пользователя по vk_id
+            $authUser = User::where('vk_id', $user->user_id)->first();
+
+            // Если пользователь не найден, создаем нового
             if (!$authUser) {
                 $authUser = User::create([
-                    'vk_id' => $user->getId(),
-                    'name' => $user->getName(),
+                    'vk_id' => $user['id'],
+                    'first_name' => $user['first_name'],
+                    'last_name' => $user['last_name'],
+                    'avatar' => $user['photo_200'],
+                    'email' => $user['email'],
                 ]);
             }
 
+            // Авторизуем пользователя
             Auth::login($authUser, true);
 
-            return redirect()->route('user.show', ['id' => Auth::user()->id]);
+            return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
         } catch (\Exception $e) {
-            Log::info($e->getMessage());
+            Log::error('VK auth error: ' . $e->getMessage());
             return redirect('/login')->withErrors(['error' => 'Ошибка авторизации: ' . $e->getMessage()]);
         }
     }

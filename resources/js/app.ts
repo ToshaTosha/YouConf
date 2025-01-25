@@ -46,7 +46,6 @@ createInertiaApp({
         };
     },
     setup({ el, app, props, plugin }) {
-        console.log(props.initialComponent.layout)
         const App = {
             render() {
                 const Layout = props.initialComponent.layout || DefaultLayout;

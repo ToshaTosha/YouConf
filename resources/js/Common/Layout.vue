@@ -11,15 +11,18 @@
 
         <!-- Кнопка входа или профиль -->
         <div>
-          <template v-if="auth">
-            <a :href="route('profile')" class="flex items-center">
+          <template v-if="$page.props?.user_data">
+            <Link
+              :href="'/user/' + $page.props.user_data.id"
+              class="flex items-center"
+            >
               <img
-                :src="$page.props.auth.user.avatar"
+                :src="$page.props?.user_data?.avatar"
                 alt="Avatar"
                 class="h-8 w-8 rounded-full mr-2"
               />
-              <span>{{ $page.props.auth.user.name }}</span>
-            </a>
+              <span>{{ $page.props?.user_data?.first_name }}</span>
+            </Link>
           </template>
           <template v-else>
             <Link
@@ -63,15 +66,20 @@
 </template>
 
 <script>
-import { Link } from '@inertiajs/inertia-vue3'
+import { Link, router } from '@inertiajs/inertia-vue3'
 export default {
   name: 'Layout',
   components: {
     Link,
   },
+  props: {
+    sections: Array,
+  },
   computed: {
-    auth() {
-      return this.$page.props?.auth?.user
+    userProfileLink() {
+      console.log(`/user/${this.$page.props?.user_data?.id}`)
+
+      return `/user/${this.$page.props?.user_data?.id}`
     },
   },
 }

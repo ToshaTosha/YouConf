@@ -9,12 +9,7 @@ class UserController extends Controller
 {
     public function show($id)
     {
-        //$user = User::findOrFail($id);
-        $user = [
-            'name' => 'Тестовый Пользователь',
-            'email' => 'test@example.com',
-            'vk_id' => '123456789',
-        ];
+        $user = User::findOrFail($id);
         return Inertia::render('UserProfile', [
             'user' => $user,
         ]);

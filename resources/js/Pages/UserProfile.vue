@@ -5,17 +5,13 @@
       <h1 class="text-2xl font-bold mb-4">Информация о пользователе</h1>
       <p>
         <strong>Имя:</strong>
-        {{ user.name }}
-      </p>
-      <p>
-        <strong>Email:</strong>
-        {{ user.email }}
+        {{ user }}
       </p>
       <!-- Добавьте другие поля пользователя -->
     </div>
 
     <!-- Таблица заявок -->
-    <div>
+    <!-- <div>
       <h2 class="text-xl font-bold mb-4">Статус заявок</h2>
       <table class="min-w-full bg-white">
         <thead>
@@ -38,7 +34,7 @@
           </tr>
         </tbody>
       </table>
-    </div>
+    </div> -->
   </div>
 </template>
 
@@ -49,9 +45,9 @@ export default {
     applications: Array,
   },
   methods: {
-    openApplication(id) {
-      this.$inertia.visit(route('application.show', id))
-    },
+    // openApplication(id) {
+    //   this.$inertia.visit(route('application.show', id))
+    // },
   },
 }
 </script>
