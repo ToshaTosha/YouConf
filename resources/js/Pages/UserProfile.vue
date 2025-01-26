@@ -11,7 +11,7 @@
     </div>
 
     <!-- Таблица заявок -->
-    <!-- <div>
+    <div>
       <h2 class="text-xl font-bold mb-4">Статус заявок</h2>
       <table class="min-w-full bg-white">
         <thead>
@@ -30,11 +30,11 @@
           >
             <td class="border px-4 py-2">{{ application.title }}</td>
             <td class="border px-4 py-2">{{ application.date }}</td>
-            <td class="border px-4 py-2">{{ application.status }}</td>
+            <td class="border px-4 py-2">{{ application.status.name }}</td>
           </tr>
         </tbody>
       </table>
-    </div> -->
+    </div>
   </div>
 </template>
 

@@ -11,6 +11,7 @@ use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\SectionController;
 use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\ApplicationController;
 
 
 Route::get('/about', function () {
@@ -32,4 +33,6 @@ Route::middleware(['web', 'auth'])->group(function () {
     });
     Route::get('/sections', [SectionController::class, 'index']);
     Route::get('/sections/{section}', [SectionController::class, 'show']);
+
+    Route::post('/sections/{section}/apply', [ApplicationController::class, 'store'])->name('sections.apply');
 });

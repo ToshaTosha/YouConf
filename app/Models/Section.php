@@ -15,4 +15,9 @@ class Section extends Model
         'start_date',
         'end_date',
     ];
+
+    public function applications()
+    {
+        return $this->hasMany(Application::class);
+    }
 }
