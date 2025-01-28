@@ -5,7 +5,7 @@
       <h1 class="text-2xl font-bold mb-4">Информация о пользователе</h1>
       <p>
         <strong>Имя:</strong>
-        {{ user }}
+        {{ user_data }}
       </p>
       <!-- Добавьте другие поля пользователя -->
     </div>
@@ -41,7 +41,7 @@
 <script>
 export default {
   props: {
-    user: Object,
+    user_data: Object,
     applications: Array,
   },
   methods: {

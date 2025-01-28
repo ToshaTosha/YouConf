@@ -4,7 +4,6 @@ use Illuminate\Support\Facades\Route;
 use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\LoginController;
-use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\UserController;
 use App\Models\Section;
 use Illuminate\Support\Facades\Log;
@@ -36,3 +35,7 @@ Route::middleware(['web', 'auth'])->group(function () {
 
     Route::post('/sections/{section}/apply', [ApplicationController::class, 'store'])->name('sections.apply');
 });
+
+if (app()->environment('local')) {
+    Route::get('/switch-user/{userId}', [UserController::class, 'switchUser'])->name('switch.user');
+}

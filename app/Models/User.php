@@ -9,10 +9,21 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 class User extends Authenticatable
 {
     protected $fillable = [
-        'vk_id',       // ID пользователя в VK
-        'first_name',  // Имя
-        'last_name',   // Фамилия
-        'avatar',      // Ссылка на аватар
-        'email',       // Email (если есть)
+        'vk_id',
+        'first_name',
+        'last_name',
+        'avatar',
+        'email',
+        'role',
     ];
+
+    public function isExpert(): bool
+    {
+        return $this->role === 'expert';
+    }
+
+    public function isParticipant(): bool
+    {
+        return $this->role === 'participant';
+    }
 }

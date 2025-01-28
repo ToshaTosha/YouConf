@@ -36,7 +36,6 @@ class LoginController extends Controller
         try {
             $user = Socialite::driver('vkontakte')->user();
 
-            // Поиск пользователя по vk_id
             $authUser = User::where('vk_id', $user->id)->first();
             Log::info($user->user);
             Log::info($authUser);

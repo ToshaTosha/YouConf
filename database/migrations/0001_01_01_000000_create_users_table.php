@@ -14,10 +14,11 @@ return new class extends Migration
         Schema::create('users', function (Blueprint $table) {
             $table->id();
             $table->string('vk_id')->unique();
-            $table->string('first_name');     // Имя
-            $table->string('last_name');      // Фамилия
-            $table->string('avatar')->nullable(); // Ссылка на аватар
+            $table->string('first_name');
+            $table->string('last_name');
+            $table->string('avatar')->nullable();
             $table->string('email')->nullable();
+            $table->string('role')->default('participant');
             $table->timestamps();
         });
 

@@ -26,8 +26,5 @@ export default {
     sections: Array,
     user: Object,
   },
-  mounted() {
-    console.log(this.user) // Выведет данные пользователя
-  },
 }
 </script>

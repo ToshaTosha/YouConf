@@ -51,6 +51,19 @@
       </div>
     </nav>
 
+    <button
+      @click="switchUser(2)"
+      class="bg-blue-500 text-white p-2 rounded-lg"
+    >
+      Переключиться на участника
+    </button>
+    <button
+      @click="switchUser(1)"
+      class="bg-green-500 text-white p-2 rounded-lg"
+    >
+      Переключиться на эксперта
+    </button>
+
     <!-- Основной контент -->
     <main class="flex-grow container mx-auto p-4">
       <slot></slot>
@@ -80,6 +93,11 @@ export default {
       console.log(`/user/${this.$page.props?.user_data?.id}`)
 
       return `/user/${this.$page.props?.user_data?.id}`
+    },
+  },
+  methods: {
+    switchUser(userId) {
+      this.$inertia.visit(`/switch-user/${userId}`)
     },
   },
 }
