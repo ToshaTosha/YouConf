@@ -4,7 +4,9 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Application;
+use App\Models\File;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
 {
@@ -22,6 +24,31 @@ class ApplicationController extends Controller
         $application->status_id = 1;
         $application->save();
 
-        return redirect()->back()->with('success', 'Заявка успешно отправлена!');
+        Log::info('Request data:', $request->all());
+
+        if ($request->hasFile('files')) {
+            foreach ($request->file('files') as $file) {
+                $path = $file->store('uploads');
+
+                File::create([
+                    'path' => $path,
+                    'name' => $file->getClientOriginalName(),
+                    'fileable_type' => Application::class,
+                    'fileable_id' => $application->id,
+                ]);
+            }
+        }
+
+        return redirect()->route('applications.show', ['id' => $application->id])
+            ->with('success', 'Заявка успешно создана!');
+    }
+
+    public function show($id)
+    {
+        $application = Application::with(['files', 'section', 'user', 'status'])->findOrFail($id);
+
+        return inertia('Applications/Show', [
+            'application' => $application,
+        ]);
     }
 }

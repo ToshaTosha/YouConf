@@ -23,6 +23,7 @@
           required
         />
       </div>
+      <FileUpload @input="updateFiles" />
       <button
         class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
         type="submit"
@@ -37,11 +38,13 @@
 import { Link } from '@inertiajs/inertia-vue3'
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
+import FileUpload from '@/Components/FileUpload.vue'
 
 export default {
   name: 'Layout',
   components: {
     Link,
+    FileUpload,
   },
   props: {
     sections: Array,
@@ -51,16 +54,31 @@ export default {
       form: reactive({
         title: null,
         description: null,
+        files: [],
       }),
     }
   },
   methods: {
     submit() {
-      console.log(this.$page.props.section)
-      Inertia.post(`/sections/${this.$page.props.section.id}/apply`, this.form)
+      const formData = new FormData()
+      formData.append('title', this.form.title)
+      formData.append('description', this.form.description)
+      this.form.files.forEach((file) => {
+        formData.append('files[]', file)
+      })
+
+      Inertia.post(`/sections/${this.$page.props.section.id}/apply`, formData, {
+        headers: {
+          'Content-Type': 'multipart/form-data',
+        },
+      })
     },
     formatDate(dateString) {
       return new Date(dateString).toLocaleDateString()
+    },
+    updateFiles(files) {
+      this.form.files = files
+      console.log(files, this.form.files)
     },
   },
 }

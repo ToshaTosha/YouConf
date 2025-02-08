@@ -11,7 +11,7 @@ class SectionController extends Controller
 {
     public function index()
     {
-        Log::info(Section::all());
+        // Log::info(Section::all());
         return Inertia::render('Sections/Index', [
             'sections' => Section::all(),
         ]);

@@ -30,4 +30,9 @@ class Application extends Model
     {
         return $this->belongsTo(Status::class);
     }
+
+    public function files()
+    {
+        return $this->morphMany(File::class, 'fileable');
+    }
 }

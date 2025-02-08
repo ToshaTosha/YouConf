@@ -13,12 +13,10 @@ return new class extends Migration
     {
         Schema::create('files', function (Blueprint $table) {
             $table->id();
-            $table->string('filename');
-            $table->string('path')->nullable();
-            $table->unsignedBigInteger('user_id')->nullable();
-            $table->foreign('user_id')
-                ->references('id')
-                ->on('users');
+            $table->string('path'); // Путь к файлу в хранилище
+            $table->string('name'); // Оригинальное имя файла
+            $table->string('fileable_type')->nullable();
+            $table->unsignedBigInteger('fileable_id')->nullable();
             $table->timestamps();
         });
     }

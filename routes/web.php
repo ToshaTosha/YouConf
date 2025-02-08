@@ -5,11 +5,8 @@ use Inertia\Inertia;
 use Laravel\Socialite\Facades\Socialite;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\UserController;
-use App\Models\Section;
-use Illuminate\Support\Facades\Log;
 
 use App\Http\Controllers\SectionController;
-use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\ApplicationController;
 
 
@@ -39,3 +36,5 @@ Route::middleware(['web', 'auth'])->group(function () {
 if (app()->environment('local')) {
     Route::get('/switch-user/{userId}', [UserController::class, 'switchUser'])->name('switch.user');
 }
+
+Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
