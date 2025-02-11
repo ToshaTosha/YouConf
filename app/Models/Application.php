@@ -25,7 +25,6 @@ class Application extends Model
         return $this->belongsTo(User::class);
     }
 
-    // Отношение к модели Status
     public function status()
     {
         return $this->belongsTo(Status::class);
@@ -34,5 +33,10 @@ class Application extends Model
     public function files()
     {
         return $this->morphMany(File::class, 'fileable');
+    }
+
+    public function chat()
+    {
+        return $this->hasOne(Chat::class);
     }
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Application;
+use App\Models\Chat;
 use App\Models\File;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
@@ -24,7 +25,9 @@ class ApplicationController extends Controller
         $application->status_id = 1;
         $application->save();
 
-        Log::info('Request data:', $request->all());
+        Chat::create([
+            'application_id' => $application->id,
+        ]);
 
         if ($request->hasFile('files')) {
             foreach ($request->file('files') as $file) {
@@ -45,7 +48,7 @@ class ApplicationController extends Controller
 
     public function show($id)
     {
-        $application = Application::with(['files', 'section', 'user', 'status'])->findOrFail($id);
+        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
 
         return inertia('Applications/Show', [
             'application' => $application,

@@ -34,12 +34,24 @@
         </a>
       </div>
     </div>
-    {{ application }}
+
+    <!-- Встраиваем компонент чата -->
+    <Chat
+      v-if="application.chat"
+      :chat="application.chat"
+      :messages="application.chat.messages"
+      :application="application"
+    />
   </div>
 </template>
 
 <script>
+import Chat from '@/Components/Chat.vue' // Импортируем компонент чата
+
 export default {
+  components: {
+    Chat, // Регистрируем компонент чата
+  },
   props: {
     application: Object,
   },

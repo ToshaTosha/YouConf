@@ -8,6 +8,7 @@ use App\Http\Controllers\UserController;
 
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\ApplicationController;
+use App\Http\Controllers\ChatController;
 
 
 Route::get('/about', function () {
@@ -38,3 +39,5 @@ if (app()->environment('local')) {
 }
 
 Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
+
+Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);

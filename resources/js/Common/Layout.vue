@@ -52,13 +52,13 @@
     </nav>
 
     <button
-      @click="switchUser(2)"
+      @click="switchUser(1)"
       class="bg-blue-500 text-white p-2 rounded-lg"
     >
       Переключиться на участника
     </button>
     <button
-      @click="switchUser(1)"
+      @click="switchUser(2)"
       class="bg-green-500 text-white p-2 rounded-lg"
     >
       Переключиться на эксперта
