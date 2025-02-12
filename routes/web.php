@@ -41,3 +41,9 @@ if (app()->environment('local')) {
 Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
 
 Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
+
+// routes/web.php
+
+use App\Http\Controllers\ScheduleController;
+
+Route::get('/schedules', [ScheduleController::class, 'index'])->name('schedules.index');
