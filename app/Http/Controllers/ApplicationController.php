@@ -6,11 +6,47 @@ use Illuminate\Http\Request;
 use App\Models\Application;
 use App\Models\Chat;
 use App\Models\File;
+use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 
 class ApplicationController extends Controller
 {
+    public function index()
+    {
+        $user = Auth::user();
+        $statuses = Status::all();
+
+        if ($user->role_id == 1) {
+            // Участник видит только свои заявки
+            $applications = Application::where('user_id', $user->id)->with(['files', 'section', 'status'])->get();
+        } else {
+            $applications = Application::with(['files', 'section', 'user', 'status'])->get();
+        }
+
+        return inertia('Applications/Index', [
+            'applications' => $applications,
+            'statuses' => $statuses,
+        ]);
+    }
+
+    public function updateStatus(Request $request, $id)
+    {
+        $request->validate([
+            'status_id' => 'required|exists:statuses,id',
+        ]);
+
+        if (Auth::user()->role_id != 2) {
+            return response()->json(['message' => 'Доступ запрещен.'], 403);
+        }
+
+        $application = Application::findOrFail($id);
+        $application->status_id = $request->status_id;
+        $application->save();
+
+        return redirect()->back();
+    }
+
     public function store(Request $request, $sectionId)
     {
         $request->validate([

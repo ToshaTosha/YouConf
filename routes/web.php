@@ -40,6 +40,11 @@ if (app()->environment('local')) {
 
 Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
 
+Route::middleware(['auth'])->group(function () {
+    Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
+    Route::post('/applications/{id}/status', [ApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
+});
+
 Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
 
 // routes/web.php

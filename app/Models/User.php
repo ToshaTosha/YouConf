@@ -14,16 +14,16 @@ class User extends Authenticatable
         'last_name',
         'avatar',
         'email',
-        'role',
+        'role_id',
     ];
 
-    public function isExpert(): bool
+    public function role()
     {
-        return $this->role === 'expert';
+        return $this->belongsTo(Role::class);
     }
 
-    public function isParticipant(): bool
+    public function hasRole($roleName): bool
     {
-        return $this->role === 'participant';
+        return $this->role->name === $roleName;
     }
 }

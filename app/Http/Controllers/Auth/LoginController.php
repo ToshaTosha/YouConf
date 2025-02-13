@@ -4,20 +4,11 @@ namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Auth;
-use Inertia\Inertia;
-use Laravel\Socialite\Facades\Socialite;
-use App\Models\User;
-use Illuminate\Support\Facades\Log;
-
-namespace App\Http\Controllers\Auth;
-
-use App\Http\Controllers\Controller;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
+use App\Models\Role;
 use Illuminate\Support\Facades\Log;
 
 class LoginController extends Controller
@@ -48,6 +39,7 @@ class LoginController extends Controller
                     'last_name' => $user['last_name'],
                     'avatar' => $user['photo_200'],
                     'email' => $user['email'],
+                    'role_id' => Role::where('name', 'participant')->first()->id,
                 ]);
             }
 

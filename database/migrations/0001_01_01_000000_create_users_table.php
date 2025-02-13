@@ -18,7 +18,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->string('avatar')->nullable();
             $table->string('email')->nullable();
-            $table->string('role')->default('participant');
+            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
         });
 

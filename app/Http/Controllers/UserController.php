@@ -12,7 +12,7 @@ class UserController extends Controller
     public function show($id)
     {
 
-        $user = User::findOrFail($id);
+        $user = User::with('role')->findOrFail($id);
         $applications = Application::where('user_id', $user->id)
             ->with(['status:id,name', 'section:id,name'])
             ->get();
