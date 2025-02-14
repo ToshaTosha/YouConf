@@ -1,21 +1,19 @@
 <template>
-  <div class="flex flex-col items-center justify-center min-h-screen">
-    <div class="flex space-x-4 mb-6">
-      <button
-        @click="showLogin = true"
-        class="px-4 py-2 font-semibold text-white bg-blue-500 rounded-lg hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-400"
-      >
-        Вход
-      </button>
-      <a href="/auth/vk">Войти через ВКонтакте</a>
-    </div>
-  </div>
+  <h2 class="text-2xl font-bold text-center mb-6">Авторизация</h2>
+  <a
+    href="/auth/vk"
+    class="text-white bg-sky-200 hover:bg-sky-300 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+  >
+    Войти через ВКонтакте
+  </a>
 </template>
 
 <script>
-import AuthLayout from '../../Common/AuthLayout.vue'
+import AuthLayout from '@/Common/AuthLayout.vue'
 
 export default {
-  layout: AuthLayout,
+  meta: {
+    layout: AuthLayout, // Сохраняем информацию о лейауте в meta
+  },
 }
 </script>

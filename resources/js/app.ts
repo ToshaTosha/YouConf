@@ -3,7 +3,7 @@ import { createInertiaApp } from '@inertiajs/inertia-vue3';
 import '../css/app.css';
 // import { InertiaProgress } from '@inertiajs/progress';
 
-import DefaultLayout from '@/Common/Layout.vue'; // Основной макет по умолчанию
+import DefaultLayout from '@/Common/DefaultLayout.vue'; // Основной макет по умолчанию
 // import NotFound from './Pages/Errors/NotFound.vue'; // Компонент для ошибки 404
 
 /**
@@ -30,8 +30,9 @@ const resolvePageComponent = async (name) => {
  */
 const resolveLayout = (page) => {
     // Если страница указывает на использование другого макета, используем его
-    if (page.layout) {
-        return page.layout;
+    console.log(page.meta?.layout)
+    if (page.meta?.layout) {
+        return page.meta?.layout;
     }
     // Иначе используем макет по умолчанию
     return DefaultLayout;
@@ -46,9 +47,10 @@ createInertiaApp({
         };
     },
     setup({ el, app, props, plugin }) {
+        console.log(props)
         const App = {
             render() {
-                const Layout = props.initialComponent.layout || DefaultLayout;
+                const Layout = props.initialComponent.meta?.layout || DefaultLayout;
                 return h(Layout, null, {
                     default: () => h(app, props),
                 });

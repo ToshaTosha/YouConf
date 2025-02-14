@@ -16,8 +16,6 @@ use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\Time;
 use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
-use MoonShine\UI\Resources\Resource;
-use Moonshine\UI\Fields\DateTime;
 
 /**
  * @extends ModelResource<Schedule>
@@ -41,7 +39,7 @@ class ScheduleResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class), // Связь с заявкой
+            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class),
             Date::make('Дата и время', 'scheduled_at'),
             Text::make('Место проведения', 'location'),
         ];
@@ -54,7 +52,7 @@ class ScheduleResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class), // Связь с заявкой
+            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class),
             Date::make('Дата и время', 'scheduled_at'),
             Text::make('Место проведения', 'location'),
         ];

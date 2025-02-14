@@ -9,33 +9,12 @@
       </p>
       <!-- Добавьте другие поля пользователя -->
     </div>
-
-    <!-- Таблица заявок -->
-    <div>
-      <h2 class="text-xl font-bold mb-4">Статус заявок</h2>
-      <table class="min-w-full bg-white">
-        <thead>
-          <tr>
-            <th class="py-2">Название</th>
-            <th class="py-2">Дата</th>
-            <th class="py-2">Статус</th>
-          </tr>
-        </thead>
-        <tbody>
-          <tr
-            v-for="application in applications"
-            :key="application.id"
-            @click="openApplication(application.id)"
-            class="cursor-pointer hover:bg-gray-100"
-          >
-            <td class="border px-4 py-2">{{ application.title }}</td>
-            <td class="border px-4 py-2">{{ application.date }}</td>
-            <td class="border px-4 py-2">{{ application.status.name }}</td>
-          </tr>
-        </tbody>
-      </table>
-    </div>
-    {{ $page.props }}
+    <a
+      href="/applications"
+      class="text-white bg-sky-200 hover:bg-sky-300 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5"
+    >
+      Заявки
+    </a>
   </div>
 </template>
 

@@ -16,9 +16,10 @@ class DatabaseSeeder extends Seeder
         $this->call([
             AdminSeeder::class,
             RoleSeeder::class,
-            ExpertUserSeeder::class,
+            UserSeeder::class,
             SectionSeeder::class,
             StatusesTableSeeder::class,
+            ApplicationSeeder::class,
         ]);
     }
 }

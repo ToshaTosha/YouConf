@@ -52,13 +52,13 @@
     </nav>
 
     <button
-      @click="switchUser(2)"
+      @click="switchUser(11)"
       class="bg-blue-500 text-white p-2 rounded-lg"
     >
       Переключиться на участника
     </button>
     <button
-      @click="switchUser(1)"
+      @click="switchUser(2)"
       class="bg-green-500 text-white p-2 rounded-lg"
     >
       Переключиться на эксперта
@@ -81,7 +81,7 @@
 <script>
 import { Link, router } from '@inertiajs/inertia-vue3'
 export default {
-  name: 'Layout',
+  name: 'DefaultLayout',
   components: {
     Link,
   },
@@ -90,8 +90,6 @@ export default {
   },
   computed: {
     userProfileLink() {
-      console.log(`/user/${this.$page.props?.user_data?.id}`)
-
       return `/user/${this.$page.props?.user_data?.id}`
     },
   },

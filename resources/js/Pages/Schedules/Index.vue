@@ -49,11 +49,7 @@
 <script>
 export default {
   props: {
-    schedule: Object, // Расписание, переданное из бэкенда
+    schedule: Object,
   },
 }
 </script>
-
-<style scoped>
-/* Вы можете добавить дополнительные стили здесь, если это необходимо */
-</style>
