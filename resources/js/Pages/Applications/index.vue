@@ -12,50 +12,54 @@
         </tr>
       </thead>
       <tbody>
-        <Link :href="`/applications/${application.id}`">
-          <tr
-            v-for="application in applications"
-            :key="application.id"
-            class="cursor-pointer hover:bg-gray-100"
+        <tr
+          v-for="application in applications"
+          :key="application.id"
+          class="cursor-pointer hover:bg-gray-100"
+        >
+          <td class="border px-4 py-2">
+            <Link :href="`/applications/${application.id}`">
+              {{ application.title }}
+            </Link>
+          </td>
+          <td class="border px-4 py-2">
+            {{ formatDate(application.created_at) }}
+          </td>
+          <td class="border px-4 py-2">{{ application.status.name }}</td>
+          <td
+            v-if="$page.props.user_data.role_id === 2"
+            class="border px-4 py-2"
           >
-            <td class="border px-4 py-2">{{ application.title }}</td>
-            <td class="border px-4 py-2">
-              {{ formatDate(application.created_at) }}
-            </td>
-            <td class="border px-4 py-2">{{ application.status.name }}</td>
-            <td
-              v-if="$page.props.user_data.role_id === 2"
-              class="border px-4 py-2"
+            <select
+              v-model="application.status_id"
+              @change="updateStatus(application.id, application.status_id)"
+              class="border rounded p-1"
             >
-              <select
-                v-model="application.status_id"
-                @change="updateStatus(application.id, application.status_id)"
-                class="border rounded p-1"
+              <option
+                v-for="status in statuses"
+                :key="status.id"
+                :value="status.id"
               >
-                <option
-                  v-for="status in statuses"
-                  :key="status.id"
-                  :value="status.id"
-                >
-                  {{ status.name }}
-                </option>
-              </select>
-            </td>
-          </tr>
-        </Link>
+                {{ status.name }}
+              </option>
+            </select>
+          </td>
+        </tr>
       </tbody>
     </table>
   </div>
 </template>
 
-import { Inertia } from '@inertiajs/inertia' import { Link } from
-'@inertiajs/inertia-vue3'
-
 <script>
+import { Link, router } from '@inertiajs/inertia-vue3'
+import { Inertia } from '@inertiajs/inertia'
 export default {
   props: {
     applications: Array,
     statuses: Array,
+  },
+  components: {
+    Link,
   },
   methods: {
     //   openApplication(id) {
