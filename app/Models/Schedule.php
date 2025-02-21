@@ -11,7 +11,10 @@ class Schedule extends Model
 
     protected $fillable = [
         'application_id',
-        'scheduled_at',
+        'date',
+        'start_time',
+        'duration',
+        'end_time',
         'location',
     ];
 

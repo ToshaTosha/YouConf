@@ -6,6 +6,7 @@ use App\Models\Schedule;
 use App\Models\Section;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
+use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
 {
@@ -14,13 +15,27 @@ class ScheduleController extends Controller
         $schedules = Schedule::with(['application.section'])->get();
         $sections = Section::all();
 
-        // Группируем расписание по дате
-        $groupedSchedules = $schedules->groupBy(function ($schedule) {
-            return \Carbon\Carbon::parse($schedule->scheduled_at)->format('Y-m-d');
+        $formattedSchedules = $schedules->map(function ($schedule) {
+            return [
+                'id' => $schedule->id,
+                'application_id' => $schedule->application_id,
+                'date' => $schedule->date,
+                'start_time' => $schedule->start_time,
+                'duration' => $schedule->duration,
+                'end_time' => $schedule->end_time,
+                'location' => $schedule->location,
+                'application_title' => $schedule->application->title, // Извлекаем заголовок приложения
+                'section_id' => $schedule->application->section_id, // Извлекаем имя секции
+            ];
         });
 
+        $sortedSchedules = $formattedSchedules->groupBy('date');
+
+
+        Log::info($formattedSchedules);
+
         return Inertia::render('Schedules/Index', [
-            'schedule' => $groupedSchedules,
+            'schedules' => $sortedSchedules,
             'sections' => $sections,
         ]);
     }

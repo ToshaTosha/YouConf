@@ -19,7 +19,8 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SectionSeeder::class,
             StatusesTableSeeder::class,
-            // ApplicationSeeder::class,
+            ApplicationSeeder::class,
+            ConferenceSessionSeeder::class,
         ]);
     }
 }

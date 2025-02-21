@@ -1,5 +1,18 @@
 <template>
   <div class="p-4">
+    <div class="flex mb-4">
+      <button
+        v-for="(schedules, date) in schedules"
+        :key="date"
+        @click="selectedDate = date"
+        :class="[
+          'px-4 py-2 mr-2',
+          selectedDate === date ? 'bg-blue-500 text-white' : 'bg-gray-200',
+        ]"
+      >
+        {{ date }}
+      </button>
+    </div>
     <table class="min-w-full bg-white border border-gray-200">
       <thead>
         <tr>
@@ -23,6 +36,7 @@
         </tr>
       </tbody>
     </table>
+    {{ schedules }}
   </div>
 </template>
 
@@ -31,85 +45,17 @@ export default {
   data() {
     return {
       timeSlots: this.generateTimeSlots(),
-      schedules: [
-        {
-          id: 1,
-          application: {
-            id: 1,
-            title: 'Opening Ceremony',
-            section_id: 1,
-            section: {
-              id: 1,
-              name: 'Main Stage',
-              color: '#FF5733',
-            },
-          },
-          date: '2025-02-16',
-          start_time: '10:00',
-          duration: 60,
-          end_time: '11:00',
-          location: 'Main Hall',
-        },
-        {
-          id: 2,
-          application: {
-            id: 2,
-            title: 'Tech Talk: AI Innovations',
-            section_id: 2,
-            section: {
-              id: 2,
-              name: 'Tech Stage',
-              color: '#33FF57',
-            },
-          },
-          date: '2025-02-16',
-          start_time: '11:00',
-          duration: 45,
-          end_time: '11:45',
-          location: 'Tech Room',
-        },
-        {
-          id: 3,
-          application: {
-            id: 3,
-            title: 'Tech Talk: AI Innovations 2',
-            section_id: 2,
-            section: {
-              id: 2,
-              name: 'Tech Stage',
-              color: '#33FF57',
-            },
-          },
-          date: '2025-02-16',
-          start_time: '12:00',
-          duration: 30,
-          end_time: '12:30',
-          location: 'Tech Room',
-        },
-      ],
-      sections: [
-        {
-          id: 1,
-          name: 'Main Stage',
-          color: '#FF5733',
-        },
-        {
-          id: 2,
-          name: 'Tech Stage',
-          color: '#33FF57',
-        },
-        {
-          id: 3,
-          name: 'Workshop Room',
-          color: '#3357FF',
-        },
-      ],
+      selectedDate: Object.keys(this.schedules)[0],
     }
+  },
+  props: {
+    schedules: Object,
+    sections: Array,
   },
   methods: {
     generateTimeSlots() {
       const slots = []
-      for (let hour = 8; hour < 20; hour++) {
+      for (let hour = 7; hour < 21; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
           slots.push(
             `${String(hour).padStart(2, '0')}:${String(minute).padStart(
@@ -122,42 +68,46 @@ export default {
       return slots
     },
     getCellStyle(sectionId, timeSlot) {
-      const event = this.schedules.find(
+      console.log(this.schedules[this.selectedDate])
+      const event = this.schedules[this.selectedDate].find(
         (schedule) =>
-          schedule.application.section_id === sectionId &&
+          schedule.section_id === sectionId &&
           timeSlot >= schedule.start_time &&
-          timeSlot < schedule.end_time,
+          timeSlot <= schedule.end_time,
       )
-      return event ? { backgroundColor: event.application.section.color } : {}
+      return event ? { backgroundColor: 'rgb(51 255 87 / 5%)' } : {}
     },
     getEvent(sectionId, timeSlot) {
-      const event = this.schedules.find(
+      const event = this.schedules[this.selectedDate].find(
         (schedule) =>
-          schedule.application.section_id === sectionId &&
+          schedule.section_id === sectionId &&
           timeSlot >= schedule.start_time &&
-          timeSlot < schedule.end_time,
+          timeSlot <= schedule.end_time,
       )
-      return event ? event.application.title : ''
+      return event ? event.application_title : ''
     },
     getRowSpan(sectionId, timeSlot, index) {
-      const event = this.schedules.find(
+      const event = this.schedules[this.selectedDate].find(
         (schedule) =>
-          schedule.application.section_id === sectionId &&
+          schedule.section_id === sectionId &&
           timeSlot >= schedule.start_time &&
-          timeSlot < schedule.end_time,
+          timeSlot <= schedule.end_time,
       )
       if (event) {
         // Проверяем, является ли текущая ячейка началом события
         if (timeSlot === event.start_time) {
           const startIndex = this.timeSlots.indexOf(event.start_time)
           const endIndex = this.timeSlots.indexOf(event.end_time)
-          return endIndex - startIndex
+          return endIndex - startIndex + 1
         } else {
           // Если это не начало события, возвращаем 0, чтобы ячейка была скрыта
           return 0
         }
       }
       return 1
+    },
+    selectDate(date) {
+      this.selectedDate = date
     },
   },
 }

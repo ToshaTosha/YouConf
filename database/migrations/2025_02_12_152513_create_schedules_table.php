@@ -14,8 +14,11 @@ return new class extends Migration
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
             $table->foreignId('application_id')->constrained()->onDelete('cascade'); // Связь с заявкой
-            $table->dateTime('scheduled_at');
-            $table->string('location'); // Место проведения
+            $table->date('date')->nullable(); // Добавляем поле date
+            $table->time('start_time')->nullable(); // Добавляем поле start_time
+            $table->integer('duration')->nullable(); // Добавляем поле duration
+            $table->time('end_time')->nullable(); // Добавляем поле end_time
+            $table->string('location')->nullable();
             $table->timestamps();
         });
     }

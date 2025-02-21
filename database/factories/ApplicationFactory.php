@@ -16,7 +16,7 @@ class ApplicationFactory extends Factory
         return [
             'title' => $this->faker->sentence,
             'description' => $this->faker->paragraph,
-            'user_id' => 11,
+            'user_id' => $this->faker->numberBetween(1, 10),
             'status_id' => Status::inRandomOrder()->first()->id,
             'section_id' => Section::inRandomOrder()->first()->id,
         ];
