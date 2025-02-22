@@ -7,12 +7,12 @@ use Illuminate\Database\Eloquent\Model;
 class Chat extends Model
 {
     protected $fillable = [
-        'application_id',
+        'application_version_id',
     ];
 
-    public function application()
+    public function applicationVersion()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(ApplicationVersion::class);
     }
 
     public function messages()

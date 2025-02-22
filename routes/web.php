@@ -32,6 +32,7 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/sections/{section}', [SectionController::class, 'show']);
 
     Route::post('/sections/{section}/apply', [ApplicationController::class, 'store'])->name('sections.apply');
+    Route::post('/applications/{id}/update', [ApplicationController::class, 'update'])->name('applications.update');
 });
 
 if (app()->environment('local')) {
@@ -39,6 +40,7 @@ if (app()->environment('local')) {
 }
 
 Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
+Route::get('/applications/{id}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');

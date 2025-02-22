@@ -34,28 +34,16 @@
         </a>
       </div>
     </div>
-
-    <ApplicationHistory :versions="application.versions" />
-
-    <!-- Встраиваем компонент чата -->
-    <Chat
-      v-if="application.chat"
-      :chat="application.chat"
-      :messages="application.chat.messages"
-      :application="application"
-    />
-    {{ application }}
+    <ApplicationForm :application="application" />
   </div>
 </template>
 
 <script>
-import Chat from '@/Components/Chat.vue' // Импортируем компонент чата
-import ApplicationHistory from '@/Components/ApplicationHistory.vue'
+import ApplicationForm from '@/Components/ApplicationForm.vue'
 
 export default {
   components: {
-    Chat,
-    ApplicationHistory,
+    ApplicationForm,
   },
   props: {
     application: Object,

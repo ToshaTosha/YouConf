@@ -4,11 +4,14 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\Application;
+use App\Models\ApplicationVersion;
 use App\Models\Chat;
 use App\Models\File;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+
+use Illuminate\Support\Facades\DB;
 
 class ApplicationController extends Controller
 {
@@ -18,7 +21,6 @@ class ApplicationController extends Controller
         $statuses = Status::all();
 
         if ($user->role_id == 1) {
-            // Участник видит только свои заявки
             $applications = Application::where('user_id', $user->id)->with(['files', 'section', 'status'])->get();
         } else {
             $applications = Application::with(['files', 'section', 'user', 'status'])->get();
@@ -82,11 +84,63 @@ class ApplicationController extends Controller
             ->with('success', 'Заявка успешно создана!');
     }
 
+    public function update(Request $request, $id)
+    {
+        DB::transaction(function () use ($request, $id) {
+            // Находим текущую заявку
+            $application = Application::findOrFail($id);
+
+            // Сохраняем текущее состояние заявки в переменные
+            $previousTitle = $application->title;
+            $previousDescription = $application->description;
+            $previousStatusId = $application->status_id;
+            $previousChatId = $application->chat->id;
+
+            // Обновляем заявку новыми данными
+            $application->title = $request->title;
+            $application->description = $request->description;
+            // $application->status_id = $request->status_id; // Раскомментируйте, если нужно обновлять статус
+            $application->save();
+
+            // Сохраняем предыдущее состояние заявки в историю
+            ApplicationVersion::create([
+                'application_id' => $application->id,
+                'title' => $previousTitle,
+                'description' => $previousDescription,
+                'status_id' => $previousStatusId,
+                'chat_id' => $previousChatId,
+            ]);
+
+            // Создаем новый чат для обновленной заявки
+            $newChat = Chat::create([
+                'application_id' => $application->id,
+            ]);
+
+            // Привязываем новый чат к текущей заявке
+            $application->chat()->associate($newChat);
+            $application->save();
+        });
+
+        Log::info('Request data:', $request->all());
+
+        return redirect()->back()->with('success', 'Заявка обновлена');
+    }
+
     public function show($id)
     {
-        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
+        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions'])->findOrFail($id);
 
         return inertia('Applications/Show', [
+            'application' => $application,
+        ]);
+    }
+
+
+    public function edit($id)
+    {
+        $application = Application::with(['files', 'section', 'user', 'status',])->findOrFail($id);
+
+        return inertia('Applications/Edit', [
             'application' => $application,
         ]);
     }

@@ -29,12 +29,9 @@ const resolvePageComponent = async (name) => {
  * Если макет не указан, используется макет по умолчанию.
  */
 const resolveLayout = (page) => {
-    // Если страница указывает на использование другого макета, используем его
-    console.log(page.meta?.layout)
     if (page.meta?.layout) {
         return page.meta?.layout;
     }
-    // Иначе используем макет по умолчанию
     return DefaultLayout;
 };
 
@@ -47,7 +44,6 @@ createInertiaApp({
         };
     },
     setup({ el, app, props, plugin }) {
-        console.log(props)
         const App = {
             render() {
                 const Layout = props.initialComponent.meta?.layout || DefaultLayout;

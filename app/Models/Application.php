@@ -37,8 +37,25 @@ class Application extends Model
         return $this->morphMany(File::class, 'fileable');
     }
 
+    public function versions()
+    {
+        return $this->hasMany(ApplicationVersion::class);
+    }
+
+    public function latestVersion()
+    {
+        return $this->versions()->latest()->first();
+    }
+
     public function chat()
     {
-        return $this->hasOne(Chat::class);
+        return $this->hasOneThrough(
+            Chat::class,
+            ApplicationVersion::class,
+            'application_id', // Внешний ключ в ApplicationVersion
+            'application_version_id', // Внешний ключ в Chat
+            'id', // Локальный ключ в Application
+            'id' // Локальный ключ в ApplicationVersion
+        )->where('application_versions.is_current', true); // Опционально, если есть флаг текущей версии
     }
 }
