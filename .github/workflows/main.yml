@@ -30,6 +30,5 @@ jobs:
       - name: Deploy to server
         run: |
           set -x
-          rsync --archive --compress --progress -e "ssh -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
-          ssh -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${SERVER_PATH} && composer install --no-dev --optimize-autoloader && yarn install && yarn build"
-
+          rsync --archive --compress --progress -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
+          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${SERVER_PATH} && composer install --no-dev --optimize-autoloader && yarn install && yarn build"
