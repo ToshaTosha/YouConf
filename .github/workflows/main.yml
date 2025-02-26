@@ -21,11 +21,10 @@ jobs:
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_conf
+          echo "${{ secrets.MY_KEY }}" > ~/.ssh/id_conf
           chmod 600 ~/.ssh/id_conf
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_conf
-          echo "${{ secrets.SSH_KNOWN_HOSTS }}" >> ~/.ssh/known_hosts
 
       # Deploy
       - name: Deploy to server
