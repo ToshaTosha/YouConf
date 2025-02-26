@@ -50,8 +50,5 @@ jobs:
             rm -f package-lock.json && \
             composer install --no-dev --optimize-autoloader && \
             yarn install && \
-            yarn build && \
-            php artisan config:cache && \
-            php artisan cache:clear && \
-            php artisan package:discover --ansi
+            yarn build
           "
