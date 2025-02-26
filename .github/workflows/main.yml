@@ -6,7 +6,7 @@ on:
       - master
 
 env:
-  SERVER_HOST: 89.108.77.14
+  SERVER_HOST: 89.169.171.236
   SERVER_USER: user
   SERVER_PATH: /var/www/you-conf
 
