@@ -30,5 +30,16 @@ jobs:
       - name: Deploy to server
         run: |
           set -x
+          # Копирование файлов на сервер
           rsync --archive --compress --progress -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
-          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${{ env.SERVER_PATH }} && composer install --no-dev --optimize-autoloader && yarn install && yarn build"
+
+          # Выполнение команд на сервере
+          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
+            cd ${{ env.SERVER_PATH }} && \
+            composer install --no-dev --optimize-autoloader && \
+            yarn install && \
+            yarn build && \
+            php artisan config:cache && \
+            php artisan cache:clear && \
+            php artisan package:discover --ansi
+          "
