@@ -21,7 +21,6 @@ class Application extends Model
         return $this->belongsTo(Section::class);
     }
 
-    // Отношение к модели User
     public function user()
     {
         return $this->belongsTo(User::class);
@@ -42,20 +41,8 @@ class Application extends Model
         return $this->hasMany(ApplicationVersion::class);
     }
 
-    public function latestVersion()
-    {
-        return $this->versions()->latest()->first();
-    }
-
     public function chat()
     {
-        return $this->hasOneThrough(
-            Chat::class,
-            ApplicationVersion::class,
-            'application_id', // Внешний ключ в ApplicationVersion
-            'application_version_id', // Внешний ключ в Chat
-            'id', // Локальный ключ в Application
-            'id' // Локальный ключ в ApplicationVersion
-        )->where('application_versions.is_current', true); // Опционально, если есть флаг текущей версии
+        return $this->morphOne(Chat::class, 'chatable');
     }
 }

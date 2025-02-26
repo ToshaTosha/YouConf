@@ -9,13 +9,7 @@ class ApplicationVersion extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'application_id',
-        'title',
-        'description',
-        'status_id',
-        'is_current',
-    ];
+    protected $fillable = ['application_id', 'title', 'description', 'status_id', 'version'];
 
     public function application()
     {
@@ -24,6 +18,11 @@ class ApplicationVersion extends Model
 
     public function chat()
     {
-        return $this->hasOne(Chat::class);
+        return $this->morphMany(Chat::class, 'chatable');
+    }
+
+    public function files()
+    {
+        return $this->morphMany(File::class, 'fileable');
     }
 }

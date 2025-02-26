@@ -6,13 +6,11 @@ use Illuminate\Database\Eloquent\Model;
 
 class Chat extends Model
 {
-    protected $fillable = [
-        'application_version_id',
-    ];
+    protected $fillable = ['chatable_type', 'chatable_id'];
 
-    public function applicationVersion()
+    public function chatable()
     {
-        return $this->belongsTo(ApplicationVersion::class);
+        return $this->morphTo();
     }
 
     public function messages()

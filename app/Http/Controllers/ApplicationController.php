@@ -49,89 +49,100 @@ class ApplicationController extends Controller
         return redirect()->back();
     }
 
-    public function store(Request $request, $sectionId)
+    public function store(Request $request)
     {
-        $request->validate([
-            'title' => 'required|string|max:255',
-        ]);
+        // $request->validate([
+        //     'title' => 'required|string|max:255',
+        //     'description' => 'required|string',
+        //     'section_id' => 'required|exists:sections,id',
+        //     'files.*' => 'file|mimes:jpg,png,pdf|max:2048',
+        // ]);
 
-        $application = new Application();
-        $application->title = $request->title;
-        $application->description = $request->description;
-        $application->user_id = Auth::id();
-        $application->section_id = $sectionId;
-        $application->status_id = 1;
-        $application->save();
+        DB::transaction(function () use ($request) {
+            // Создаем новую заявку
+            $application = Application::create([
+                'title' => $request->title,
+                'description' => $request->description,
+                'user_id' => Auth::id(),
+                'status_id' => 1, // Статус "на рассмотрении"
+                'section_id' => $request->section_id,
+            ]);
 
-        Chat::create([
-            'application_id' => $application->id,
-        ]);
+            // Создаем чат для заявки
+            Chat::create([
+                'chatable_type' => Application::class, // Указываем тип модели
+                'chatable_id' => $application->id,
+            ]);
 
-        if ($request->hasFile('files')) {
-            foreach ($request->file('files') as $file) {
-                $path = $file->store('uploads');
-
-                File::create([
-                    'path' => $path,
-                    'name' => $file->getClientOriginalName(),
-                    'fileable_type' => Application::class,
-                    'fileable_id' => $application->id,
-                ]);
+            // Загружаем файлы, если они есть
+            if ($request->hasFile('files')) {
+                $this->storeFiles($request->file('files'), $application); // Сохраняем файлы, связанные с Application
             }
-        }
+        });
 
-        return redirect()->route('applications.show', ['id' => $application->id])
-            ->with('success', 'Заявка успешно создана!');
+        return redirect()->route('applications.index')->with('success', 'Заявка создана');
     }
 
     public function update(Request $request, $id)
     {
+        // $request->validate([
+        //     'title' => 'required|string|max:255',
+        //     'description' => 'required|string',
+        //     'status_id' => 'required|exists:statuses,id',
+        //     'files.*' => 'file|mimes:jpg,png,pdf|max:2048',
+        // ]);
+
         DB::transaction(function () use ($request, $id) {
             // Находим текущую заявку
             $application = Application::findOrFail($id);
 
-            // Сохраняем текущее состояние заявки в переменные
-            $previousTitle = $application->title;
-            $previousDescription = $application->description;
-            $previousStatusId = $application->status_id;
-            $previousChatId = $application->chat->id;
+            // Получаем текущий чат
+            $currentChat = $application->chat;
 
-            // Обновляем заявку новыми данными
-            $application->title = $request->title;
-            $application->description = $request->description;
-            // $application->status_id = $request->status_id; // Раскомментируйте, если нужно обновлять статус
-            $application->save();
-
-            // Сохраняем предыдущее состояние заявки в историю
-            ApplicationVersion::create([
-                'application_id' => $application->id,
-                'title' => $previousTitle,
-                'description' => $previousDescription,
-                'status_id' => $previousStatusId,
-                'chat_id' => $previousChatId,
+            // Сохраняем текущую версию заявки
+            $versionNumber = $application->versions()->count() + 1; // Получаем номер новой версии
+            $applicationVersion = $application->versions()->create([
+                'title' => $application->title,
+                'description' => $application->description,
+                'status_id' => $application->status_id,
+                'version' => $versionNumber,
             ]);
 
-            // Создаем новый чат для обновленной заявки
-            $newChat = Chat::create([
-                'application_id' => $application->id,
+            $currentChat->chatable_type = ApplicationVersion::class; // Указываем тип модели
+            $currentChat->chatable_id = $applicationVersion->id; // Указываем ID новой версии
+            $currentChat->save();
+
+            // Обновляем основную заявку
+            $application->update($request->only(['title', 'description', 'status_id']));
+
+            Chat::create([
+                'chatable_type' => Application::class, // Указываем тип модели
+                'chatable_id' => $application->id, // Указываем ID заявки
             ]);
 
-            // Привязываем новый чат к текущей заявке
-            $application->chat()->associate($newChat);
-            $application->save();
+            // Перемещаем файлы из Application в ApplicationVersion
+            $this->moveFilesToVersion($application, $applicationVersion);
+
+            // Загружаем новые файлы, если они есть
+            if ($request->hasFile('files')) {
+                $this->storeFiles($request->file('files'), $applicationVersion); // Передаем новую версию
+            }
         });
-
-        Log::info('Request data:', $request->all());
 
         return redirect()->back()->with('success', 'Заявка обновлена');
     }
 
     public function show($id)
     {
-        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions'])->findOrFail($id);
+        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions', 'versions.chat.messages.user', 'versions.files'])->findOrFail($id);
+
+        // Получаем сообщения из чата
+        $chat = $application->chat; // Получаем чат, связанный с заявкой
+        $messages = $chat ? $chat->messages : []; // Получаем сообщения, если чат существует
 
         return inertia('Applications/Show', [
             'application' => $application,
+            'messages' => $messages, // Передаем сообщения в представление
         ]);
     }
 
@@ -143,5 +154,45 @@ class ApplicationController extends Controller
         return inertia('Applications/Edit', [
             'application' => $application,
         ]);
+    }
+
+    public function history($id)
+    {
+        // Находим заявку по ID
+        $application = Application::with(['versions.chat', 'versions.files']) // Предзагрузка версий, чатов и файлов
+            ->findOrFail($id);
+
+        // Получаем все версии заявки
+        $applicationVersions = $application->versions;
+
+        return view('applications.history', compact('applicationVersions'));
+    }
+
+
+    protected function storeFiles($files, $fileable)
+    {
+        foreach ($files as $file) {
+            $path = $file->store('uploads');
+
+            File::create([
+                'path' => $path,
+                'name' => $file->getClientOriginalName(),
+                'fileable_type' => get_class($fileable),
+                'fileable_id' => $fileable->id,
+            ]);
+        }
+    }
+
+    protected function moveFilesToVersion(Application $application, ApplicationVersion $applicationVersion)
+    {
+        // Получаем все файлы, связанные с заявкой
+        $files = $application->files;
+
+        foreach ($files as $file) {
+            // Обновляем запись в таблице files, чтобы она ссылалась на новую версию
+            $file->fileable_type = ApplicationVersion::class; // Изменяем тип на ApplicationVersion
+            $file->fileable_id = $applicationVersion->id; // Указываем ID новой версии
+            $file->save(); // Сохраняем изменения
+        }
     }
 }

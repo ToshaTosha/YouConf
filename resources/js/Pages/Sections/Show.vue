@@ -31,6 +31,7 @@
         Отправить
       </button>
     </form>
+    {{ section }}
   </div>
 </template>
 
@@ -47,7 +48,7 @@ export default {
     FileUpload,
   },
   props: {
-    sections: Array,
+    section: Object,
   },
   data() {
     return {
@@ -63,6 +64,7 @@ export default {
       const formData = new FormData()
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
+      formData.append('section_id', this.section.id)
       this.form.files.forEach((file) => {
         formData.append('files[]', file)
       })

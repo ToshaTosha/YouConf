@@ -13,10 +13,9 @@ return new class extends Migration
     {
         Schema::create('chats', function (Blueprint $table) {
             $table->id();
-            $table->unsignedBigInteger('application_id');
+            $table->string('chatable_type');
+            $table->unsignedBigInteger('chatable_id');
             $table->timestamps();
-
-            $table->foreign('application_id')->references('id')->on('applications')->onDelete('cascade');
         });
     }
 

@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('title');
             $table->text('description');
             $table->foreignId('status_id')->constrained()->onDelete('cascade');
-            $table->boolean('is_current')->default(false);
+            $table->integer('version');
             $table->timestamps();
         });
     }
