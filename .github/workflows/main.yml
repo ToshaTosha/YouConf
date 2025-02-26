@@ -36,6 +36,7 @@ jobs:
           # Выполнение команд на сервере
           ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
             cd ${{ env.SERVER_PATH }} && \
+            sudo apt-get update && \
             composer install --no-dev --optimize-autoloader && \
             yarn install && \
             yarn build && \
