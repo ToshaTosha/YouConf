@@ -38,6 +38,7 @@ jobs:
             cd ${{ env.SERVER_PATH }} && \
             sudo apt-get remove -y cmdtest && \
             sudo apt-get remove -y yarn && \
+            sudo apt-get remove --purge -y nodejs libnode72 && \  # Удаление конфликтующих пакетов
             curl -sS https://dl.yarnpkg.com/debian/pubkey.gpg | sudo apt-key add - && \
             echo 'deb https://dl.yarnpkg.com/debian/ stable main' | sudo tee /etc/apt/sources.list.d/yarn.list && \
             sudo apt-get update && \
