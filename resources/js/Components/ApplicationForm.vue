@@ -22,12 +22,13 @@
         ></textarea>
       </div>
       <div class="flex-none mb-4 md:ml-4 w-2/5">
-        <!-- Задаем фиксированную ширину -->
-        <FileUpload v-if="!isEditMode" @input="updateFiles" />
+        <FileUpload
+          @input="updateFiles"
+          :initialFiles="application ? application.files : []"
+        />
       </div>
     </div>
     <div class="flex justify-end mt-4">
-      <!-- Контейнер для кнопки -->
       <button
         class="bg-blue-500 text-white p-3 rounded-lg hover:bg-blue-600 transition duration-200"
         type="submit"
@@ -50,8 +51,8 @@ export default {
     FileUpload,
   },
   props: {
-    application: Object, // Данные заявки для редактирования
-    sectionId: Number, // ID секции для создания заявки
+    application: Object,
+    sectionId: Number,
   },
   data() {
     return {
@@ -60,13 +61,13 @@ export default {
         description: this.application ? this.application.description : '',
         files: [],
       }),
-      isEditMode: !!this.application, // Определяем режим редактирования
-      isSubmitting: false, // Индикатор загрузки
+      isEditMode: !!this.application,
+      isSubmitting: false,
     }
   },
   methods: {
     async submit() {
-      this.isSubmitting = true // Устанавливаем индикатор загрузки
+      this.isSubmitting = true
       const formData = new FormData()
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
@@ -77,7 +78,6 @@ export default {
 
       try {
         if (this.isEditMode) {
-          // Если в режиме редактирования, используем PUT
           await Inertia.post(
             `/applications/${this.application.id}/update`,
             formData,
@@ -88,17 +88,20 @@ export default {
             },
           )
         } else {
-          // Если в режиме создания, используем POST
-          await Inertia.post(`/sections/${this.sectionId}/apply`, formData, {
-            headers: {
-              'Content-Type': 'multipart/form-data',
+          await Inertia.post(
+            `/applications/${this.sectionId}/apply`,
+            formData,
+            {
+              headers: {
+                'Content-Type': 'multipart/form-data',
+              },
             },
-          })
+          )
         }
       } catch (error) {
         console.error('Ошибка при отправке формы:', error)
       } finally {
-        this.isSubmitting = false // Сбрасываем индикатор загрузки
+        this.isSubmitting = false
       }
     },
     updateFiles(files) {
@@ -107,7 +110,3 @@ export default {
   },
 }
 </script>
-
-<style scoped>
-/* Добавьте стили, если необходимо */
-</style>

@@ -57,9 +57,15 @@
 <script>
 export default {
   name: 'FileUpload',
+  props: {
+    initialFiles: {
+      type: Array,
+      default: () => [],
+    },
+  },
   data() {
     return {
-      uploadedFiles: [],
+      uploadedFiles: this.initialFiles, // Инициализируем с переданными файлами
       previewUrls: [],
     }
   },
@@ -79,7 +85,7 @@ export default {
       this.$emit('input', this.uploadedFiles)
     },
     isImage(file) {
-      return file && file.type.startsWith('image/')
+      return false
     },
     getPreviewUrl(index) {
       return this.previewUrls[index]
@@ -117,6 +123,16 @@ export default {
     this.uploadedFiles.forEach((file) => {
       if (file.previewUrl) {
         URL.revokeObjectURL(file.previewUrl)
+      }
+    })
+  },
+  mounted() {
+    // Если есть начальные файлы, создаем URL для их предварительного просмотра
+    this.uploadedFiles.forEach((file) => {
+      if (this.isImage(file)) {
+        this.previewUrls.push(URL.createObjectURL(file))
+      } else {
+        this.previewUrls.push(null)
       }
     })
   },

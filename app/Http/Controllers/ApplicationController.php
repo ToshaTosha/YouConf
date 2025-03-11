@@ -49,7 +49,7 @@ class ApplicationController extends Controller
         return redirect()->back();
     }
 
-    public function store(Request $request)
+    public function apply(Request $request)
     {
         // $request->validate([
         //     'title' => 'required|string|max:255',
@@ -147,11 +147,19 @@ class ApplicationController extends Controller
     }
 
 
+    public function create($section_id = null)
+    {
+        return inertia('Applications/ApplicationFormPage', [
+            'section_id' => $section_id,
+        ]);
+    }
+
+
     public function edit($id)
     {
         $application = Application::with(['files', 'section', 'user', 'status',])->findOrFail($id);
 
-        return inertia('Applications/Edit', [
+        return inertia('Applications/ApplicationFormPage', [
             'application' => $application,
         ]);
     }

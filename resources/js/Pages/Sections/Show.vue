@@ -3,6 +3,9 @@
     <h1 class="text-2xl font-bold mb-4">{{ $page.props.section.name }}</h1>
     <p class="text-gray-600">{{ $page.props.section.full_description }}</p>
     <p class="text-gray-600">Полное описание заявки</p>
+    <a :href="`/applications/create/${section.id}`">
+      Создать заявку в этой секции
+    </a>
     <ApplicationForm :section-id="section.id" />
     {{ section }}
   </div>

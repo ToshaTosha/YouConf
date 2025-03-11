@@ -31,7 +31,10 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/sections', [SectionController::class, 'index']);
     Route::get('/sections/{section}', [SectionController::class, 'show']);
 
-    Route::post('/sections/{section}/apply', [ApplicationController::class, 'store'])->name('sections.apply');
+    Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
+    Route::get('/applications/create/{section_id}', [ApplicationController::class, 'create'])->name('applications.create');
+    Route::post('/applications/{section_id}/apply', [ApplicationController::class, 'apply'])->name('applications.apply');
+    Route::get('/applications/{id}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
     Route::post('/applications/{id}/update', [ApplicationController::class, 'update'])->name('applications.update');
 });
 
@@ -39,8 +42,6 @@ if (app()->environment('local')) {
     Route::get('/switch-user/{userId}', [UserController::class, 'switchUser'])->name('switch.user');
 }
 
-Route::get('/applications/{id}', [ApplicationController::class, 'show'])->name('applications.show');
-Route::get('/applications/{id}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
