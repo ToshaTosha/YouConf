@@ -2,35 +2,8 @@
   <div class="p-4">
     <h1 class="text-2xl font-bold mb-4">{{ $page.props.section.name }}</h1>
     <p class="text-gray-600">{{ $page.props.section.full_description }}</p>
-    <p class="text-sm text-gray-500 mt-2">
-      Дата: {{ formatDate($page.props.section.start_date) }} -
-      {{ formatDate($page.props.section.end_date) }}
-    </p>
-    <form @submit.prevent="submit">
-      <div class="mb-4">
-        <label class="block text-gray-700">Название</label>
-        <input
-          v-model="form.title"
-          type="text"
-          class="w-full p-2 border rounded-lg"
-          required
-        />
-        <label class="block text-gray-700">Описание</label>
-        <input
-          v-model="form.description"
-          type="text"
-          class="w-full p-2 border rounded-lg"
-          required
-        />
-      </div>
-      <FileUpload @input="updateFiles" />
-      <button
-        class="bg-blue-500 text-white p-2 rounded-lg hover:bg-blue-600"
-        type="submit"
-      >
-        Отправить
-      </button>
-    </form>
+    <p class="text-gray-600">Полное описание заявки</p>
+    <ApplicationForm :section-id="section.id" />
     {{ section }}
   </div>
 </template>
@@ -40,12 +13,14 @@ import { Link } from '@inertiajs/inertia-vue3'
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
 import FileUpload from '@/Components/FileUpload.vue'
+import ApplicationForm from '@/Components/ApplicationForm.vue'
 
 export default {
   name: 'Layout',
   components: {
     Link,
     FileUpload,
+    ApplicationForm,
   },
   props: {
     section: Object,

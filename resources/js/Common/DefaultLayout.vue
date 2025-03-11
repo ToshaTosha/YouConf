@@ -41,10 +41,6 @@
       <div class="container mx-auto flex justify-center space-x-4 p-2">
         <a href="/" class="text-gray-700 hover:text-blue-600">Главная</a>
         <a href="/rules" class="text-gray-700 hover:text-blue-600">Правила</a>
-        <a href="/archive" class="text-gray-700 hover:text-blue-600">Архив</a>
-        <a href="/contacts" class="text-gray-700 hover:text-blue-600">
-          Контакты
-        </a>
         <a href="/sections" class="text-gray-700 hover:text-blue-600">
           Секции
         </a>

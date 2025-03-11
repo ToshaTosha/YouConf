@@ -5,11 +5,26 @@
       <div
         v-for="section in sections"
         :key="section.id"
-        class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow cursor-pointer"
+        class="bg-white p-4 rounded-lg shadow-md hover:shadow-lg transition-shadow flex flex-col h-full"
       >
-        <Link :href="`/sections/${section.id}`">View User</Link>
         <h3 class="text-lg font-bold">{{ section.name }}</h3>
-        <p class="text-gray-600">{{ section.description }}</p>
+        <p class="text-gray-600 flex-1 overflow-hidden text-ellipsis">
+          {{ section.description }}
+        </p>
+        <div class="mt-4 flex justify-between">
+          <Link
+            :href="`/sections/${section.id}`"
+            class="text-blue-500 hover:underline"
+          >
+            Подробнее
+          </Link>
+          <button
+            @click="apply(section.id)"
+            class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
+          >
+            Подать заявку
+          </button>
+        </div>
       </div>
     </div>
   </div>
@@ -26,5 +41,23 @@ export default {
     sections: Array,
     user: Object,
   },
+  methods: {
+    apply(sectionId) {
+      // Логика для подачи заявки
+      console.log(`Заявка подана на секцию с ID: ${sectionId}`)
+    },
+  },
 }
 </script>
+
+<style scoped>
+/* Стили для обрезки текста с троеточием */
+p {
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3; /* Количество строк, которые нужно показать */
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: normal; /* Позволяет тексту переноситься на следующую строку */
+}
+</style>

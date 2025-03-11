@@ -1,12 +1,13 @@
 <template>
-  <div>
-    <input
-      type="file"
-      @change="handleFileUpload"
-      required
-      class="border border-gray-300 rounded p-2"
-    />
-    <div class="grid grid-cols-2 gap-4 mt-4">
+  <div class="p-4">
+    <div class="flex flex-col space-y-4">
+      <input
+        type="file"
+        @change="handleFileUpload"
+        required
+        class="border border-gray-300 rounded p-2 mb-4"
+        multiple
+      />
       <div
         v-for="(file, index) in uploadedFiles"
         :key="index"
@@ -87,14 +88,14 @@ export default {
       const extension = file.name.split('.').pop().toLowerCase()
       switch (extension) {
         case 'txt':
-          return this.renderIcon('document-text') // Иконка для текстового файла
+          return this.renderIcon('document-text')
         case 'doc':
         case 'docx':
-          return this.renderIcon('document') // Иконка для документа
+          return this.renderIcon('document')
         case 'pdf':
-          return this.renderIcon('pdf') // Иконка для PDF
+          return this.renderIcon('pdf')
         default:
-          return this.renderIcon('folder') // Иконка для папки
+          return this.renderIcon('folder')
       }
     },
     renderIcon(iconName) {

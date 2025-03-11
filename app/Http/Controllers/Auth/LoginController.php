@@ -29,9 +29,8 @@ class LoginController extends Controller
 
             $authUser = User::where('vk_id', $user->id)->first();
             Log::info($user->user);
-            Log::info($authUser);
+            // Log::info($authUser);
 
-            // Если пользователь не найден, создаем нового
             if (!$authUser) {
                 $authUser = User::create([
                     'vk_id' => $user['id'],
@@ -43,7 +42,6 @@ class LoginController extends Controller
                 ]);
             }
 
-            // Авторизуем пользователя
             Auth::login($authUser, true);
 
             return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
