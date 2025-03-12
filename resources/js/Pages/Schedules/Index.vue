@@ -1,42 +1,39 @@
 <template>
-  <div class="p-4">
-    <div class="flex mb-4">
-      <button
-        v-for="(schedules, date) in schedules"
-        :key="date"
-        @click="selectedDate = date"
-        :class="[
-          'px-4 py-2 mr-2',
-          selectedDate === date ? 'bg-blue-500 text-white' : 'bg-gray-200',
-        ]"
-      >
-        {{ date }}
-      </button>
+  <!-- Общая сетка для времени и событий -->
+  <div
+    className="col-start-1 col-end-5 grid grid-rows-[repeat(48,minmax(0,1fr))]"
+  >
+    <!-- Заголовки категорий -->
+    <div className="col-start-1 col-end-2"></div>
+    <div
+      v-for="(category, catIndex) in categories"
+      :key="catIndex"
+      className="text-center font-bold p-2"
+    >
+      {{ category }}
     </div>
-    <table class="min-w-full bg-white border border-gray-200">
-      <thead>
-        <tr>
-          <th>Time</th>
-          <th v-for="section in sections" :key="section.id">
-            {{ section.name }}
-          </th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr v-for="(timeSlot, index) in timeSlots" :key="timeSlot">
-          <td>{{ timeSlot }}</td>
-          <td
-            v-for="section in sections"
-            :key="section.id"
-            :style="getCellStyle(section.id, timeSlot)"
-            :rowspan="getRowSpan(section.id, timeSlot, index)"
-          >
-            {{ getEvent(section.id, timeSlot) }}
-          </td>
-        </tr>
-      </tbody>
-    </table>
-    {{ schedules }}
+    <!-- Время -->
+    <div
+      v-for="(time, index) in times"
+      :key="index"
+      className="text-right pr-2"
+      :style="{ gridRow: `${index + 2} / span 1` }"
+    >
+      {{ time }}
+    </div>
+
+    <!-- События -->
+    <div
+      v-for="event in processedEvents"
+      :key="event.name"
+      :className="`bg-blue-500 p-2 rounded-lg`"
+      :style="{
+        gridColumn: `${categories.indexOf(event.category) + 2}`,
+        gridRow: `${event.start + 1} / ${event.end + 2}`,
+      }"
+    >
+      {{ event.name }}
+    </div>
   </div>
 </template>
 
@@ -44,87 +41,65 @@
 export default {
   data() {
     return {
-      timeSlots: this.generateTimeSlots(),
-      selectedDate: Object.keys(this.schedules)[0],
+      times: this.generateTimes(),
+      categories: ['Work', 'Personal', 'Meetings'], // Категории событий
+      events: [
+        {
+          name: 'Event 1',
+          startTime: '09:00',
+          endTime: '09:30',
+          category: 'Work',
+        },
+        {
+          name: 'Event 2',
+          startTime: '10:00',
+          endTime: '11:00',
+          category: 'Personal',
+        },
+        {
+          name: 'Event 3',
+          startTime: '11:30',
+          endTime: '12:00',
+          category: 'Meetings',
+        },
+        {
+          name: 'Event 3',
+          startTime: '13:30',
+          endTime: '15:00',
+          category: 'Meetings',
+        },
+      ],
     }
   },
-  props: {
-    schedules: Object,
-    sections: Array,
-  },
   methods: {
-    generateTimeSlots() {
-      const slots = []
-      for (let hour = 7; hour < 21; hour++) {
+    generateTimes() {
+      const times = []
+      for (let hour = 8; hour <= 20; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
-          slots.push(
-            `${String(hour).padStart(2, '0')}:${String(minute).padStart(
-              2,
-              '0',
-            )}`,
-          )
+          const time = `${hour
+            .toString()
+            .padStart(2, '0')}:${minute.toString().padStart(2, '0')}`
+          times.push(time)
         }
       }
-      return slots
+      return times
     },
-    getCellStyle(sectionId, timeSlot) {
-      console.log(this.schedules[this.selectedDate])
-      const event = this.schedules[this.selectedDate].find(
-        (schedule) =>
-          schedule.section_id === sectionId &&
-          timeSlot >= schedule.start_time &&
-          timeSlot <= schedule.end_time,
-      )
-      return event ? { backgroundColor: 'rgb(51 255 87 / 5%)' } : {}
+    timeToRowIndex(time) {
+      // Преобразует время в номер строки
+      const [hour, minute] = time.split(':').map(Number)
+      const totalMinutes = (hour - 8) * 60 + minute // 8:00 — начало отсчета
+      return Math.floor(totalMinutes / 15) + 1 // +1, так как строки начинаются с 1
     },
-    getEvent(sectionId, timeSlot) {
-      const event = this.schedules[this.selectedDate].find(
-        (schedule) =>
-          schedule.section_id === sectionId &&
-          timeSlot >= schedule.start_time &&
-          timeSlot <= schedule.end_time,
-      )
-      return event ? event.application_title : ''
-    },
-    getRowSpan(sectionId, timeSlot, index) {
-      const event = this.schedules[this.selectedDate].find(
-        (schedule) =>
-          schedule.section_id === sectionId &&
-          timeSlot >= schedule.start_time &&
-          timeSlot <= schedule.end_time,
-      )
-      if (event) {
-        // Проверяем, является ли текущая ячейка началом события
-        if (timeSlot === event.start_time) {
-          const startIndex = this.timeSlots.indexOf(event.start_time)
-          const endIndex = this.timeSlots.indexOf(event.end_time)
-          return endIndex - startIndex + 1
-        } else {
-          // Если это не начало события, возвращаем 0, чтобы ячейка была скрыта
-          return 0
-        }
-      }
-      return 1
-    },
-    selectDate(date) {
-      this.selectedDate = date
+  },
+  computed: {
+    processedEvents() {
+      // Преобразуем события, добавляя start и end на основе времени
+      return this.events.map((event) => ({
+        ...event,
+        start: this.timeToRowIndex(event.startTime),
+        end: this.timeToRowIndex(event.endTime),
+      }))
     },
   },
 }
 </script>
-
-<style scoped>
-table {
-  width: 100%;
-  border-collapse: collapse;
-}
-th,
-td {
-  border: 1px solid #ddd;
-  padding: 12px;
-  text-align: center;
-}
-td[rowspan='0'] {
-  display: none;
-}
-</style>
