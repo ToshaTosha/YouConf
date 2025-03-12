@@ -1,22 +1,23 @@
 <template>
   <!-- Общая сетка для времени и событий -->
   <div
-    className="col-start-1 col-end-5 grid grid-rows-[repeat(48,minmax(0,1fr))]"
+    className="col-start-1 col-end-5 gap-4 grid grid-rows-[repeat(48,minmax(0,1fr))]"
+    :style="{ gridTemplateColumns: `50px repeat(${sections.length}, 1fr)` }"
   >
     <!-- Заголовки категорий -->
     <div className="col-start-1 col-end-2"></div>
     <div
-      v-for="(category, catIndex) in categories"
-      :key="catIndex"
+      v-for="(section, sectionIndex) in sections"
+      :key="sectionIndex"
       className="text-center font-bold p-2"
     >
-      {{ category }}
+      {{ section.name }}
     </div>
     <!-- Время -->
     <div
       v-for="(time, index) in times"
       :key="index"
-      className="text-right pr-2"
+      className="text-center pr-2"
       :style="{ gridRow: `${index + 2} / span 1` }"
     >
       {{ time }}
@@ -24,51 +25,63 @@
 
     <!-- События -->
     <div
-      v-for="event in processedEvents"
+      v-for="event in currentEvents"
       :key="event.name"
       :className="`bg-blue-500 p-2 rounded-lg`"
       :style="{
-        gridColumn: `${categories.indexOf(event.category) + 2}`,
+        gridColumn: `${
+          sections.findIndex((section) => section.id === event.section_id) + 2
+        }`,
         gridRow: `${event.start + 1} / ${event.end + 2}`,
       }"
     >
-      {{ event.name }}
+      {{ event.application_title }}
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  props: {
+    sections: Array,
+    events: Array,
+  },
   data() {
     return {
       times: this.generateTimes(),
       categories: ['Work', 'Personal', 'Meetings'], // Категории событий
-      events: [
-        {
-          name: 'Event 1',
-          startTime: '09:00',
-          endTime: '09:30',
-          category: 'Work',
-        },
-        {
-          name: 'Event 2',
-          startTime: '10:00',
-          endTime: '11:00',
-          category: 'Personal',
-        },
-        {
-          name: 'Event 3',
-          startTime: '11:30',
-          endTime: '12:00',
-          category: 'Meetings',
-        },
-        {
-          name: 'Event 3',
-          startTime: '13:30',
-          endTime: '15:00',
-          category: 'Meetings',
-        },
-      ],
+      //   events: [
+      //     {
+      //       name: 'Event 1',
+      //       startTime: '09:00',
+      //       endTime: '09:30',
+      //       category: 'Work',
+      //     },
+      //     {
+      //       name: 'Event 1.2',
+      //       startTime: '09:30',
+      //       endTime: '10:00',
+      //       category: 'Work',
+      //     },
+      //     {
+      //       name: 'Event 2',
+      //       startTime: '10:00',
+      //       endTime: '11:00',
+      //       category: 'Personal',
+      //     },
+      //     {
+      //       name: 'Event 3',
+      //       startTime: '11:30',
+      //       endTime: '12:00',
+      //       category: 'Meetings',
+      //     },
+      //     {
+      //       name: 'Event 3',
+      //       startTime: '13:30',
+      //       endTime: '15:00',
+      //       category: 'Meetings',
+      //     },
+      //   ],
     }
   },
   methods: {
@@ -92,12 +105,12 @@ export default {
     },
   },
   computed: {
-    processedEvents() {
-      // Преобразуем события, добавляя start и end на основе времени
+    currentEvents() {
+      console.log('currentEvents', this.events[0])
       return this.events.map((event) => ({
         ...event,
-        start: this.timeToRowIndex(event.startTime),
-        end: this.timeToRowIndex(event.endTime),
+        start: this.timeToRowIndex(event.start_time),
+        end: this.timeToRowIndex(event.end_time),
       }))
     },
   },

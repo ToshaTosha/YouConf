@@ -10,7 +10,7 @@ use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
 {
-    public function index()
+    public function show()
     {
         $schedules = Schedule::with(['application.section'])->get();
         $sections = Section::all();
@@ -34,7 +34,7 @@ class ScheduleController extends Controller
 
         Log::info($formattedSchedules);
 
-        return Inertia::render('Schedules/Index', [
+        return Inertia::render('Schedules/Show', [
             'schedules' => $sortedSchedules,
             'sections' => $sections,
         ]);
