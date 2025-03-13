@@ -31,7 +31,7 @@ jobs:
         run: |
           set -x
           # Копирование файлов на сервер
-          rsync --archive --compress --progress -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
+          rsync --archive --compress --progress -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }} --omit-dir-times
 
           # Выполнение команд на сервере
           ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
