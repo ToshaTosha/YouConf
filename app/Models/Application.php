@@ -45,4 +45,9 @@ class Application extends Model
     {
         return $this->morphOne(Chat::class, 'chatable');
     }
+
+    public function schedule()
+    {
+        return $this->hasOne(Schedule::class);
+    }
 }
