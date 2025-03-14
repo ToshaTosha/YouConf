@@ -51,9 +51,8 @@
 
     <!-- Встраиваем компонент чата -->
     <Chat
-      v-if="application.chat"
       :chat="application.chat"
-      :messages="application.chat.messages"
+      :messages="application.chat?.messages"
       :application="application"
     />
     {{ application }}
