@@ -42,6 +42,7 @@
 
 <script>
 export default {
+  name: 'ScheduleTable',
   props: {
     sections: Array,
     events: Array,

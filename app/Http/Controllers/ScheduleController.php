@@ -7,6 +7,7 @@ use App\Models\Section;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 use Illuminate\Support\Facades\Log;
+use App\Models\Application;
 
 class ScheduleController extends Controller
 {
@@ -38,5 +39,32 @@ class ScheduleController extends Controller
             'schedules' => $sortedSchedules,
             'sections' => $sections,
         ]);
+    }
+    public function getApplicationsBySection($sectionId)
+    {
+        $applications = Application::with(['user', 'section', 'schedule'])
+            ->where('section_id', $sectionId)
+            ->get();
+
+        // Форматируем данные для ответа
+        $formattedApplications = $applications->map(function ($application) {
+            return [
+                'title' => $application->title,
+                'description' => $application->description,
+                'user' => [
+                    'first_name' => $application->user->first_name,
+                    'last_name' => $application->user->last_name,
+                    'email' => $application->user->email,
+                ],
+                'schedule' => [
+                    'date' => $application->schedule->date,
+                    'start_time' => $application->schedule->start_time,
+                    'end_time' => $application->schedule->end_time,
+                    'location' => $application->schedule->location,
+                ],
+            ];
+        });
+
+        return response()->json($formattedApplications);
     }
 }

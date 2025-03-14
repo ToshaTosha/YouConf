@@ -55,3 +55,5 @@ Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
 use App\Http\Controllers\ScheduleController;
 
 Route::get('/schedules', [ScheduleController::class, 'show'])->name('schedules.show');
+
+Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getApplicationsBySection']);
