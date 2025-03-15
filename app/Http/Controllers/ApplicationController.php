@@ -10,6 +10,8 @@ use App\Models\File;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
+use Illuminate\Support\Facades\Log;
+
 
 
 use Illuminate\Support\Facades\DB;
@@ -95,19 +97,9 @@ class ApplicationController extends Controller
 
     public function update(Request $request, $id)
     {
-        // $request->validate([
-        //     'title' => 'required|string|max:255',
-        //     'description' => 'required|string',
-        //     'status_id' => 'required|exists:statuses,id',
-        //     'files.*' => 'file|mimes:jpg,png,pdf|max:2048',
-        // ]);
-
         DB::transaction(function () use ($request, $id) {
             // Находим текущую заявку
             $application = Application::findOrFail($id);
-
-            // Получаем текущий чат
-            $currentChat = $application->chat;
 
             // Сохраняем текущую версию заявки
             $versionNumber = $application->versions()->count() + 1; // Получаем номер новой версии
@@ -118,28 +110,45 @@ class ApplicationController extends Controller
                 'version' => $versionNumber,
             ]);
 
-            $currentChat->chatable_type = ApplicationVersion::class; // Указываем тип модели
-            $currentChat->chatable_id = $applicationVersion->id; // Указываем ID новой версии
-            $currentChat->save();
+            // Перемещаем файлы из Application в ApplicationVersion
+            $this->moveFilesToVersion($application, $applicationVersion);
 
             // Обновляем основную заявку
             $application->update($request->only(['title', 'description', 'status_id']));
 
-            Chat::create([
-                'chatable_type' => Application::class, // Указываем тип модели
-                'chatable_id' => $application->id, // Указываем ID заявки
-            ]);
-
-            // Перемещаем файлы из Application в ApplicationVersion
-            $this->moveFilesToVersion($application, $applicationVersion);
-
             // Загружаем новые файлы, если они есть
-            if ($request->hasFile('files')) {
-                $this->storeFiles($request->file('files'), $applicationVersion); // Передаем новую версию
+            $files = $request->input('files'); // Получаем массив файлов (существующие файлы)
+            $newFiles = $request->file('files'); // Получаем новые файлы
+
+            // Обрабатываем существующие файлы
+            if ($files) {
+                foreach ($files as $file) {
+                    $fileData = json_decode($file, true); // Декодируем JSON
+                    if (is_array($fileData)) {
+                        // Это существующий файл, обновляем его связь
+                        $existingFile = File::find($fileData['id']);
+                        if ($existingFile) {
+                            $existingFile->update([
+                                'fileable_id' => $application->id,
+                                'fileable_type' => get_class($application),
+                            ]);
+                        }
+                    }
+                }
+            }
+
+            // Обрабатываем новые файлы
+            if ($newFiles) {
+                foreach ($newFiles as $file) {
+                    if ($file instanceof \Illuminate\Http\UploadedFile) {
+                        // Это новый файл, загружаем его
+                        $this->storeFiles([$file], $application);
+                    }
+                }
             }
         });
 
-        return redirect()->back()->with('success', 'Заявка обновлена');
+        redirect()->route('applications.index')->with('success', 'Заявка обновлена');
     }
 
     public function show($id)

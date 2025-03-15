@@ -72,9 +72,17 @@ export default {
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
       formData.append('section_id', this.sectionId)
-      this.form.files.forEach((file) => {
-        formData.append('files[]', file)
+      this.form.files.forEach((file, index) => {
+        if (file instanceof File) {
+          // Новый файл
+          formData.append(`files[${index}]`, file)
+        } else {
+          // Существующий файл
+          formData.append(`files[${index}]`, JSON.stringify(file))
+        }
       })
+
+      console.log(formData)
 
       try {
         if (this.isEditMode) {

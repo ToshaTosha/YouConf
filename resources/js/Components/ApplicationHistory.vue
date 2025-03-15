@@ -13,19 +13,6 @@
         Изменено: {{ formatDate(version.created_at) }}
       </p>
 
-      <!-- Отображение чата и его сообщений -->
-      <div v-if="version.chat && version.chat.length > 0" class="mt-4">
-        <h4 class="font-semibold">Чат:</h4>
-        <Chat
-          v-if="version.chat"
-          :chat="version.chat"
-          :messages="version.chat.messages"
-          :application="application"
-          :isActive="false"
-        />
-      </div>
-
-      <!-- Отображение связанных файлов -->
       <div v-if="version.files && version.files.length > 0" class="mt-4">
         <h4 class="font-semibold">Связанные файлы:</h4>
         <ul class="list-disc list-inside">

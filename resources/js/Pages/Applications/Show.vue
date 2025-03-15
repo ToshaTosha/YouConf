@@ -93,6 +93,8 @@
       </div>
     </div>
 
+    {{ application.chat }}
+
     <ApplicationHistory :versions="application.versions" />
   </div>
 </template>
