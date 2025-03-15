@@ -16,30 +16,13 @@
       <!-- Отображение чата и его сообщений -->
       <div v-if="version.chat && version.chat.length > 0" class="mt-4">
         <h4 class="font-semibold">Чат:</h4>
-        <div
-          v-for="chat in version.chat"
-          :key="chat.id"
-          class="border-t mt-2 pt-2"
-        >
-          <div
-            v-for="message in chat.messages"
-            :key="message.id"
-            class="flex items-start mb-2"
-          >
-            <img
-              :src="message.user.avatar"
-              alt="Avatar"
-              class="w-8 h-8 rounded-full mr-2"
-            />
-            <div>
-              <p class="font-semibold">{{ message.user.first_name }}:</p>
-              <p>{{ message.message }}</p>
-              <p class="text-sm text-gray-500">
-                {{ formatDate(message.created_at) }}
-              </p>
-            </div>
-          </div>
-        </div>
+        <Chat
+          v-if="version.chat"
+          :chat="version.chat"
+          :messages="version.chat.messages"
+          :application="application"
+          :isActive="false"
+        />
       </div>
 
       <!-- Отображение связанных файлов -->
@@ -59,6 +42,7 @@
       </div>
     </div>
   </div>
+  {{ versions }}
 </template>
 
 <script>

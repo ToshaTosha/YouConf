@@ -47,31 +47,79 @@
       </div>
     </div>
 
-    <ApplicationHistory :versions="application.versions" />
+    <button
+      @click="toggleChat"
+      class="bg-blue-500 text-white rounded-full shadow-lg"
+    >
+      <svg
+        xmlns="http://www.w3.org/2000/svg"
+        class="h-6 w-6"
+        fill="none"
+        viewBox="0 0 24 24"
+        stroke="currentColor"
+      >
+        <path
+          stroke-linecap="round"
+          stroke-linejoin="round"
+          stroke-width="2"
+          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
+        />
+      </svg>
+    </button>
+
+    <Link
+      :href="`/applications/${application.id}/edit`"
+      class="text-blue-500 hover:underline"
+    >
+      Редактировать
+    </Link>
 
     <!-- Встраиваем компонент чата -->
-    <Chat
-      :chat="application.chat"
-      :messages="application.chat?.messages"
-      :application="application"
-    />
-    {{ application }}
+    <div
+      v-if="isChatOpen"
+      class="fixed inset-0 flex items-center justify-center z-50"
+    >
+      <div class="bg-white shadow-md rounded-lg p-6 w-1/2">
+        <Chat
+          v-if="application.chat"
+          :chat="application.chat"
+          :messages="application.chat.messages"
+          :application="application"
+          :isActive="true"
+        />
+        <button @click="toggleChat" class="mt-4 text-red-500">
+          Закрыть чат
+        </button>
+      </div>
+    </div>
+
+    <ApplicationHistory :versions="application.versions" />
   </div>
 </template>
 
 <script>
 import Chat from '@/Components/Chat.vue' // Импортируем компонент чата
 import ApplicationHistory from '@/Components/ApplicationHistory.vue'
+import { Link, router } from '@inertiajs/inertia-vue3'
 
 export default {
   components: {
     Chat,
     ApplicationHistory,
+    Link,
   },
   props: {
     application: Object,
   },
+  data() {
+    return {
+      isChatOpen: false, // Состояние для управления видимостью чата
+    }
+  },
   methods: {
+    toggleChat() {
+      this.isChatOpen = !this.isChatOpen // Переключаем состояние чата
+    },
     isImage(file) {
       const extension = file.name.split('.').pop().toLowerCase()
       console.log(extension === 'png' || extension === 'jpg')

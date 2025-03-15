@@ -36,8 +36,13 @@
         </div>
       </div>
 
+      <!-- Сообщение о завершении чата -->
+      <div v-if="!isActive" class="text-center text-gray-500 mb-4">
+        Этот чат завершён.
+      </div>
+
       <!-- Поле ввода сообщения и кнопка отправки -->
-      <div class="flex items-center gap-2">
+      <div v-if="isActive" class="flex items-center gap-2">
         <input
           v-model="newMessage"
           @keyup.enter="sendMessage"
@@ -66,16 +71,20 @@
         </button>
       </div>
     </div>
-    {{ user_data }}
   </div>
 </template>
 
 <script>
 export default {
+  name: 'Chat',
   props: {
     chat: Object,
     messages: Array,
     application: Object,
+    isActive: {
+      type: Boolean,
+      default: false,
+    },
   },
   data() {
     return {
