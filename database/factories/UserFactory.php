@@ -29,7 +29,6 @@ class UserFactory extends Factory
             'last_name' => $this->faker->lastName,
             'avatar' => $this->faker->imageUrl(640, 480, 'people'),
             'email' => $this->faker->unique()->safeEmail,
-            'role_id' => null,
         ];
     }
 

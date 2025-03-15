@@ -9,7 +9,8 @@ use App\Models\Chat;
 use App\Models\File;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
-use Illuminate\Support\Facades\Log;
+use App\Models\User;
+
 
 use Illuminate\Support\Facades\DB;
 
@@ -17,13 +18,18 @@ class ApplicationController extends Controller
 {
     public function index()
     {
-        $user = Auth::user();
+        $user = User::findOrFail(Auth::user()->id);
         $statuses = Status::all();
 
-        if ($user->role_id == 1) {
-            $applications = Application::where('user_id', $user->id)->with(['files', 'section', 'status'])->get();
+        if ($user && $user->hasRole('participant')) {
+            // Если пользователь участник, показываем только его заявки
+            $applications = Application::where('user_id', $user->id)
+                ->with(['files', 'section', 'status'])
+                ->get();
         } else {
-            $applications = Application::with(['files', 'section', 'user', 'status'])->get();
+            // Если пользователь эксперт или администратор, показываем все заявки
+            $applications = Application::with(['files', 'section', 'user', 'status'])
+                ->get();
         }
 
         return inertia('Applications/Index', [
@@ -38,10 +44,14 @@ class ApplicationController extends Controller
             'status_id' => 'required|exists:statuses,id',
         ]);
 
-        if (Auth::user()->role_id != 2) {
+        $user = User::findOrFail(Auth::user()->id);
+
+        // Проверяем, является ли пользователь экспертом
+        if (!$user->hasRole('expert')) {
             return response()->json(['message' => 'Доступ запрещен.'], 403);
         }
 
+        // Обновляем статус заявки
         $application = Application::findOrFail($id);
         $application->status_id = $request->status_id;
         $application->save();

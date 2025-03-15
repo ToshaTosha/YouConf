@@ -6,7 +6,7 @@ namespace App\MoonShine\Resources;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
@@ -35,7 +35,9 @@ class UserResource extends ModelResource
             ID::make()->sortable(),
             Text::make('Имя', 'first_name'),
             Text::make('Фамилия', 'last_name'),
-            Text::make('Роль', 'role.name'),
+            Text::make('Роли', function (User $user) {
+                return $user->getRoleNames()->join(', '); // Отображаем роли пользователя
+            }),
         ];
     }
 
@@ -51,9 +53,10 @@ class UserResource extends ModelResource
                 ID::make(),
                 Text::make('Имя', 'first_name')->required(),
                 Text::make('Фамилия', 'last_name')->required(),
-                Select::make('Роль', 'role_id')
+                Select::make('Роли', 'roles')
                     ->options($roles) // Передаем роли в поле Select
-                    ->required(),
+                    ->multiple() // Разрешаем выбор нескольких ролей
+                    ->required()
             ]),
         ];
     }
@@ -67,7 +70,9 @@ class UserResource extends ModelResource
             ID::make(),
             Text::make('Имя', 'first_name'), // Поле имени
             Text::make('Фамилия', 'last_name'), // Поле фамилии
-            BelongsTo::make('Роль', 'role', 'name'), // Отображаем название роли
+            Text::make('Роли', function (User $user) {
+                return $user->getRoleNames()->join(', '); // Отображаем роли пользователя
+            }),
         ];
     }
 

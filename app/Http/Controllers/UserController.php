@@ -6,13 +6,16 @@ use Inertia\Inertia;
 use App\Models\User;
 use App\Models\Application;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     public function show($id)
     {
+        Log::info('showLoginForm called');
 
-        $user = User::with('role')->findOrFail($id);
+        $user = User::with('roles')->findOrFail($id);
+
         $applications = Application::where('user_id', $user->id)
             ->with(['status:id,name', 'section:id,name'])
             ->get();
