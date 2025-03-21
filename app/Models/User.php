@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
 
 class User extends Authenticatable
 {
@@ -18,4 +19,14 @@ class User extends Authenticatable
         'avatar',
         'email',
     ];
+
+    public function getRoleIdAttribute()
+    {
+        return $this->roles->first()?->id;
+    }
+
+    public function setRoleIdAttribute($value)
+    {
+        $this->syncRoles(Role::find($value));
+    }
 }

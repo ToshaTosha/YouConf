@@ -7,6 +7,7 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Log;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
@@ -33,13 +34,12 @@ class UserResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            Text::make('Имя', 'first_name'),
-            Text::make('Фамилия', 'last_name'),
-            Text::make('Роли', function (User $user) {
-                return $user->getRoleNames()->join(', '); // Отображаем роли пользователя
-            }),
+            Text::make('Имя', 'first_name')->sortable(),
+            Text::make('Фамилия', 'last_name')->sortable(),
+            Text::make('Role', '', fn($user) => $user->roles->first()?->name),
         ];
     }
+
 
     /**
      * @return list<ComponentContract|FieldContract>
@@ -53,10 +53,10 @@ class UserResource extends ModelResource
                 ID::make(),
                 Text::make('Имя', 'first_name')->required(),
                 Text::make('Фамилия', 'last_name')->required(),
-                Select::make('Роли', 'roles')
-                    ->options($roles) // Передаем роли в поле Select
-                    ->multiple() // Разрешаем выбор нескольких ролей
+                Select::make('Role', 'role_id')
+                    ->options(Role::pluck('name', 'id')->toArray())
                     ->required()
+                    ->searchable(),
             ]),
         ];
     }
@@ -70,20 +70,6 @@ class UserResource extends ModelResource
             ID::make(),
             Text::make('Имя', 'first_name'), // Поле имени
             Text::make('Фамилия', 'last_name'), // Поле фамилии
-            Text::make('Роли', function (User $user) {
-                return $user->getRoleNames()->join(', '); // Отображаем роли пользователя
-            }),
         ];
-    }
-
-    /**
-     * @param User $item
-     *
-     * @return array<string, string[]|string>
-     * @see https://laravel.com/docs/validation#available-validation-rules
-     */
-    protected function rules(mixed $item): array
-    {
-        return [];
     }
 }

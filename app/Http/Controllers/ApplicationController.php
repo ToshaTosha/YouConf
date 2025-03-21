@@ -101,18 +101,6 @@ class ApplicationController extends Controller
             // Находим текущую заявку
             $application = Application::findOrFail($id);
 
-            // Сохраняем текущую версию заявки
-            $versionNumber = $application->versions()->count() + 1; // Получаем номер новой версии
-            $applicationVersion = $application->versions()->create([
-                'title' => $application->title,
-                'description' => $application->description,
-                'status_id' => $application->status_id,
-                'version' => $versionNumber,
-            ]);
-
-            // Перемещаем файлы из Application в ApplicationVersion
-            $this->moveFilesToVersion($application, $applicationVersion);
-
             // Обновляем основную заявку
             $application->update($request->only(['title', 'description', 'status_id']));
 
@@ -148,7 +136,7 @@ class ApplicationController extends Controller
             }
         });
 
-        redirect()->route('applications.index')->with('success', 'Заявка обновлена');
+        return redirect()->route('applications.index')->with('success', 'Заявка обновлена');
     }
 
     public function show($id)
