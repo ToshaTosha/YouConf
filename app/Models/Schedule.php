@@ -35,10 +35,13 @@ class Schedule extends Model
         static::saving(function ($schedule) {
             // Вычисляем время окончания
             $startTime = Carbon::createFromFormat('H:i', $schedule->start_time);
-            $endTime = $startTime->copy()->addMinutes($schedule->duration);
+            $endTime = $startTime->copy()->addMinutes((int)$schedule->duration);
 
-            // Проверяем, есть ли пересекающиеся расписания
-            $conflictingSchedules = Schedule::where('location_id', $schedule->location_id)
+            // Проверяем, есть ли пересекающиеся расписания для этой секции
+            $conflictingSchedules = Schedule::whereHas('application', function ($query) use ($schedule) {
+                $query->where('section_id', $schedule->application->section_id); // Проверяем по section_id
+            })
+                ->where('date', $schedule->date)
                 ->where(function ($query) use ($startTime, $endTime) {
                     $query->where(function ($q) use ($startTime, $endTime) {
                         $q->where('start_time', '<', $endTime->format('H:i'))
@@ -50,7 +53,7 @@ class Schedule extends Model
 
             if ($conflictingSchedules) {
                 throw ValidationException::withMessages([
-                    'start_time' => 'Расписание пересекается с другим мероприятием в этом месте.',
+                    'start_time' => 'Расписание пересекается с другим мероприятием в этой секции.',
                 ]);
             }
         });

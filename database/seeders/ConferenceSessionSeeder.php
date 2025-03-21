@@ -47,8 +47,10 @@ class ConferenceSessionSeeder extends Seeder
                 // Вычисляем время окончания
                 $end_time = $start_time->copy()->addMinutes($duration);
 
-                // Проверяем, есть ли пересекающиеся расписания для этой локации
-                $conflictingSchedules = Schedule::where('location_id', $location->id)
+                // Проверяем, есть ли пересекающиеся расписания для этой секции
+                $conflictingSchedules = Schedule::whereHas('application', function ($query) use ($application) {
+                    $query->where('section_id', $application->section_id); // Проверяем по section_id
+                })
                     ->where('date', $date->toDateString())
                     ->where(function ($query) use ($start_time, $end_time) {
                         $query->where(function ($q) use ($start_time, $end_time) {
