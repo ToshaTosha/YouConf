@@ -2,12 +2,12 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
-use Illuminate\Database\Seeder;
 use App\Models\Application;
 use App\Models\Schedule;
 use App\Models\Location;
 use Carbon\Carbon;
+use Illuminate\Database\Seeder;
+use Illuminate\Validation\ValidationException;
 
 class ConferenceSessionSeeder extends Seeder
 {
@@ -47,7 +47,7 @@ class ConferenceSessionSeeder extends Seeder
                 // Вычисляем время окончания
                 $end_time = $start_time->copy()->addMinutes($duration);
 
-                // Проверяем, есть ли пересекающиеся расписания
+                // Проверяем, есть ли пересекающиеся расписания для этой локации
                 $conflictingSchedules = Schedule::where('location_id', $location->id)
                     ->where('date', $date->toDateString())
                     ->where(function ($query) use ($start_time, $end_time) {
@@ -63,18 +63,25 @@ class ConferenceSessionSeeder extends Seeder
 
             // Если не удалось найти непересекающееся расписание, пропускаем заявку
             if ($attempts >= $maxAttempts) {
+                echo "Не удалось найти время для заявки ID {$application->id}.\n";
                 continue;
             }
 
-            // Создаем запись в расписании
-            Schedule::create([
-                'application_id' => $application->id,
-                'date' => $date->toDateString(),
-                'start_time' => $start_time->format('H:i'),
-                'duration' => $duration,
-                'end_time' => $end_time->format('H:i'),
-                'location_id' => $location->id,
-            ]);
+            // Пытаемся создать запись в расписании
+            try {
+                Schedule::create([
+                    'application_id' => $application->id,
+                    'date' => $date->toDateString(),
+                    'start_time' => $start_time->format('H:i'),
+                    'duration' => $duration,
+                    'end_time' => $end_time->format('H:i'),
+                    'location_id' => $location->id,
+                ]);
+            } catch (ValidationException $e) {
+                // Логируем ошибку и продолжаем выполнение
+                echo "Ошибка при создании расписания для заявки ID {$application->id}: " . $e->getMessage() . "\n";
+                continue;
+            }
         }
     }
 }

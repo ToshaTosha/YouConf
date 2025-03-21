@@ -4,6 +4,8 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Validation\ValidationException;
+use Carbon\Carbon;
 
 class Schedule extends Model
 {
@@ -26,5 +28,31 @@ class Schedule extends Model
     public function location()
     {
         return $this->belongsTo(Location::class);
+    }
+
+    protected static function booted()
+    {
+        static::saving(function ($schedule) {
+            // Вычисляем время окончания
+            $startTime = Carbon::createFromFormat('H:i', $schedule->start_time);
+            $endTime = $startTime->copy()->addMinutes($schedule->duration);
+
+            // Проверяем, есть ли пересекающиеся расписания
+            $conflictingSchedules = Schedule::where('location_id', $schedule->location_id)
+                ->where(function ($query) use ($startTime, $endTime) {
+                    $query->where(function ($q) use ($startTime, $endTime) {
+                        $q->where('start_time', '<', $endTime->format('H:i'))
+                            ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration * 60)) > ?', [$startTime->format('H:i')]);
+                    });
+                })
+                ->where('id', '!=', $schedule->id) // Исключаем текущее расписание при обновлении
+                ->exists();
+
+            if ($conflictingSchedules) {
+                throw ValidationException::withMessages([
+                    'start_time' => 'Расписание пересекается с другим мероприятием в этом месте.',
+                ]);
+            }
+        });
     }
 }
