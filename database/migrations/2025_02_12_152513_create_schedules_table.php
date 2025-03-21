@@ -18,7 +18,7 @@ return new class extends Migration
             $table->time('start_time')->nullable(); // Добавляем поле start_time
             $table->integer('duration')->nullable(); // Добавляем поле duration
             $table->time('end_time')->nullable(); // Добавляем поле end_time
-            $table->string('location')->nullable();
+            $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
             $table->timestamps();
         });
     }

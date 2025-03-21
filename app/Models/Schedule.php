@@ -15,12 +15,16 @@ class Schedule extends Model
         'start_time',
         'duration',
         'end_time',
-        'location',
+        'location_id',
     ];
 
-    // Связь с заявкой
     public function application()
     {
         return $this->belongsTo(Application::class);
+    }
+
+    public function location()
+    {
+        return $this->belongsTo(Location::class);
     }
 }

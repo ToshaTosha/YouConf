@@ -15,6 +15,7 @@ use App\MoonShine\Resources\UserResource;
 use MoonShine\MenuManager\MenuItem;
 use App\MoonShine\Resources\ScheduleResource;
 use App\MoonShine\Resources\ApplicationResource;
+use App\MoonShine\Resources\LocationResource;
 
 final class MoonShineLayout extends CompactLayout
 {
@@ -32,6 +33,7 @@ final class MoonShineLayout extends CompactLayout
             MenuItem::make('Users', UserResource::class),
             MenuItem::make('Schedules', ScheduleResource::class),
             MenuItem::make('Applications', ApplicationResource::class),
+            MenuItem::make('Locations', LocationResource::class),
         ];
     }
 
