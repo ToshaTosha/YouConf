@@ -27,15 +27,44 @@ class ConferenceSessionSeeder extends Seeder
 
         // Проходим по каждой заявке
         foreach ($applications as $application) {
-            // Генерируем случайную дату в диапазоне
+            $location = $locations->random();
             $date = Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
 
-            $start_time = Carbon::createFromTime(rand(8, 20), rand(0, 3) * 15);
+            // Генерация времени начала и продолжительности
+            $start_time = null;
+            $duration = null;
+            $end_time = null;
+            $attempts = 0; // Счётчик попыток
+            $maxAttempts = 100; // Максимальное количество попыток
 
-            $duration = $durations[array_rand($durations)];
-            $end_time = $start_time->copy()->addMinutes($duration);
+            do {
+                // Генерируем случайное время начала с 8:00 до 20:00 с шагом 15 минут
+                $start_time = Carbon::createFromTime(rand(8, 20), rand(0, 3) * 15);
 
-            $location = $locations->random();
+                // Выбираем случайную продолжительность
+                $duration = $durations[array_rand($durations)];
+
+                // Вычисляем время окончания
+                $end_time = $start_time->copy()->addMinutes($duration);
+
+                // Проверяем, есть ли пересекающиеся расписания
+                $conflictingSchedules = Schedule::where('location_id', $location->id)
+                    ->where('date', $date->toDateString())
+                    ->where(function ($query) use ($start_time, $end_time) {
+                        $query->where(function ($q) use ($start_time, $end_time) {
+                            $q->where('start_time', '<', $end_time->format('H:i'))
+                                ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration * 60)) > ?', [$start_time->format('H:i')]);
+                        });
+                    })
+                    ->exists();
+
+                $attempts++;
+            } while ($conflictingSchedules && $attempts < $maxAttempts);
+
+            // Если не удалось найти непересекающееся расписание, пропускаем заявку
+            if ($attempts >= $maxAttempts) {
+                continue;
+            }
 
             // Создаем запись в расписании
             Schedule::create([

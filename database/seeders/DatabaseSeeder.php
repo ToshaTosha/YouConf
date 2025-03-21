@@ -19,6 +19,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             SectionSeeder::class,
             StatusesTableSeeder::class,
+            LocationSeeder::class,
             ApplicationSeeder::class,
             ConferenceSessionSeeder::class,
         ]);

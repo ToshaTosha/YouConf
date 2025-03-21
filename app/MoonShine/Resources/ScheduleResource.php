@@ -6,6 +6,7 @@ namespace App\MoonShine\Resources;
 
 use Illuminate\Database\Eloquent\Model;
 use App\Models\Schedule;
+use App\Models\Location;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
@@ -14,6 +15,7 @@ use MoonShine\UI\Contracts\UI\FieldContract;
 use MoonShine\UI\Contracts\UI\ComponentContract;
 use MoonShine\UI\Fields\Date;
 use MoonShine\UI\Fields\Time;
+use MoonShine\UI\Fields\Select;
 use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 
@@ -39,9 +41,10 @@ class ScheduleResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class),
-            Date::make('Дата и время', 'scheduled_at'),
-            Text::make('Место проведения', 'location'),
+            BelongsTo::make('Заявка', 'application', 'title', resource: ApplicationResource::class),
+            Date::make('Время начала', 'start_time')
+                ->format('H:i'),
+            Text::make('Место проведения', '', fn($schedule) => $schedule->location->name),
         ];
     }
 
@@ -52,9 +55,13 @@ class ScheduleResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Заявка', 'application', resource: ApplicationResource::class),
-            Date::make('Дата и время', 'scheduled_at'),
-            Text::make('Место проведения', 'location'),
+            BelongsTo::make('Заявка', 'application', 'title', resource: ApplicationResource::class),
+            Date::make('Время начала', 'start_time')
+                ->format('H:i'),
+            Select::make('Место проведения', 'location_id')
+                ->options(Location::pluck('name', 'id')->toArray()) // Данные из таблицы locations
+                ->required()
+                ->searchable(),
         ];
     }
 
