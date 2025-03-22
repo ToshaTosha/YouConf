@@ -25,7 +25,9 @@ class LoginController extends Controller
     public function handleProviderCallback()
     {
         try {
+            Log::info('Starting VK auth callback handling.');
             $user = Socialite::driver('vkontakte')->user();
+            Log::info('VK user data received.', ['user_id' => $user->id]);
 
             $authUser = User::where('vk_id', $user->id)->first();
             if (!$authUser) {
