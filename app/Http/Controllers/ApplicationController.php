@@ -92,7 +92,7 @@ class ApplicationController extends Controller
             }
         });
 
-        return redirect()->route('applications.index')->with('success', 'Заявка создана');
+        return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
     }
 
     public function update(Request $request, $id)
@@ -136,7 +136,7 @@ class ApplicationController extends Controller
             }
         });
 
-        return redirect()->route('applications.index')->with('success', 'Заявка обновлена');
+        return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
     }
 
     public function show($id)

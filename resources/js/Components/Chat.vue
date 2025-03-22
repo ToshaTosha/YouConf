@@ -1,6 +1,5 @@
 <template>
   <div class="mt-8">
-    <h2 class="text-lg font-semibold mb-4">Чат по заявке</h2>
     <div class="bg-white shadow-md rounded-lg p-6">
       <!-- Окно сообщений -->
       <div class="overflow-y-auto max-h-64 mb-4">

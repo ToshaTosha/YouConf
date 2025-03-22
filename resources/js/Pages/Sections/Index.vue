@@ -18,12 +18,12 @@
           >
             Подробнее
           </Link>
-          <button
-            @click="apply(section.id)"
+          <Link
+            :href="`/applications/create/${section.id}`"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Подать заявку
-          </button>
+          </Link>
         </div>
       </div>
     </div>

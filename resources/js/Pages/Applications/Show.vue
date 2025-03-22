@@ -1,26 +1,40 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">{{ application.title }}</h1>
-    <p class="text-gray-600">{{ application.description }}</p>
-    <p class="text-sm text-gray-500 mt-2">
-      Статус: {{ application.status.name }}
-    </p>
-    <p class="text-sm text-gray-500 mt-2">
-      Раздел: {{ application.section.name }}
-    </p>
-    <p class="text-sm text-gray-500 mt-2">
-      Пользователь: {{ application.user.first_name }}
-    </p>
+  <div class="p-4 bg-white rounded-lg shadow-md">
+    <!-- Заголовок заявки -->
+    <h1 class="text-2xl font-bold mb-4 text-gray-800">
+      {{ application.title }}
+    </h1>
 
-    <h2 class="text-lg font-semibold mt-4">Связанные файлы:</h2>
-    <div class="grid grid-cols-2 gap-4 mt-2">
+    <!-- Описание заявки -->
+    <p class="text-gray-600 mb-4">{{ application.description }}</p>
+
+    <!-- Детали заявки -->
+    <div class="space-y-2 text-sm text-gray-600">
+      <p>
+        <strong>Статус:</strong>
+        {{ application.status.name }}
+      </p>
+      <p>
+        <strong>Раздел:</strong>
+        {{ application.section.name }}
+      </p>
+      <p>
+        <strong>Пользователь:</strong>
+        {{ application.user.first_name }}
+      </p>
+    </div>
+
+    <!-- Связанные файлы -->
+    <h2 class="text-lg font-semibold mt-6 mb-2 text-gray-800">
+      Связанные файлы:
+    </h2>
+    <div class="grid grid-cols-4 gap-4">
       <div
         v-for="file in application.files"
         :key="file.id"
-        class="flex items-center space-x-2"
+        class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg"
       >
-        <span class="text-gray-700">{{ file.name }}</span>
-
+        <!-- Иконка файла -->
         <div
           v-if="isImage(file)"
           class="w-16 h-16 flex items-center justify-center"
@@ -37,49 +51,48 @@
         >
           <span class="text-gray-500" v-html="getFileIcon(file)"></span>
         </div>
-        <a
-          :href="`/storage/${file.path}`"
-          target="_blank"
-          class="text-blue-500"
-        >
-          Скачать
-        </a>
       </div>
     </div>
 
-    <button
-      @click="toggleChat"
-      class="bg-blue-500 text-white rounded-full shadow-lg"
-    >
-      <svg
-        xmlns="http://www.w3.org/2000/svg"
-        class="h-6 w-6"
-        fill="none"
-        viewBox="0 0 24 24"
-        stroke="currentColor"
+    <!-- Кнопки действий -->
+    <div class="flex items-center justify-end space-x-4 mt-6">
+      <!-- Иконка для открытия чата -->
+      <button
+        @click="toggleChat"
+        class="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200"
       >
-        <path
-          stroke-linecap="round"
-          stroke-linejoin="round"
-          stroke-width="2"
-          d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"
-        />
-      </svg>
-    </button>
+        <svg
+          xmlns="http://www.w3.org/2000/svg"
+          class="h-6 w-6"
+          fill="none"
+          viewBox="0 0 24 24"
+          stroke="currentColor"
+        >
+          <path
+            stroke-linecap="round"
+            stroke-linejoin="round"
+            stroke-width="2"
+            d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z"
+          />
+        </svg>
+      </button>
 
-    <Link
-      :href="`/applications/${application.id}/edit`"
-      class="text-blue-500 hover:underline"
-    >
-      Редактировать
-    </Link>
+      <!-- Кнопка для редактирования -->
+      <Link
+        :href="`/applications/${application.id}/edit`"
+        class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+      >
+        Редактировать
+      </Link>
+    </div>
 
-    <!-- Встраиваем компонент чата -->
+    <!-- Модальное окно чата -->
     <div
       v-if="isChatOpen"
-      class="fixed inset-0 flex items-center justify-center z-50"
+      class="fixed inset-0 flex items-center justify-center z-50 bg-black bg-opacity-50"
     >
-      <div class="bg-white shadow-md rounded-lg p-6 w-1/2">
+      <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 p-6">
+        <!-- Компонент чата -->
         <Chat
           v-if="application.chat"
           :chat="application.chat"
@@ -87,31 +100,32 @@
           :application="application"
           :isActive="true"
         />
-        <button @click="toggleChat" class="mt-4 text-red-500">
+        <!-- Кнопка закрытия чата -->
+        <button
+          @click="toggleChat"
+          class="mt-4 px-4 py-2 bg-red-500 text-white rounded-lg hover:bg-red-600 transition duration-200"
+        >
           Закрыть чат
         </button>
       </div>
     </div>
-
-    {{ application.chat }}
-
-    <ApplicationHistory :versions="application.versions" />
   </div>
 </template>
 
 <script>
-import Chat from '@/Components/Chat.vue' // Импортируем компонент чата
-import ApplicationHistory from '@/Components/ApplicationHistory.vue'
-import { Link, router } from '@inertiajs/inertia-vue3'
+import Chat from '@/Components/Chat.vue'
+import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
   components: {
     Chat,
-    ApplicationHistory,
     Link,
   },
   props: {
-    application: Object,
+    application: {
+      type: Object,
+      required: true,
+    },
   },
   data() {
     return {
@@ -119,14 +133,16 @@ export default {
     }
   },
   methods: {
+    // Переключение видимости чата
     toggleChat() {
-      this.isChatOpen = !this.isChatOpen // Переключаем состояние чата
+      this.isChatOpen = !this.isChatOpen
     },
+    // Проверка, является ли файл изображением
     isImage(file) {
       const extension = file.name.split('.').pop().toLowerCase()
-      console.log(extension === 'png' || extension === 'jpg')
-      return file && (extension === 'png' || extension === 'jpg')
+      return ['png', 'jpg', 'jpeg', 'gif'].includes(extension)
     },
+    // Получение иконки для файла
     getFileIcon(file) {
       const extension = file.name.split('.').pop().toLowerCase()
       switch (extension) {
@@ -141,6 +157,7 @@ export default {
           return this.renderIcon('folder') // Иконка для папки
       }
     },
+    // Рендер иконки
     renderIcon(iconName) {
       const icons = {
         'document-text': `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h10M7 11h10m-5 4h5" /></svg>`,

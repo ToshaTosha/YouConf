@@ -1,65 +1,37 @@
 <template>
-  <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">{{ $page.props.section.name }}</h1>
-    <p class="text-gray-600">{{ $page.props.section.full_description }}</p>
-    <p class="text-gray-600">Полное описание заявки</p>
-    <a :href="`/applications/create/${section.id}`">
+  <div class="p-6 bg-white rounded-lg shadow-md">
+    <!-- Заголовок секции -->
+    <h1 class="text-2xl font-bold mb-4 text-gray-800">
+      {{ $page.props.section.name }}
+    </h1>
+
+    <!-- Полное описание секции -->
+    <p class="text-gray-600 mb-6">
+      {{ $page.props.section.full_description }}
+    </p>
+
+    <!-- Дополнительное описание -->
+    <p class="text-gray-600 mb-6">
+      Полное описание заявки
+    </p>
+
+    <!-- Кнопка для создания заявки -->
+    <Link
+      :href="`/applications/create/${$page.props.section.id}`"
+      class="inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
+    >
       Создать заявку в этой секции
-    </a>
-    <ApplicationForm :section-id="section.id" />
-    {{ section }}
+    </Link>
   </div>
 </template>
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
-import { reactive } from 'vue'
-import { Inertia } from '@inertiajs/inertia'
-import FileUpload from '@/Components/FileUpload.vue'
-import ApplicationForm from '@/Components/ApplicationForm.vue'
 
 export default {
-  name: 'Layout',
+  name: 'SectionInfo',
   components: {
     Link,
-    FileUpload,
-    ApplicationForm,
-  },
-  props: {
-    section: Object,
-  },
-  data() {
-    return {
-      form: reactive({
-        title: null,
-        description: null,
-        files: [],
-      }),
-    }
-  },
-  methods: {
-    submit() {
-      const formData = new FormData()
-      formData.append('title', this.form.title)
-      formData.append('description', this.form.description)
-      formData.append('section_id', this.section.id)
-      this.form.files.forEach((file) => {
-        formData.append('files[]', file)
-      })
-
-      Inertia.post(`/sections/${this.$page.props.section.id}/apply`, formData, {
-        headers: {
-          'Content-Type': 'multipart/form-data',
-        },
-      })
-    },
-    formatDate(dateString) {
-      return new Date(dateString).toLocaleDateString()
-    },
-    updateFiles(files) {
-      this.form.files = files
-      console.log(files, this.form.files)
-    },
   },
 }
 </script>

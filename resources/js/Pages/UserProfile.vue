@@ -84,6 +84,7 @@ const UserInfo = {
 }
 
 export default {
+  name: 'UserProfile',
   props: {
     user_data: Object,
     applications: Array,

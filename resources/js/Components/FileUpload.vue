@@ -1,13 +1,32 @@
 <template>
   <div class="p-4">
     <div class="flex flex-col space-y-4">
-      <input
-        type="file"
-        @change="handleFileUpload"
-        required
-        class="border border-gray-300 rounded p-2 mb-4"
-        multiple
-      />
+      <div class="col-span-full">
+        <div
+          class="mt-2 flex justify-center rounded-lg border border-dashed border-gray-900/25 px-6 py-10"
+        >
+          <div class="text-center">
+            <div class="mt-4 flex text-sm/6 text-gray-600">
+              <label
+                for="file-upload"
+                class="relative cursor-pointer rounded-md font-semibold text-blue-500 focus-within:ring-2 focus-within:ring-blue-500 focus-within:ring-offset-2 focus-within:outline-hidden hover:text-blue-400"
+              >
+                <span>Выберите файлы</span>
+                <input
+                  id="file-upload"
+                  name="file-upload"
+                  type="file"
+                  class="sr-only"
+                  @change="handleFileUpload"
+                  multiple
+                />
+              </label>
+              <p class="pl-1">или перетащите файлы сюда или</p>
+            </div>
+            <p class="text-xs/5 text-gray-600">PNG, JPG, GIF up to 10MB</p>
+          </div>
+        </div>
+      </div>
       <div
         v-for="(file, index) in uploadedFiles"
         :key="file.id || file.name"
