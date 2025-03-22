@@ -82,8 +82,6 @@ export default {
         }
       })
 
-      console.log(formData)
-
       try {
         if (this.isEditMode) {
           await Inertia.post(

@@ -11,6 +11,7 @@
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "moonshine/moonshine": "^3.5",
+        "moonshine/ru": "^1.0",
         "socialiteproviders/vkontakte": "^5.0",
         "spatie/laravel-permission": "^6.16"
     },

@@ -27,6 +27,12 @@ class UserResource extends ModelResource
 
     protected string $title = 'Пользователи';
 
+    protected bool $createInModal = true;
+
+    protected bool $editInModal = true;
+
+    protected bool $detailInModal = true;
+
     /**
      * @return list<FieldContract>
      */

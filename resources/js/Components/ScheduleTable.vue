@@ -49,45 +49,13 @@ export default {
   data() {
     return {
       times: this.generateTimes(),
-      categories: ['Work', 'Personal', 'Meetings'], // Категории событий
-      //   events: [
-      //     {
-      //       name: 'Event 1',
-      //       startTime: '09:00',
-      //       endTime: '09:30',
-      //       category: 'Work',
-      //     },
-      //     {
-      //       name: 'Event 1.2',
-      //       startTime: '09:30',
-      //       endTime: '10:00',
-      //       category: 'Work',
-      //     },
-      //     {
-      //       name: 'Event 2',
-      //       startTime: '10:00',
-      //       endTime: '11:00',
-      //       category: 'Personal',
-      //     },
-      //     {
-      //       name: 'Event 3',
-      //       startTime: '11:30',
-      //       endTime: '12:00',
-      //       category: 'Meetings',
-      //     },
-      //     {
-      //       name: 'Event 3',
-      //       startTime: '13:30',
-      //       endTime: '15:00',
-      //       category: 'Meetings',
-      //     },
-      //   ],
+      categories: ['Work', 'Personal', 'Meetings'],
     }
   },
   methods: {
     generateTimes() {
       const times = []
-      for (let hour = 8; hour <= 20; hour++) {
+      for (let hour = 8; hour <= 19; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
           const time = `${hour
             .toString()
@@ -106,7 +74,6 @@ export default {
   },
   computed: {
     currentEvents() {
-      console.log('currentEvents', this.events[0])
       return this.events.map((event) => ({
         ...event,
         start: this.timeToRowIndex(event.start_time),

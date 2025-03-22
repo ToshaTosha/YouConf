@@ -41,12 +41,6 @@ export default {
     sections: Array,
     user: Object,
   },
-  methods: {
-    apply(sectionId) {
-      // Логика для подачи заявки
-      console.log(`Заявка подана на секцию с ID: ${sectionId}`)
-    },
-  },
 }
 </script>
 

@@ -11,8 +11,5 @@
 <script>
 export default {
   name: 'AuthLayout',
-  mounted() {
-    console.log('AuthLayout mounted')
-  },
 }
 </script>

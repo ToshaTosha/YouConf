@@ -35,7 +35,6 @@ export default {
   },
   methods: {
     selectDate(date) {
-      console.log(this.selectedDate)
       this.selectedDate = date
       this.updateProcessedEvents()
     },
