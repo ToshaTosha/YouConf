@@ -18,38 +18,19 @@
         />
       </div>
     </div>
-
-    <table class="min-w-full bg-white border border-gray-200 shadow-md">
-      <thead>
-        <tr>
-          <th class="py-2 border-b">Название</th>
-          <th class="py-2 border-b">Дата</th>
-          <th class="py-2 border-b">Статус</th>
-        </tr>
-      </thead>
-      <tbody>
-        <tr
-          v-for="application in applications"
-          :key="application.id"
-          class="cursor-pointer hover:bg-gray-100"
-        >
-          <td class="border px-4 py-2">
-            <Link :href="`/applications/${application.id}`">
-              {{ application.title }}
-            </Link>
-          </td>
-          <td class="border px-4 py-2">
-            {{ formatDate(application.created_at, 'short') }}
-          </td>
-          <td class="border px-4 py-2">{{ application.status.name }}</td>
-        </tr>
-      </tbody>
-    </table>
+    <ApplicationsTable
+      v-if="$page.props?.role !== 'expert'"
+      :applications="applications"
+      :statuses="statuses"
+      :role="$page.props?.role"
+      @status-updated="handleStatusUpdated"
+    />
   </div>
 </template>
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
+import ApplicationsTable from '@/components/ApplicationsTable.vue'
 
 const formatDate = (dateString, formatType) => {
   const date = new Date(dateString)
@@ -92,6 +73,7 @@ export default {
   components: {
     Link,
     UserInfo,
+    ApplicationsTable,
   },
   methods: {
     formatDate,

@@ -79,6 +79,7 @@
 
       <!-- Кнопка для редактирования -->
       <Link
+        v-if="isApplicationOwner"
         :href="`/applications/${application.id}/edit`"
         class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
       >
@@ -131,6 +132,12 @@ export default {
     return {
       isChatOpen: false, // Состояние для управления видимостью чата
     }
+  },
+  computed: {
+    // Проверка, является ли текущий пользователь владельцем заявки
+    isApplicationOwner() {
+      return this.$page.props.user_data.id === this.application.user.id
+    },
   },
   methods: {
     // Переключение видимости чата
