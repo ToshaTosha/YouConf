@@ -22,7 +22,7 @@ class ConferenceSessionSeeder extends Seeder
 
         // Устанавливаем диапазон дат для расписания
         $startDate = Carbon::now()->startOfDay();
-        $endDate = Carbon::now()->addDays(7); // Например, на 7 дней вперед
+        $endDate = Carbon::now()->addDays(2);
         $durations = [15, 30, 45, 60];
 
         // Проходим по каждой заявке
@@ -39,7 +39,8 @@ class ConferenceSessionSeeder extends Seeder
 
             do {
                 // Генерируем случайное время начала с 8:00 до 20:00 с шагом 15 минут
-                $start_time = Carbon::createFromTime(rand(8, 20), rand(0, 3) * 15);
+                // $start_time = Carbon::createFromTime(rand(8, 20), rand(0, 3) * 15);
+                $start_time = Carbon::createFromTime(rand(8, 17), rand(0, 3) * 15);
 
                 // Выбираем случайную продолжительность
                 $duration = $durations[array_rand($durations)];

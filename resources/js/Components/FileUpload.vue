@@ -100,6 +100,7 @@ export default {
   },
   methods: {
     handleFileUpload(event) {
+      console.log(this.uploadedFiles)
       const newFiles = Array.from(event.target.files)
       newFiles.forEach((file) => {
         this.uploadedFiles.push(file) // Добавляем новые файлы

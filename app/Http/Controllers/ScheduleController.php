@@ -25,8 +25,12 @@ class ScheduleController extends Controller
                 'duration' => $schedule->duration,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'application_title' => $schedule->application->title, // Извлекаем заголовок приложения
-                'section_id' => $schedule->application->section_id, // Извлекаем имя секции
+                'application_title' => $schedule->application->title,
+                'section_id' => $schedule->application->section_id,
+                'user' => [
+                    'first_name' => $schedule->application->user->first_name,
+                    'last_name' => $schedule->application->user->last_name,
+                ],
             ];
         });
 

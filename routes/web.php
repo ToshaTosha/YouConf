@@ -25,11 +25,6 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
-    Route::get('/', function () {
-        return Inertia::render('Home');
-    });
-    Route::get('/sections', [SectionController::class, 'index']);
-    Route::get('/sections/{section}', [SectionController::class, 'show']);
 
     Route::get('/applications/create/{section_id}', [ApplicationController::class, 'create'])->name('applications.create');
     Route::post('/applications/{section_id}/apply', [ApplicationController::class, 'apply'])->name('applications.apply');
@@ -39,15 +34,20 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/applications/{id}/edit', [ApplicationController::class, 'edit'])->name('applications.edit');
         Route::post('/applications/{id}/update', [ApplicationController::class, 'update'])->name('applications.update');
     });
+    Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
 });
 
+Route::get('/', function () {
+    return Inertia::render('Home');
+});
+Route::get('/sections', [SectionController::class, 'index']);
+Route::get('/sections/{section}', [SectionController::class, 'show']);
 
 Route::middleware(['auth'])->group(function () {
     Route::get('/applications', [ApplicationController::class, 'index'])->name('applications.index');
     Route::post('/applications/{id}/status', [ApplicationController::class, 'updateStatus'])->name('applications.updateStatus');
 });
 
-Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
 
 // routes/web.php
 

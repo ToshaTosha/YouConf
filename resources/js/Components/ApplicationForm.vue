@@ -56,11 +56,11 @@ export default {
   },
   data() {
     return {
-      form: reactive({
+      form: {
         title: this.application ? this.application.title : '',
         description: this.application ? this.application.description : '',
         files: [],
-      }),
+      },
       isEditMode: !!this.application,
       isSubmitting: false,
     }

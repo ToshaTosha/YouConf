@@ -15,7 +15,8 @@ class UserSeeder extends Seeder
         $expertRole = Role::where('name', 'expert')->first();
         $participantRole = Role::where('name', 'participant')->first();
 
-        User::factory()
+        // Создаем 5 экспертов
+        $experts = User::factory()
             ->count(5)
             ->create()
             ->each(function ($user) use ($expertRole) {
@@ -23,11 +24,20 @@ class UserSeeder extends Seeder
             });
 
         // Создаем 5 участников
-        User::factory()
+        $participants = User::factory()
             ->count(5)
             ->create()
             ->each(function ($user) use ($participantRole) {
                 $user->assignRole($participantRole);
             });
+
+        // Выводим информацию о созданных пользователях и их ролях
+        foreach ($experts as $user) {
+            $this->command->info("Пользователь: {$user->id}, Роль: Expert");
+        }
+
+        foreach ($participants as $user) {
+            $this->command->info("Пользователь: {$user->id}, Роль: Participant");
+        }
     }
 }

@@ -33,7 +33,7 @@
             </p>
             <p class="mt-2 text-gray-700">
               <span class="font-semibold">Место:</span>
-              {{ performance.location }}
+              {{ performance.location.name }}
             </p>
           </div>
         </div>

@@ -7,6 +7,7 @@ use App\Models\Application;
 use App\Models\ApplicationVersion;
 use App\Models\Chat;
 use App\Models\File;
+use App\Models\Section;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
@@ -156,8 +157,10 @@ class ApplicationController extends Controller
 
     public function create($section_id = null)
     {
+        $section = Section::findOrFail($section_id);
         return inertia('Applications/ApplicationFormPage', [
             'section_id' => $section_id,
+            'section_name' => $section->name,
         ]);
     }
 

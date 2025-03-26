@@ -32,7 +32,8 @@
       <div
         v-for="file in application.files"
         :key="file.id"
-        class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg"
+        class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg cursor-pointer"
+        @click="downloadFile(file.path)"
       >
         <!-- Иконка файла -->
         <div
@@ -50,6 +51,9 @@
           class="w-16 h-16 flex items-center justify-center bg-gray-100 rounded"
         >
           <span class="text-gray-500" v-html="getFileIcon(file)"></span>
+        </div>
+        <div class="flex-1 text-left">
+          <span class="font-semibold">{{ file.name }}</span>
         </div>
       </div>
     </div>
@@ -173,6 +177,14 @@ export default {
         folder: `<svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 7h4l2 4h10a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2V9a2 2 0 012-2z" /></svg>`,
       }
       return icons[iconName] || icons['folder'] // Возвращаем иконку по умолчанию, если не найдено
+    },
+    downloadFile(filePath) {
+      const link = document.createElement('a')
+      link.href = `/storage/${filePath}`
+      link.download = filePath // Устанавливаем имя файла для скачивания
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
     },
   },
 }

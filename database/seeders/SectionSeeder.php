@@ -13,6 +13,12 @@ class SectionSeeder extends Seeder
      */
     public function run(): void
     {
-        Section::factory()->count(5)->create();
+        $json = file_get_contents(database_path('seeders/content/sections.json'));
+        $sections = json_decode($json, true);
+
+        // Создаем записи в базе данных
+        foreach ($sections as $section) {
+            Section::create($section);
+        }
     }
 }

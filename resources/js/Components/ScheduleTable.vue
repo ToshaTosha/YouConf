@@ -11,7 +11,12 @@
       :key="sectionIndex"
       className="text-center font-bold p-2"
     >
-      {{ section.name }}
+      <Link
+        :href="'/schedules/section/' + section.id"
+        class="flex items-center"
+      >
+        {{ section.name }}
+      </Link>
     </div>
     <!-- Время -->
     <div
@@ -27,7 +32,7 @@
     <div
       v-for="event in currentEvents"
       :key="event.name"
-      :className="`bg-blue-500 p-2 rounded-lg`"
+      :className="`bg-blue-500 p-2 rounded-lg text-white`"
       :style="{
         gridColumn: `${
           sections.findIndex((section) => section.id === event.section_id) + 2
@@ -35,13 +40,25 @@
         gridRow: `${event.start + 1} / ${event.end + 2}`,
       }"
     >
-      {{ event.application_title }}
+      <h3 className="text-lg font-bold mb-1">
+        <!-- Заголовок для темы выступления -->
+        {{ event.application_title }}
+      </h3>
+      <p className="text-sm">
+        <!-- Параграф для имени докладчика -->
+        {{ event.user.last_name }} {{ event.user.first_name }}
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import { Link } from '@inertiajs/inertia-vue3'
 export default {
+  name: 'ScheduleTable',
+  components: {
+    Link,
+  },
   props: {
     sections: Array,
     events: Array,
@@ -49,7 +66,6 @@ export default {
   data() {
     return {
       times: this.generateTimes(),
-      categories: ['Work', 'Personal', 'Meetings'],
     }
   },
   methods: {

@@ -1,5 +1,6 @@
 <template>
   <div class="p-4">
+    {{ section_name }}
     <h1 class="text-2xl font-bold mb-4">
       {{ isEditMode ? 'Редактировать заявку' : 'Создать заявку' }}
     </h1>
@@ -18,7 +19,7 @@ export default {
     ApplicationForm,
   },
   props: {
-    section: Object,
+    section_name: String,
     section_id: {
       type: Number,
       default: null,

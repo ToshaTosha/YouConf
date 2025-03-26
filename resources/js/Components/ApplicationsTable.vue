@@ -9,6 +9,8 @@
           <th class="py-2 border-b">Название</th>
           <th class="py-2 border-b">Дата</th>
           <th class="py-2 border-b">Статус</th>
+          <th v-if="isExpert" class="py-2 border-b">Автор заявки</th>
+          <!-- Новая колонка -->
           <th v-if="isExpert" class="py-2 border-b">Изменить статус</th>
         </tr>
       </thead>
@@ -27,6 +29,10 @@
             {{ formatDate(application.created_at) }}
           </td>
           <td class="border px-4 py-2">{{ application.status.name }}</td>
+          <td v-if="isExpert" class="border px-4 py-2">
+            {{ application.user.first_name }} {{ application.user.last_name }}
+            <!-- Имя автора заявки -->
+          </td>
           <td v-if="isExpert" class="border px-4 py-2">
             <select
               v-model="application.status_id"
@@ -52,6 +58,7 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
+  name: 'ApplicationsTable',
   props: {
     applications: Array,
     statuses: Array,
