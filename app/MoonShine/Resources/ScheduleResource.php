@@ -18,6 +18,7 @@ use MoonShine\UI\Fields\Select;
 use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use Illuminate\Validation\ValidationException;
+use Illuminate\Contracts\Database\Eloquent\Builder;
 use Carbon\Carbon;
 
 class ScheduleResource extends ModelResource
@@ -61,10 +62,17 @@ class ScheduleResource extends ModelResource
             $timeOptions[$startTime->format('H:i')] = $startTime->format('H:i');
             $startTime->addMinutes(15); // Шаг 15 минут
         }
+        $scheduledApplicationIds = Schedule::pluck('application_id')->toArray();
         return [
             Box::make([
                 BelongsTo::make('Заявка', 'application', 'title', resource: ApplicationResource::class)
-                    ->required(),
+                    ->required()
+                    // ->asyncSearch('title') // Включаем асинхронный поиск
+                    ->valuesQuery(
+                        fn($query) => $query
+                            ->where('status_id', 2) // Только принятые заявки
+                            ->whereNotIn('id', Schedule::pluck('application_id')->filter()->toArray()) // Не в расписании
+                    ),
                 Date::make('Дата', 'date')
                     ->format('Y-m-d')
                     ->required(),
@@ -92,11 +100,23 @@ class ScheduleResource extends ModelResource
      */
     protected function beforeSave(Model $item): void
     {
-        $duration = (int)$item->duration;
+        // Вычисляем end_time на основе start_time и duration
         $startTime = Carbon::createFromFormat('H:i', $item->start_time);
-        $endTime = $startTime->copy()->addMinutes($duration);
+        $item->end_time = $startTime->copy()->addMinutes($item->duration)->format('H:i');
 
-        // Проверяем, есть ли пересекающиеся расписания для этой секции
+        // Проверяем, что заявка принята и не в расписании
+        if (
+            $item->application->status_id !== 2 ||
+            Schedule::where('application_id', $item->application_id)->exists()
+        ) {
+            throw ValidationException::withMessages([
+                'application' => 'Можно выбирать только принятые заявки, которых нет в расписании'
+            ]);
+        }
+
+        // Проверка на пересечение времени
+        $endTime = $startTime->copy()->addMinutes($item->duration);
+
         $conflictingSchedules = Schedule::whereHas('application', function ($query) use ($item) {
             $query->where('section_id', $item->application->section_id);
         })
@@ -104,15 +124,15 @@ class ScheduleResource extends ModelResource
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->where(function ($q) use ($startTime, $endTime) {
                     $q->where('start_time', '<', $endTime->format('H:i'))
-                        ->whereRaw('ADDTIME(start_time, SEC_TO_TIME(duration * 60)) > ?', [$startTime->format('H:i')]);
+                        ->where('end_time', '>', $startTime->format('H:i'));
                 });
             })
-            ->where('id', '!=', $item->id) // Исключаем текущее расписание при обновлении
+            ->where('id', '!=', $item->id)
             ->exists();
 
         if ($conflictingSchedules) {
             throw ValidationException::withMessages([
-                'start_time' => 'Расписание пересекается с другим мероприятием в этой секции.',
+                'start_time' => 'Расписание пересекается с другим мероприятием в этой секции'
             ]);
         }
     }

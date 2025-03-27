@@ -87,14 +87,34 @@ export default {
       const totalMinutes = (hour - 8) * 60 + minute // 8:00 — начало отсчета
       return Math.floor(totalMinutes / 15) + 1 // +1, так как строки начинаются с 1
     },
+    calculateEndTime(startTime, duration) {
+      if (!startTime || !duration) return null
+
+      const [hours, minutes] = startTime.split(':').map(Number)
+      const startDate = new Date()
+      startDate.setHours(hours, minutes, 0, 0)
+
+      const endDate = new Date(startDate.getTime() + duration * 60000)
+      return `${endDate
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`
+    },
   },
   computed: {
     currentEvents() {
-      return this.events.map((event) => ({
-        ...event,
-        start: this.timeToRowIndex(event.start_time),
-        end: this.timeToRowIndex(event.end_time),
-      }))
+      return this.events.map((event) => {
+        // Если end_time отсутствует, вычисляем его из start_time + duration
+        const endTime =
+          event.end_time ||
+          this.calculateEndTime(event.start_time, event.duration)
+
+        return {
+          ...event,
+          start: this.timeToRowIndex(event.start_time),
+          end: this.timeToRowIndex(endTime),
+        }
+      })
     },
   },
 }

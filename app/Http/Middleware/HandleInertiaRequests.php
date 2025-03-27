@@ -39,12 +39,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $user = Auth::user();
-        Log::info('User data in middleware:', ['user' => $user]);
 
         return array_merge(parent::share($request), [
             'user_data' => fn() => Auth::user(),
-            'role' => fn() => User::findOrFail(Auth::user()->id)->getRoleNames()->first(),
+            'role' => function () {
+                $user = Auth::user();
+                return $user && method_exists($user, 'getRoleNames')
+                    ? User::findOrFail(Auth::user()->id)->getRoleNames()->first()
+                    : null;
+            },
         ]);
     }
 }
+// 'role' => fn() => User::findOrFail(Auth::user()->id)->getRoleNames()->first(),

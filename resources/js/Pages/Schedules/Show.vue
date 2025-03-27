@@ -39,6 +39,7 @@ export default {
       this.updateProcessedEvents()
     },
     updateProcessedEvents() {
+      console.log(this.schedules)
       const events = this.schedules[this.selectedDate] || []
       this.processedEvents = Object.values(events)
     },
