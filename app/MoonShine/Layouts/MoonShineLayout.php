@@ -25,6 +25,7 @@ use MoonShine\UI\Components\Layout\Burger;
 use MoonShine\UI\Components\Layout\ThemeSwitcher;
 use MoonShine\UI\Components\Layout\Menu;
 use MoonShine\UI\Components\When;
+use App\MoonShine\Resources\PerformanceKanbanResource;
 
 final class MoonShineLayout extends CompactLayout
 {
@@ -43,6 +44,7 @@ final class MoonShineLayout extends CompactLayout
             MenuItem::make('Расписание', ScheduleResource::class),
             MenuItem::make('Заявки', PerformanceResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
+            MenuItem::make('PerformanceKanbans', PerformanceKanbanResource::class),
         ];
     }
     protected function getFooterComponent(): Footer
