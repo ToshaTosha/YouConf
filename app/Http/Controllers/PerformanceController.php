@@ -141,7 +141,7 @@ class PerformanceController extends Controller
 
     public function show($id)
     {
-        $performance = Performance::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions', 'versions.chat.messages.user', 'versions.files'])->findOrFail($id);
+        $performance = Performance::with(['files', 'section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
 
         // Получаем сообщения из чата
         $chat = $performance->chat; // Получаем чат, связанный с заявкой
@@ -172,19 +172,6 @@ class PerformanceController extends Controller
             'performance' => $performance,
         ]);
     }
-
-    public function history($id)
-    {
-        // Находим заявку по ID
-        $performance = Performance::with(['versions.chat', 'versions.files']) // Предзагрузка версий, чатов и файлов
-            ->findOrFail($id);
-
-        // Получаем все версии заявки
-        $performanceVersions = $performance->versions;
-
-        return view('performances.history', compact('performanceVersions'));
-    }
-
 
     protected function storeFiles($files, $fileable)
     {

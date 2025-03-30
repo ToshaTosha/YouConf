@@ -36,11 +36,6 @@ class Performance extends Model
         return $this->morphMany(File::class, 'fileable');
     }
 
-    public function versions()
-    {
-        return $this->hasMany(ApplicationVersion::class);
-    }
-
     public function chat()
     {
         return $this->morphOne(Chat::class, 'chatable');
