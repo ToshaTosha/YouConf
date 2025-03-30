@@ -2,25 +2,25 @@
   <div class="p-4 bg-white rounded-lg shadow-md">
     <!-- Заголовок заявки -->
     <h1 class="text-2xl font-bold mb-4 text-gray-800">
-      {{ application.title }}
+      {{ performance.title }}
     </h1>
 
     <!-- Описание заявки -->
-    <p class="text-gray-600 mb-4">{{ application.description }}</p>
+    <p class="text-gray-600 mb-4">{{ performance.description }}</p>
 
     <!-- Детали заявки -->
     <div class="space-y-2 text-sm text-gray-600">
       <p>
         <strong>Статус:</strong>
-        {{ application.status.name }}
+        {{ performance.status.name }}
       </p>
       <p>
         <strong>Раздел:</strong>
-        {{ application.section.name }}
+        {{ performance.section.name }}
       </p>
       <p>
         <strong>Пользователь:</strong>
-        {{ application.user.first_name }}
+        {{ performance.user.first_name }}
       </p>
     </div>
 
@@ -30,7 +30,7 @@
     </h2>
     <div class="grid grid-cols-4 gap-4">
       <div
-        v-for="file in application.files"
+        v-for="file in performance.files"
         :key="file.id"
         class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg cursor-pointer"
         @click="downloadFile(file.path)"
@@ -83,8 +83,8 @@
 
       <!-- Кнопка для редактирования -->
       <Link
-        v-if="isApplicationOwner"
-        :href="`/applications/${application.id}/edit`"
+        v-if="isPerformanceOwner"
+        :href="`/performances/${performance.id}/edit`"
         class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
       >
         Редактировать
@@ -99,10 +99,10 @@
       <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 p-6">
         <!-- Компонент чата -->
         <Chat
-          v-if="application.chat"
-          :chat="application.chat"
-          :messages="application.chat.messages"
-          :application="application"
+          v-if="performance.chat"
+          :chat="performance.chat"
+          :messages="performance.chat.messages"
+          :performance="performance"
           :isActive="true"
         />
         <!-- Кнопка закрытия чата -->
@@ -127,7 +127,7 @@ export default {
     Link,
   },
   props: {
-    application: {
+    performance: {
       type: Object,
       required: true,
     },
@@ -139,8 +139,8 @@ export default {
   },
   computed: {
     // Проверка, является ли текущий пользователь владельцем заявки
-    isApplicationOwner() {
-      return this.$page.props.user_data.id === this.application.user.id
+    isPerformanceOwner() {
+      return this.$page.props.user_data.id === this.performance.user.id
     },
   },
   methods: {

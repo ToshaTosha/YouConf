@@ -1,5 +1,5 @@
 <template>
-  <div class="application-history">
+  <div class="performance-history">
     <h2 class="text-lg font-bold mb-4">История изменений заявки</h2>
     <div v-if="versions.length === 0" class="text-gray-500">Нет изменений.</div>
     <div
@@ -53,7 +53,7 @@ export default {
 </script>
 
 <style scoped>
-.application-history {
+.performance-history {
   margin-top: 20px;
 }
 </style>

@@ -79,7 +79,6 @@ export default {
   props: {
     chat: Object,
     messages: Array,
-    application: Object,
     isActive: {
       type: Boolean,
       default: false,

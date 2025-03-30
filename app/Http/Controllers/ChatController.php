@@ -3,7 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Application;
+use App\Models\Performance;
 use App\Models\Chat;
 use App\Models\Message;
 use Illuminate\Support\Facades\Auth;
@@ -20,9 +20,9 @@ class ChatController extends Controller
         return redirect()->back();
     }
 
-    public function showChat(Application $application)
+    public function showChat(Performance $performance)
     {
-        $chat = $application->chat;
+        $chat = $performance->chat;
         $messages = $chat->messages()->with('user')->get();
 
         return inertia('Chat/Show', [

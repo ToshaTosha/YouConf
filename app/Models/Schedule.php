@@ -12,7 +12,7 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
-        'application_id',
+        'performance_id',
         'date',
         'start_time',
         'duration',
@@ -20,9 +20,9 @@ class Schedule extends Model
         'location_id',
     ];
 
-    public function application()
+    public function performance()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(Performance::class);
     }
 
     public function location()
@@ -38,8 +38,8 @@ class Schedule extends Model
             $endTime = $startTime->copy()->addMinutes((int)$schedule->duration);
 
             // Проверяем, есть ли пересекающиеся расписания для этой секции
-            $conflictingSchedules = Schedule::whereHas('application', function ($query) use ($schedule) {
-                $query->where('section_id', $schedule->application->section_id); // Проверяем по section_id
+            $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($schedule) {
+                $query->where('section_id', $schedule->performance->section_id); // Проверяем по section_id
             })
                 ->where('date', $schedule->date)
                 ->where(function ($query) use ($startTime, $endTime) {

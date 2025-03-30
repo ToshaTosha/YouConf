@@ -42,7 +42,7 @@
     >
       <h3 className="text-lg font-bold mb-1">
         <!-- Заголовок для темы выступления -->
-        {{ event.application_title }}
+        {{ event.performance_title }}
       </h3>
       <p className="text-sm">
         <!-- Параграф для имени докладчика -->

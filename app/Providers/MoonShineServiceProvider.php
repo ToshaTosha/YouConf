@@ -13,7 +13,7 @@ use App\MoonShine\Resources\MoonShineUserResource;
 use App\MoonShine\Resources\MoonShineUserRoleResource;
 use App\MoonShine\Resources\UserResource;
 use App\MoonShine\Resources\ScheduleResource;
-use App\MoonShine\Resources\ApplicationResource;
+use App\MoonShine\Resources\PerformanceResource;
 use App\MoonShine\Resources\LocationResource;
 
 class MoonShineServiceProvider extends ServiceProvider
@@ -33,7 +33,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 MoonShineUserRoleResource::class,
                 UserResource::class,
                 ScheduleResource::class,
-                ApplicationResource::class,
+                PerformanceResource::class,
                 LocationResource::class,
             ])
             ->pages([

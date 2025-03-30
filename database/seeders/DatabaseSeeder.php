@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             SectionSeeder::class,
             StatusesTableSeeder::class,
             LocationSeeder::class,
-            ApplicationSeeder::class,
+            PerformanceSeeder::class,
             ConferenceSessionSeeder::class,
         ]);
     }

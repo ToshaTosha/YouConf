@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('schedules', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained()->onDelete('cascade'); // Связь с заявкой
+            $table->foreignId('performance_id')->constrained()->onDelete('cascade'); // Связь с заявкой
             $table->date('date')->nullable(); // Добавляем поле date
             $table->time('start_time')->nullable(); // Добавляем поле start_time
             $table->integer('duration')->nullable(); // Добавляем поле duration

@@ -18,9 +18,9 @@
         />
       </div>
     </div>
-    <ApplicationsTable
+    <PerformancesTable
       v-if="$page.props?.role !== 'expert'"
-      :applications="applications"
+      :performances="performances"
       :statuses="statuses"
       :role="$page.props?.role"
       @status-updated="handleStatusUpdated"
@@ -30,7 +30,7 @@
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
-import ApplicationsTable from '@/components/ApplicationsTable.vue'
+import PerformancesTable from '@/components/PerformancesTable.vue'
 
 const formatDate = (dateString, formatType) => {
   const date = new Date(dateString)
@@ -68,12 +68,12 @@ export default {
   name: 'UserProfile',
   props: {
     user_data: Object,
-    applications: Array,
+    performances: Array,
   },
   components: {
     Link,
     UserInfo,
-    ApplicationsTable,
+    PerformancesTable,
   },
   methods: {
     formatDate,

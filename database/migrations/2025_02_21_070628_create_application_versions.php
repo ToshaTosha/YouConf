@@ -13,7 +13,7 @@ return new class extends Migration
     {
         Schema::create('application_versions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('application_id')->constrained()->onDelete('cascade');
+            $table->foreignId('performance_id')->constrained()->onDelete('cascade');
             $table->string('title');
             $table->text('description');
             $table->foreignId('status_id')->constrained()->onDelete('cascade');

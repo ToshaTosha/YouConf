@@ -48,7 +48,7 @@
         </a>
         <a
           v-if="$page.props?.role === 'expert'"
-          href="/applications"
+          href="/performances"
           class="text-gray-700 hover:text-blue-600"
         >
           Заявки

@@ -3,8 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Application;
-use App\Models\ApplicationVersion;
+use App\Models\Performance;
 use App\Models\Chat;
 use App\Models\File;
 use App\Models\Section;
@@ -17,7 +16,7 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 
-class ApplicationController extends Controller
+class PerformanceController extends Controller
 {
     public function index()
     {
@@ -26,17 +25,17 @@ class ApplicationController extends Controller
 
         if ($user && $user->hasRole('participant')) {
             // Если пользователь участник, показываем только его заявки
-            $applications = Application::where('user_id', $user->id)
+            $performances = Performance::where('user_id', $user->id)
                 ->with(['files', 'section', 'status'])
                 ->get();
         } else {
             // Если пользователь эксперт или администратор, показываем все заявки
-            $applications = Application::with(['files', 'section', 'user', 'status'])
+            $performances = Performance::with(['files', 'section', 'user', 'status'])
                 ->get();
         }
 
-        return inertia('Applications/Index', [
-            'applications' => $applications,
+        return inertia('Performances/Index', [
+            'performances' => $performances,
             'statuses' => $statuses,
         ]);
     }
@@ -55,9 +54,9 @@ class ApplicationController extends Controller
         }
 
         // Обновляем статус заявки
-        $application = Application::findOrFail($id);
-        $application->status_id = $request->status_id;
-        $application->save();
+        $performance = Performance::findOrFail($id);
+        $performance->status_id = $request->status_id;
+        $performance->save();
 
         return redirect()->back();
     }
@@ -73,7 +72,7 @@ class ApplicationController extends Controller
 
         DB::transaction(function () use ($request) {
             // Создаем новую заявку
-            $application = Application::create([
+            $performance = Performance::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'user_id' => Auth::id(),
@@ -83,13 +82,13 @@ class ApplicationController extends Controller
 
             // Создаем чат для заявки
             Chat::create([
-                'chatable_type' => Application::class, // Указываем тип модели
-                'chatable_id' => $application->id,
+                'chatable_type' => Performance::class, // Указываем тип модели
+                'chatable_id' => $performance->id,
             ]);
 
             // Загружаем файлы, если они есть
             if ($request->hasFile('files')) {
-                $this->storeFiles($request->file('files'), $application); // Сохраняем файлы, связанные с Application
+                $this->storeFiles($request->file('files'), $performance); // Сохраняем файлы, связанные с Performance 
             }
         });
 
@@ -100,10 +99,10 @@ class ApplicationController extends Controller
     {
         DB::transaction(function () use ($request, $id) {
             // Находим текущую заявку
-            $application = Application::findOrFail($id);
+            $performance = Performance::findOrFail($id);
 
             // Обновляем основную заявку
-            $application->update($request->only(['title', 'description', 'status_id']));
+            $performance->update($request->only(['title', 'description', 'status_id']));
 
             // Загружаем новые файлы, если они есть
             $files = $request->input('files'); // Получаем массив файлов (существующие файлы)
@@ -118,8 +117,8 @@ class ApplicationController extends Controller
                         $existingFile = File::find($fileData['id']);
                         if ($existingFile) {
                             $existingFile->update([
-                                'fileable_id' => $application->id,
-                                'fileable_type' => get_class($application),
+                                'fileable_id' => $performance->id,
+                                'fileable_type' => get_class($performance),
                             ]);
                         }
                     }
@@ -131,7 +130,7 @@ class ApplicationController extends Controller
                 foreach ($newFiles as $file) {
                     if ($file instanceof \Illuminate\Http\UploadedFile) {
                         // Это новый файл, загружаем его
-                        $this->storeFiles([$file], $application);
+                        $this->storeFiles([$file], $performance);
                     }
                 }
             }
@@ -142,14 +141,14 @@ class ApplicationController extends Controller
 
     public function show($id)
     {
-        $application = Application::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions', 'versions.chat.messages.user', 'versions.files'])->findOrFail($id);
+        $performance = Performance::with(['files', 'section', 'user', 'status', 'chat.messages.user', 'versions', 'versions.chat.messages.user', 'versions.files'])->findOrFail($id);
 
         // Получаем сообщения из чата
-        $chat = $application->chat; // Получаем чат, связанный с заявкой
+        $chat = $performance->chat; // Получаем чат, связанный с заявкой
         $messages = $chat ? $chat->messages : []; // Получаем сообщения, если чат существует
 
-        return inertia('Applications/Show', [
-            'application' => $application,
+        return inertia('Performances/Show', [
+            'performance' => $performance,
             'messages' => $messages, // Передаем сообщения в представление
         ]);
     }
@@ -158,7 +157,7 @@ class ApplicationController extends Controller
     public function create($section_id = null)
     {
         $section = Section::findOrFail($section_id);
-        return inertia('Applications/ApplicationFormPage', [
+        return inertia('Performances/PerformanceFormPage', [
             'section_id' => $section_id,
             'section_name' => $section->name,
         ]);
@@ -167,23 +166,23 @@ class ApplicationController extends Controller
 
     public function edit($id)
     {
-        $application = Application::with(['files', 'section', 'user', 'status',])->findOrFail($id);
+        $performance = Performance::with(['files', 'section', 'user', 'status',])->findOrFail($id);
 
-        return inertia('Applications/ApplicationFormPage', [
-            'application' => $application,
+        return inertia('Performances/PerformanceFormPage', [
+            'performance' => $performance,
         ]);
     }
 
     public function history($id)
     {
         // Находим заявку по ID
-        $application = Application::with(['versions.chat', 'versions.files']) // Предзагрузка версий, чатов и файлов
+        $performance = Performance::with(['versions.chat', 'versions.files']) // Предзагрузка версий, чатов и файлов
             ->findOrFail($id);
 
         // Получаем все версии заявки
-        $applicationVersions = $application->versions;
+        $performanceVersions = $performance->versions;
 
-        return view('applications.history', compact('applicationVersions'));
+        return view('performances.history', compact('performanceVersions'));
     }
 
 
@@ -198,19 +197,6 @@ class ApplicationController extends Controller
                 'fileable_type' => get_class($fileable),
                 'fileable_id' => $fileable->id,
             ]);
-        }
-    }
-
-    protected function moveFilesToVersion(Application $application, ApplicationVersion $applicationVersion)
-    {
-        // Получаем все файлы, связанные с заявкой
-        $files = $application->files;
-
-        foreach ($files as $file) {
-            // Обновляем запись в таблице files, чтобы она ссылалась на новую версию
-            $file->fileable_type = ApplicationVersion::class; // Изменяем тип на ApplicationVersion
-            $file->fileable_id = $applicationVersion->id; // Указываем ID новой версии
-            $file->save(); // Сохраняем изменения
         }
     }
 }

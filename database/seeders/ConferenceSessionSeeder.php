@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Application;
+use App\Models\Performance;
 use App\Models\Schedule;
 use App\Models\Location;
 use Carbon\Carbon;
@@ -17,7 +17,7 @@ class ConferenceSessionSeeder extends Seeder
     public function run(): void
     {
         // Получаем только заявки со статусом "Принято" (status_id = 2)
-        $applications = Application::where('status_id', 2)->get();
+        $performances = Performance::where('status_id', 2)->get();
         $locations = Location::all();
 
         // Устанавливаем диапазон дат для расписания
@@ -26,7 +26,7 @@ class ConferenceSessionSeeder extends Seeder
         $durations = [15, 30, 45, 60];
 
         // Проходим по каждой заявке
-        foreach ($applications as $application) {
+        foreach ($performances as $performance) {
             $location = $locations->random();
             $date = Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
 
@@ -49,8 +49,8 @@ class ConferenceSessionSeeder extends Seeder
                 $end_time = $start_time->copy()->addMinutes($duration);
 
                 // Проверяем, есть ли пересекающиеся расписания для этой секции
-                $conflictingSchedules = Schedule::whereHas('application', function ($query) use ($application) {
-                    $query->where('section_id', $application->section_id); // Проверяем по section_id
+                $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($performance) {
+                    $query->where('section_id', $performance->section_id); // Проверяем по section_id
                 })
                     ->where('date', $date->toDateString())
                     ->where(function ($query) use ($start_time, $end_time) {
@@ -66,14 +66,14 @@ class ConferenceSessionSeeder extends Seeder
 
             // Если не удалось найти непересекающееся расписание, пропускаем заявку
             if ($attempts >= $maxAttempts) {
-                echo "Не удалось найти время для заявки ID {$application->id}.\n";
+                echo "Не удалось найти время для заявки ID {$performance->id}.\n";
                 continue;
             }
 
             // Пытаемся создать запись в расписании
             try {
                 Schedule::create([
-                    'application_id' => $application->id,
+                    'performance_id' => $performance->id,
                     'date' => $date->toDateString(),
                     'start_time' => $start_time->format('H:i'),
                     'duration' => $duration,
@@ -82,7 +82,7 @@ class ConferenceSessionSeeder extends Seeder
                 ]);
             } catch (ValidationException $e) {
                 // Логируем ошибку и продолжаем выполнение
-                echo "Ошибка при создании расписания для заявки ID {$application->id}: " . $e->getMessage() . "\n";
+                echo "Ошибка при создании расписания для заявки ID {$performance->id}: " . $e->getMessage() . "\n";
                 continue;
             }
         }

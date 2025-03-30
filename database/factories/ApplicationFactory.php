@@ -3,17 +3,17 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Application;
+use App\Models\Performance;
 use App\Models\Status;
 use App\Models\Section;
 use App\Models\Chat;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Application>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Performance>
  */
-class ApplicationFactory extends Factory
+class PerformanceFactory extends Factory
 {
-    protected $model = Application::class;
+    protected $model = Performance::class;
 
     public function definition()
     {
@@ -28,11 +28,11 @@ class ApplicationFactory extends Factory
 
     public function configure()
     {
-        return $this->afterCreating(function (Application $application) {
+        return $this->afterCreating(function (Performance $performance) {
             // Создаем чат для заявки
             Chat::create([
-                'chatable_type' => Application::class,
-                'chatable_id' => $application->id,
+                'chatable_type' => Performance::class,
+                'chatable_id' => $performance->id,
             ]);
         });
     }

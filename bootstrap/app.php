@@ -4,7 +4,7 @@ use Illuminate\Foundation\Application;
 use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
-use App\Http\Middleware\CheckApplicationOwner;
+use App\Http\Middleware\CheckPerformanceOwner;
 use App\Http\Middleware\HandleAuth;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -16,7 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(HandleInertiaRequests::class);
         $middleware->alias([
-            'check.application.owner' => CheckApplicationOwner::class,
+            'check.performance.owner' => CheckPerformanceOwner::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class
         ]);
     })

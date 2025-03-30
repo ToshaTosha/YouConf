@@ -4,19 +4,19 @@
     <h1 class="text-2xl font-bold mb-4">
       {{ isEditMode ? 'Редактировать заявку' : 'Создать заявку' }}
     </h1>
-    <ApplicationForm :section-id="section_id" :application="application" />
+    <PerformancesForm :section-id="section_id" :performance="performance" />
   </div>
 </template>
 
 <script>
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
-import ApplicationForm from '@/Components/ApplicationForm.vue'
+import PerformancesForm from '@/Components/PerformancesForm.vue'
 
 export default {
-  name: 'ApplicationFormPage',
+  name: 'PerformanceFormPage',
   components: {
-    ApplicationForm,
+    PerformancesForm,
   },
   props: {
     section_name: String,
@@ -24,16 +24,16 @@ export default {
       type: Number,
       default: null,
     },
-    application: Object,
+    performance: Object,
   },
   data() {
     return {
       form: reactive({
-        title: this.application ? this.application.title : '',
-        description: this.application ? this.application.description : '',
+        title: this.performance ? this.performance.title : '',
+        description: this.performance ? this.performance.description : '',
         files: [],
       }),
-      isEditMode: !!this.application, // Определяем режим редактирования
+      isEditMode: !!this.performance, // Определяем режим редактирования
     }
   },
 }

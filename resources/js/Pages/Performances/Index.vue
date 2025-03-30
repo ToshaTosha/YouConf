@@ -1,7 +1,7 @@
 <template>
   <div class="p-4">
-    <ApplicationsTable
-      :applications="applications"
+    <PerformancesTable
+      :performances="performances"
       :statuses="statuses"
       :role="$page.props.role"
       @status-updated="handleStatusUpdated"
@@ -11,23 +11,23 @@
 
 <script>
 import { Link, router } from '@inertiajs/inertia-vue3'
-import ApplicationsTable from '@/components/ApplicationsTable.vue'
+import PerformancesTable from '@/components/PerformancesTable.vue'
 export default {
   props: {
-    applications: Array,
+    performances: Array,
     statuses: Array,
   },
   components: {
     Link,
-    ApplicationsTable,
+    PerformancesTable,
   },
   methods: {
     formatDate(date) {
       return new Date(date).toLocaleDateString() // Форматирование даты
     },
-    async updateStatus(applicationId, statusId) {
+    async updateStatus(performanceId, statusId) {
       try {
-        await this.$inertia.post(`/applications/${applicationId}/status`, {
+        await this.$inertia.post(`/performances/${performanceId}/status`, {
           status_id: statusId,
         })
         this.$emit('status-updated')

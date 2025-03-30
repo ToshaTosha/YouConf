@@ -4,32 +4,29 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Models\Section;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use App\Models\Application;
-use Illuminate\Support\Facades\Log;
 
 class ScheduleController extends Controller
 {
     public function show()
     {
-        $schedules = Schedule::with(['application.section'])->get();
+        $schedules = Schedule::with(['performance.section'])->get();
         $sections = Section::all();
 
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
                 'id' => $schedule->id,
-                'application_id' => $schedule->application_id,
+                'performance_id' => $schedule->performance_id,
                 'date' => $schedule->date,
                 'start_time' => $schedule->start_time,
                 'duration' => $schedule->duration,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'application_title' => $schedule->application->title,
-                'section_id' => $schedule->application->section_id,
+                'performance_title' => $schedule->performance->title,
+                'section_id' => $schedule->performance->section_id,
                 'user' => [
-                    'first_name' => $schedule->application->user->first_name,
-                    'last_name' => $schedule->application->user->last_name,
+                    'first_name' => $schedule->performance->user->first_name,
+                    'last_name' => $schedule->performance->user->last_name,
                 ],
             ];
         });
@@ -42,11 +39,11 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function getApplicationsBySection($sectionId)
+    public function getPerformanceBySection($sectionId)
     {
         // Получаем все расписания, относящиеся к заявкам выбранной секции
-        $schedules = Schedule::with(['application.user', 'application.section'])
-            ->whereHas('application', function ($query) use ($sectionId) {
+        $schedules = Schedule::with(['performance.user', 'performance.section'])
+            ->whereHas('performance', function ($query) use ($sectionId) {
                 $query->where('section_id', $sectionId);
             })
             ->orderBy('date')
@@ -60,11 +57,11 @@ class ScheduleController extends Controller
                 'start_time' => $schedule->start_time,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'title' => $schedule->application->title,
-                'description' => $schedule->application->description,
+                'title' => $schedule->performance->title,
+                'description' => $schedule->performance->description,
                 'user' => [
-                    'first_name' => $schedule->application->user->first_name,
-                    'last_name' => $schedule->application->user->last_name,
+                    'first_name' => $schedule->performance->user->first_name,
+                    'last_name' => $schedule->performance->user->last_name,
                 ],
             ];
         });

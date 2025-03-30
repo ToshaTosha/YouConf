@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MoonShine\Resources;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Application;
+use App\Models\Performance;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
@@ -16,13 +16,13 @@ use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 
 /**
- * @extends ModelResource<Application>
+ * @extends ModelResource<Performance>
  */
-class ApplicationResource extends ModelResource
+class PerformanceResource extends ModelResource
 {
-    protected string $model = Application::class;
+    protected string $model = Performance::class;
 
-    protected string $title = 'Applications';
+    protected string $title = 'Performances';
 
     protected bool $createInModal = true;
 
@@ -69,7 +69,7 @@ class ApplicationResource extends ModelResource
     }
 
     /**
-     * @param Application $item
+     * @param Performance $item
      *
      * @return array<string, string[]|string>
      * @see https://laravel.com/docs/validation#available-validation-rules

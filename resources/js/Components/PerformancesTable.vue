@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="applications.length === 0" class="text-center p-4 text-gray-600">
+    <div v-if="performances.length === 0" class="text-center p-4 text-gray-600">
       У вас нет заявок.
     </div>
     <table v-else :class="tableClass">
@@ -16,27 +16,27 @@
       </thead>
       <tbody>
         <tr
-          v-for="application in applications"
-          :key="application.id"
+          v-for="performance in performances"
+          :key="performance.id"
           class="cursor-pointer hover:bg-gray-100"
         >
           <td class="border px-4 py-2">
-            <Link :href="`/applications/${application.id}`">
-              {{ application.title }}
+            <Link :href="`/performances/${performance.id}`">
+              {{ performance.title }}
             </Link>
           </td>
           <td class="border px-4 py-2">
-            {{ formatDate(application.created_at) }}
+            {{ formatDate(performance.created_at) }}
           </td>
-          <td class="border px-4 py-2">{{ application.status.name }}</td>
+          <td class="border px-4 py-2">{{ performance.status.name }}</td>
           <td v-if="isExpert" class="border px-4 py-2">
-            {{ application.user.first_name }} {{ application.user.last_name }}
+            {{ performance.user.first_name }} {{ performance.user.last_name }}
             <!-- Имя автора заявки -->
           </td>
           <td v-if="isExpert" class="border px-4 py-2">
             <select
-              v-model="application.status_id"
-              @change="updateStatus(application.id, application.status_id)"
+              v-model="performance.status_id"
+              @change="updateStatus(performance.id, performance.status_id)"
               class="border rounded p-1"
             >
               <option
@@ -58,9 +58,9 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-  name: 'ApplicationsTable',
+  name: 'PerformancesTable',
   props: {
-    applications: Array,
+    performances: Array,
     statuses: Array,
     role: String,
   },
@@ -81,9 +81,9 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString() // Форматирование даты
     },
-    async updateStatus(applicationId, statusId) {
+    async updateStatus(performanceId, statusId) {
       try {
-        await this.$inertia.post(`/applications/${applicationId}/status`, {
+        await this.$inertia.post(`/performances/${performanceId}/status`, {
           status_id: statusId,
         })
         this.$emit('status-updated')

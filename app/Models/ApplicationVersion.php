@@ -9,11 +9,11 @@ class ApplicationVersion extends Model
 {
     use HasFactory;
 
-    protected $fillable = ['application_id', 'title', 'description', 'status_id', 'version'];
+    protected $fillable = ['performance_id', 'title', 'description', 'status_id', 'version'];
 
     public function application()
     {
-        return $this->belongsTo(Application::class);
+        return $this->belongsTo(Performance::class);
     }
 
     public function chat()

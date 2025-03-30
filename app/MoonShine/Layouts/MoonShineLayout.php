@@ -14,7 +14,7 @@ use MoonShine\UI\Components\{
 use App\MoonShine\Resources\UserResource;
 use MoonShine\MenuManager\MenuItem;
 use App\MoonShine\Resources\ScheduleResource;
-use App\MoonShine\Resources\ApplicationResource;
+use App\MoonShine\Resources\PerformanceResource;
 use App\MoonShine\Resources\LocationResource;
 use MoonShine\UI\Components\Layout\Head;
 use MoonShine\UI\Components\Layout\Footer;
@@ -41,7 +41,7 @@ final class MoonShineLayout extends CompactLayout
             // ...parent::menu(),
             MenuItem::make('Пользователи', UserResource::class),
             MenuItem::make('Расписание', ScheduleResource::class),
-            MenuItem::make('Заявки', ApplicationResource::class),
+            MenuItem::make('Заявки', PerformanceResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
         ];
     }
