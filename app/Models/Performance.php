@@ -5,7 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 
-class Application extends Model
+class Performance extends Model
 {
     use HasFactory;
     protected $fillable = [
@@ -34,11 +34,6 @@ class Application extends Model
     public function files()
     {
         return $this->morphMany(File::class, 'fileable');
-    }
-
-    public function versions()
-    {
-        return $this->hasMany(ApplicationVersion::class);
     }
 
     public function chat()

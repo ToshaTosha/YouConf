@@ -5,7 +5,7 @@ namespace Database\Seeders;
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
-use App\Models\Role;
+use Spatie\Permission\Models\Role;
 
 class UserSeeder extends Seeder
 {
@@ -15,12 +15,29 @@ class UserSeeder extends Seeder
         $expertRole = Role::where('name', 'expert')->first();
         $participantRole = Role::where('name', 'participant')->first();
 
-        User::factory()
-            ->count(5) // Создаем 5 экспертов
-            ->create(['role_id' => $expertRole->id]);
+        // Создаем 5 экспертов
+        $experts = User::factory()
+            ->count(5)
+            ->create()
+            ->each(function ($user) use ($expertRole) {
+                $user->assignRole($expertRole);
+            });
 
-        User::factory()
-            ->count(5) // Создаем 5 участников
-            ->create(['role_id' => $participantRole->id]);
+        // Создаем 5 участников
+        $participants = User::factory()
+            ->count(5)
+            ->create()
+            ->each(function ($user) use ($participantRole) {
+                $user->assignRole($participantRole);
+            });
+
+        // Выводим информацию о созданных пользователях и их ролях
+        foreach ($experts as $user) {
+            $this->command->info("Пользователь: {$user->id}, Роль: Expert");
+        }
+
+        foreach ($participants as $user) {
+            $this->command->info("Пользователь: {$user->id}, Роль: Participant");
+        }
     }
 }

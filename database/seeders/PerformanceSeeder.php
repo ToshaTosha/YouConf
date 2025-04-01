@@ -4,14 +4,14 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Application;
+use App\Models\Performance;
 
-class ApplicationSeeder extends Seeder
+class PerformanceSeeder extends Seeder
 {
     public function run(): void
     {
-        Application::factory()
-            ->count(50)
+        Performance::factory()
+            ->count(20)
             ->create();
     }
 }

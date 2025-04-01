@@ -2,30 +2,31 @@
 
 namespace App\Models;
 
-namespace App\Models;
-
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\Permission\Traits\HasRoles;
+use Spatie\Permission\Models\Role;
 
 class User extends Authenticatable
 {
     use HasFactory;
+    use HasRoles;
+
     protected $fillable = [
         'vk_id',
         'first_name',
         'last_name',
         'avatar',
         'email',
-        'role_id',
     ];
 
-    public function role()
+    public function getRoleIdAttribute()
     {
-        return $this->belongsTo(Role::class);
+        return $this->roles->first()?->id;
     }
 
-    public function hasRole($roleName): bool
+    public function setRoleIdAttribute($value)
     {
-        return $this->role->name === $roleName;
+        $this->syncRoles(Role::find($value));
     }
 }

@@ -1,6 +1,6 @@
 <template>
   <div class="p-4">
-    <h1 class="text-2xl font-bold mb-4">Мероприятия</h1>
+    <h1 class="text-2xl font-bold mb-4">Секции</h1>
     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
       <div
         v-for="section in sections"
@@ -18,12 +18,12 @@
           >
             Подробнее
           </Link>
-          <button
-            @click="apply(section.id)"
+          <Link
+            :href="`/performances/create/${section.id}`"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Подать заявку
-          </button>
+          </Link>
         </div>
       </div>
     </div>
@@ -40,12 +40,6 @@ export default {
   props: {
     sections: Array,
     user: Object,
-  },
-  methods: {
-    apply(sectionId) {
-      // Логика для подачи заявки
-      console.log(`Заявка подана на секцию с ID: ${sectionId}`)
-    },
   },
 }
 </script>

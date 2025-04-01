@@ -7,6 +7,7 @@ use Inertia\Middleware;
 use Closure;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
+use App\Models\User;
 
 class HandleInertiaRequests extends Middleware
 {
@@ -38,12 +39,16 @@ class HandleInertiaRequests extends Middleware
      */
     public function share(Request $request): array
     {
-        $user = Auth::user();
-        // Log::info('User data in middleware:', ['user' => $user]);
 
         return array_merge(parent::share($request), [
             'user_data' => fn() => Auth::user(),
-            // 'roles' => fn() => Auth::check() ? Auth::user()->getRoleNames() : [],
+            'role' => function () {
+                $user = Auth::user();
+                return $user && method_exists($user, 'getRoleNames')
+                    ? User::findOrFail(Auth::user()->id)->getRoleNames()->first()
+                    : null;
+            },
         ]);
     }
 }
+// 'role' => fn() => User::findOrFail(Auth::user()->id)->getRoleNames()->first(),

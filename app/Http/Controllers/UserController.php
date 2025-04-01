@@ -4,20 +4,23 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\User;
-use App\Models\Application;
+use App\Models\Performance;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Log;
 
 class UserController extends Controller
 {
     public function show($id)
     {
+        Log::info('showLoginForm called');
 
-        $user = User::with('role')->findOrFail($id);
-        $applications = Application::where('user_id', $user->id)
+        $user = User::with('roles')->findOrFail($id);
+
+        $performances = Performance::where('user_id', $user->id)
             ->with(['status:id,name', 'section:id,name'])
             ->get();
         return Inertia::render('UserProfile', [
-            'applications' => $applications,
+            'performances' => $performances,
         ]);
     }
 

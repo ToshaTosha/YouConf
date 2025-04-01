@@ -8,8 +8,8 @@ use Inertia\Inertia;
 use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
-use App\Models\Role;
 use Illuminate\Support\Facades\Log;
+use Spatie\Permission\Models\Role;
 
 class LoginController extends Controller
 {
@@ -25,12 +25,11 @@ class LoginController extends Controller
     public function handleProviderCallback()
     {
         try {
+            Log::info('Starting VK auth callback handling.');
             $user = Socialite::driver('vkontakte')->user();
+            Log::info('VK user data received.', ['user_id' => $user->id]);
 
             $authUser = User::where('vk_id', $user->id)->first();
-            Log::info($user->user);
-            // Log::info($authUser);
-
             if (!$authUser) {
                 $authUser = User::create([
                     'vk_id' => $user['id'],
@@ -38,8 +37,10 @@ class LoginController extends Controller
                     'last_name' => $user['last_name'],
                     'avatar' => $user['photo_200'],
                     'email' => $user['email'],
-                    'role_id' => Role::where('name', 'participant')->first()->id,
                 ]);
+
+                $participantRole = Role::where('name', 'participant')->first();
+                $authUser->assignRole($participantRole);
             }
 
             Auth::login($authUser, true);

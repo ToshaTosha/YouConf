@@ -24,7 +24,7 @@
       <div class="flex-none mb-4 md:ml-4 w-2/5">
         <FileUpload
           @input="updateFiles"
-          :initialFiles="application ? application.files : []"
+          :initialFiles="performance ? performance.files : []"
         />
       </div>
     </div>
@@ -51,17 +51,17 @@ export default {
     FileUpload,
   },
   props: {
-    application: Object,
+    performance: Object,
     sectionId: Number,
   },
   data() {
     return {
-      form: reactive({
-        title: this.application ? this.application.title : '',
-        description: this.application ? this.application.description : '',
+      form: {
+        title: this.performance ? this.performance.title : '',
+        description: this.performance ? this.performance.description : '',
         files: [],
-      }),
-      isEditMode: !!this.application,
+      },
+      isEditMode: !!this.performance,
       isSubmitting: false,
     }
   },
@@ -72,14 +72,20 @@ export default {
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
       formData.append('section_id', this.sectionId)
-      this.form.files.forEach((file) => {
-        formData.append('files[]', file)
+      this.form.files.forEach((file, index) => {
+        if (file instanceof File) {
+          // Новый файл
+          formData.append(`files[${index}]`, file)
+        } else {
+          // Существующий файл
+          formData.append(`files[${index}]`, JSON.stringify(file))
+        }
       })
 
       try {
         if (this.isEditMode) {
           await Inertia.post(
-            `/applications/${this.application.id}/update`,
+            `/performances/${this.performance.id}/update`,
             formData,
             {
               headers: {
@@ -89,7 +95,7 @@ export default {
           )
         } else {
           await Inertia.post(
-            `/applications/${this.sectionId}/apply`,
+            `/performances/${this.sectionId}/apply`,
             formData,
             {
               headers: {

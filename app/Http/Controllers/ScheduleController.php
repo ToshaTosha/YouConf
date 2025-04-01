@@ -4,67 +4,73 @@ namespace App\Http\Controllers;
 
 use App\Models\Schedule;
 use App\Models\Section;
-use Illuminate\Http\Request;
 use Inertia\Inertia;
-use Illuminate\Support\Facades\Log;
-use App\Models\Application;
 
 class ScheduleController extends Controller
 {
     public function show()
     {
-        $schedules = Schedule::with(['application.section'])->get();
+        $schedules = Schedule::with(['performance.section'])->get();
         $sections = Section::all();
 
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
                 'id' => $schedule->id,
-                'application_id' => $schedule->application_id,
+                'performance_id' => $schedule->performance_id,
                 'date' => $schedule->date,
                 'start_time' => $schedule->start_time,
                 'duration' => $schedule->duration,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'application_title' => $schedule->application->title, // Извлекаем заголовок приложения
-                'section_id' => $schedule->application->section_id, // Извлекаем имя секции
+                'performance_title' => $schedule->performance->title,
+                'section_id' => $schedule->performance->section_id,
+                'user' => [
+                    'first_name' => $schedule->performance->user->first_name,
+                    'last_name' => $schedule->performance->user->last_name,
+                ],
             ];
         });
 
         $sortedSchedules = $formattedSchedules->groupBy('date');
-
-
-        Log::info($formattedSchedules);
 
         return Inertia::render('Schedules/Show', [
             'schedules' => $sortedSchedules,
             'sections' => $sections,
         ]);
     }
-    public function getApplicationsBySection($sectionId)
+
+    public function getPerformanceBySection($sectionId)
     {
-        $applications = Application::with(['user', 'section', 'schedule'])
-            ->where('section_id', $sectionId)
+        // Получаем все расписания, относящиеся к заявкам выбранной секции
+        $schedules = Schedule::with(['performance.user', 'performance.section'])
+            ->whereHas('performance', function ($query) use ($sectionId) {
+                $query->where('section_id', $sectionId);
+            })
+            ->orderBy('date')
+            ->orderBy('start_time')
             ->get();
 
         // Форматируем данные для ответа
-        $formattedApplications = $applications->map(function ($application) {
+        $formattedSchedules = $schedules->map(function ($schedule) {
             return [
-                'title' => $application->title,
-                'description' => $application->description,
+                'date' => $schedule->date,
+                'start_time' => $schedule->start_time,
+                'end_time' => $schedule->end_time,
+                'location' => $schedule->location,
+                'title' => $schedule->performance->title,
+                'description' => $schedule->performance->description,
                 'user' => [
-                    'first_name' => $application->user->first_name,
-                    'last_name' => $application->user->last_name,
-                    'email' => $application->user->email,
-                ],
-                'schedule' => [
-                    'date' => $application->schedule->date,
-                    'start_time' => $application->schedule->start_time,
-                    'end_time' => $application->schedule->end_time,
-                    'location' => $application->schedule->location,
+                    'first_name' => $schedule->performance->user->first_name,
+                    'last_name' => $schedule->performance->user->last_name,
                 ],
             ];
         });
 
-        return response()->json($formattedApplications);
+        $section = Section::findOrFail($sectionId);
+
+        return Inertia::render('Schedules/Index', [
+            'performances' => $formattedSchedules,
+            'sectionName' => $section->name,
+        ]);
     }
 }

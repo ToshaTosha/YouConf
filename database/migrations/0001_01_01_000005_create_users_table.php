@@ -16,9 +16,8 @@ return new class extends Migration
             $table->string('vk_id')->unique();
             $table->string('first_name');
             $table->string('last_name');
-            $table->string('avatar')->nullable();
+            $table->text('avatar')->nullable();
             $table->string('email')->nullable();
-            $table->foreignId('role_id')->constrained('roles')->onDelete('cascade');
             $table->timestamps();
         });
 

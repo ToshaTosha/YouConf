@@ -11,7 +11,12 @@
       :key="sectionIndex"
       className="text-center font-bold p-2"
     >
-      {{ section.name }}
+      <Link
+        :href="'/schedules/section/' + section.id"
+        class="flex items-center"
+      >
+        {{ section.name }}
+      </Link>
     </div>
     <!-- Время -->
     <div
@@ -27,7 +32,7 @@
     <div
       v-for="event in currentEvents"
       :key="event.name"
-      :className="`bg-blue-500 p-2 rounded-lg`"
+      :className="`bg-blue-500 p-2 rounded-lg text-white`"
       :style="{
         gridColumn: `${
           sections.findIndex((section) => section.id === event.section_id) + 2
@@ -35,14 +40,25 @@
         gridRow: `${event.start + 1} / ${event.end + 2}`,
       }"
     >
-      {{ event.application_title }}
+      <h3 className="text-lg font-bold mb-1">
+        <!-- Заголовок для темы выступления -->
+        {{ event.performance_title }}
+      </h3>
+      <p className="text-sm">
+        <!-- Параграф для имени докладчика -->
+        {{ event.user.last_name }} {{ event.user.first_name }}
+      </p>
     </div>
   </div>
 </template>
 
 <script>
+import { Link } from '@inertiajs/inertia-vue3'
 export default {
   name: 'ScheduleTable',
+  components: {
+    Link,
+  },
   props: {
     sections: Array,
     events: Array,
@@ -50,45 +66,12 @@ export default {
   data() {
     return {
       times: this.generateTimes(),
-      categories: ['Work', 'Personal', 'Meetings'], // Категории событий
-      //   events: [
-      //     {
-      //       name: 'Event 1',
-      //       startTime: '09:00',
-      //       endTime: '09:30',
-      //       category: 'Work',
-      //     },
-      //     {
-      //       name: 'Event 1.2',
-      //       startTime: '09:30',
-      //       endTime: '10:00',
-      //       category: 'Work',
-      //     },
-      //     {
-      //       name: 'Event 2',
-      //       startTime: '10:00',
-      //       endTime: '11:00',
-      //       category: 'Personal',
-      //     },
-      //     {
-      //       name: 'Event 3',
-      //       startTime: '11:30',
-      //       endTime: '12:00',
-      //       category: 'Meetings',
-      //     },
-      //     {
-      //       name: 'Event 3',
-      //       startTime: '13:30',
-      //       endTime: '15:00',
-      //       category: 'Meetings',
-      //     },
-      //   ],
     }
   },
   methods: {
     generateTimes() {
       const times = []
-      for (let hour = 8; hour <= 20; hour++) {
+      for (let hour = 8; hour <= 19; hour++) {
         for (let minute = 0; minute < 60; minute += 15) {
           const time = `${hour
             .toString()
@@ -104,15 +87,34 @@ export default {
       const totalMinutes = (hour - 8) * 60 + minute // 8:00 — начало отсчета
       return Math.floor(totalMinutes / 15) + 1 // +1, так как строки начинаются с 1
     },
+    calculateEndTime(startTime, duration) {
+      if (!startTime || !duration) return null
+
+      const [hours, minutes] = startTime.split(':').map(Number)
+      const startDate = new Date()
+      startDate.setHours(hours, minutes, 0, 0)
+
+      const endDate = new Date(startDate.getTime() + duration * 60000)
+      return `${endDate
+        .getHours()
+        .toString()
+        .padStart(2, '0')}:${endDate.getMinutes().toString().padStart(2, '0')}`
+    },
   },
   computed: {
     currentEvents() {
-      console.log('currentEvents', this.events[0])
-      return this.events.map((event) => ({
-        ...event,
-        start: this.timeToRowIndex(event.start_time),
-        end: this.timeToRowIndex(event.end_time),
-      }))
+      return this.events.map((event) => {
+        // Если end_time отсутствует, вычисляем его из start_time + duration
+        const endTime =
+          event.end_time ||
+          this.calculateEndTime(event.start_time, event.duration)
+
+        return {
+          ...event,
+          start: this.timeToRowIndex(event.start_time),
+          end: this.timeToRowIndex(endTime),
+        }
+      })
     },
   },
 }

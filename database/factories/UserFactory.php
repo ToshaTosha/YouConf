@@ -4,6 +4,7 @@ namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
 use App\Models\User;
+use Faker\Factory as FakerFactory;
 
 /**
  * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\User>
@@ -23,13 +24,13 @@ class UserFactory extends Factory
     protected $model = User::class;
     public function definition(): array
     {
+        $faker = FakerFactory::create('ru_RU');
         return [
             'vk_id' => $this->faker->unique()->numberBetween(100000000, 999999999),
-            'first_name' => $this->faker->firstName,
-            'last_name' => $this->faker->lastName,
+            'first_name' => $faker->firstName,
+            'last_name' => $faker->lastName,
             'avatar' => $this->faker->imageUrl(640, 480, 'people'),
             'email' => $this->faker->unique()->safeEmail,
-            'role_id' => null,
         ];
     }
 

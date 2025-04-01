@@ -35,11 +35,11 @@ export default {
   },
   methods: {
     selectDate(date) {
-      console.log(this.selectedDate)
       this.selectedDate = date
       this.updateProcessedEvents()
     },
     updateProcessedEvents() {
+      console.log(this.schedules)
       const events = this.schedules[this.selectedDate] || []
       this.processedEvents = Object.values(events)
     },

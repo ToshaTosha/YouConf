@@ -16,8 +16,8 @@ class Section extends Model
         'end_date',
     ];
 
-    public function applications()
+    public function performances()
     {
-        return $this->hasMany(Application::class);
+        return $this->hasMany(Performance::class);
     }
 }
