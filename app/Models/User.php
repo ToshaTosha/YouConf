@@ -18,6 +18,7 @@ class User extends Authenticatable
         'last_name',
         'avatar',
         'email',
+        'password'
     ];
 
     public function getRoleIdAttribute()

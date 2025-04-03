@@ -21,6 +21,12 @@ Route::get('/auth/vk', function () {
 })->name('auth.vk');
 Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
 
+use App\Http\Controllers\Auth\RegisterController;
+
+// Добавляем рядом с другими auth роутами
+Route::get('/register', [RegisterController::class, 'showRegistrationForm'])->name('register');
+Route::post('/register', [RegisterController::class, 'register']);
+
 Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['web', 'auth'])->group(function () {
