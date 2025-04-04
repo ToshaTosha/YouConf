@@ -2,8 +2,6 @@
   <div
     class="min-h-screen flex items-center justify-center bg-gray-50 py-12 px-4 sm:px-6 lg:px-8"
   >
-    {{ form }}
-    {{ errors }}
     <div class="max-w-md w-full space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
@@ -121,6 +119,22 @@
             Уже есть аккаунт? Войдите
           </router-link>
         </div>
+        <div class="mt-6">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-gray-50 text-gray-500">
+                Или войдите через
+              </span>
+            </div>
+          </div>
+
+          <div class="mt-6">
+            <VkAuthButton />
+          </div>
+        </div>
       </form>
     </div>
   </div>
@@ -129,7 +143,7 @@
 <script>
 import { useForm } from '@inertiajs/inertia-vue3'
 import { Inertia } from '@inertiajs/inertia'
-import { ref } from 'vue'
+import VkAuthButton from '@/Components/VkAuthButton.vue'
 
 export default {
   setup() {
@@ -161,6 +175,9 @@ export default {
     }
 
     return { form, submit }
+  },
+  components: {
+    VkAuthButton,
   },
   computed: {
     processing() {

@@ -89,8 +89,22 @@
             Нет аккаунта? Зарегистрируйтесь
           </router-link>
         </div>
+        <div class="mt-6">
+          <div class="relative">
+            <div class="absolute inset-0 flex items-center">
+              <div class="w-full border-t border-gray-300"></div>
+            </div>
+            <div class="relative flex justify-center text-sm">
+              <span class="px-2 bg-gray-50 text-gray-500">
+                Или войдите через
+              </span>
+            </div>
+          </div>
 
-        <!-- Соц. сети остаются без изменений -->
+          <div class="mt-6">
+            <VkAuthButton />
+          </div>
+        </div>
       </form>
     </div>
   </div>
@@ -99,7 +113,7 @@
 <script>
 import { useForm } from '@inertiajs/inertia-vue3'
 import { Inertia } from '@inertiajs/inertia'
-import { computed } from 'vue'
+import VkAuthButton from '@/Components/VkAuthButton.vue'
 
 export default {
   props: {
@@ -107,6 +121,9 @@ export default {
     message: String,
     status: String,
     user_data: Object,
+  },
+  components: {
+    VkAuthButton,
   },
   setup(props) {
     const form = useForm({
