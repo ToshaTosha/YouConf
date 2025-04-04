@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Laravel\Socialite\Facades\Socialite;
 use App\Models\User;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
 
 class LoginController extends Controller
@@ -20,6 +21,36 @@ class LoginController extends Controller
             return redirect()->route('user.show', ['id' => Auth::user()->id]);
         }
         return Inertia::render('Auth/Login');
+    }
+
+    public function login(Request $request)
+    {
+        try {
+            $validated = $request->validate([
+                'email' => 'required|email',
+                'password' => 'required',
+            ]);
+
+            if (Auth::attempt($validated, $request->remember)) {
+                $request->session()->regenerate();
+                return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
+            }
+
+            throw ValidationException::withMessages([
+                'email' => __('auth.failed'),
+            ]);
+        } catch (ValidationException $e) {
+            return Inertia::render('Auth/Login', [
+                'errors' => $e->validator->errors(),
+                'user_data' => $request->only('email', 'remember'),
+            ]);
+        } catch (\Exception $e) {
+            Log::error($e);
+            return back()->with([
+                'message' => 'Произошла ошибка при входе: ' . $e->getMessage(),
+                'status' => 'error'
+            ]);
+        }
     }
 
     public function handleProviderCallback()
