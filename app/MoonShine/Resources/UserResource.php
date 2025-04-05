@@ -7,6 +7,7 @@ namespace App\MoonShine\Resources;
 use Illuminate\Database\Eloquent\Model;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Section;
 use Illuminate\Support\Facades\Log;
 
 use MoonShine\Laravel\Resources\ModelResource;
@@ -43,6 +44,7 @@ class UserResource extends ModelResource
             Text::make('Имя', 'first_name')->sortable(),
             Text::make('Фамилия', 'last_name')->sortable(),
             Text::make('Role', '', fn($user) => $user->roles->first()?->name),
+            Text::make('Секции', '', fn($user) => $user->sections->pluck('name')->implode(', '))->nullable(),
         ];
     }
 
@@ -53,6 +55,7 @@ class UserResource extends ModelResource
     protected function formFields(): iterable
     {
         $roles = Role::all()->pluck('name', 'id')->toArray();
+        $sections = Section::all()->pluck('name', 'id')->toArray();
 
         return [
             Box::make([
@@ -60,9 +63,26 @@ class UserResource extends ModelResource
                 Text::make('Имя', 'first_name')->required(),
                 Text::make('Фамилия', 'last_name')->required(),
                 Select::make('Role', 'role_id')
-                    ->options(Role::pluck('name', 'id')->toArray())
+                    ->options($roles)
                     ->required()
                     ->searchable(),
+                // Поле для выбора секций, доступное только для экспертов
+                Select::make('Секции', 'sections')
+                    ->options($sections)
+                    ->multiple()
+                    ->disabled(function () {
+                        $id = $this->getItemID();
+
+                        // Если ID есть - получаем модель из БД
+                        if ($id) {
+                            $user = User::with('roles')->find($id);
+                            return !$user || !$user->hasRole('expert');
+                        }
+
+                        // Для нового пользователя поле не disabled
+                        return false;
+                    })
+                    ->nullable(),
             ]),
         ];
     }
