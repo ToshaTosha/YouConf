@@ -18,6 +18,7 @@ use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\UI\Fields\Select;
+use MoonShine\Fields\Fields;
 
 /**
  * @extends ModelResource<User>
@@ -66,20 +67,21 @@ class UserResource extends ModelResource
                     ->options($roles)
                     ->required()
                     ->searchable(),
-                // Поле для выбора секций, доступное только для экспертов
                 Select::make('Секции', 'sections')
                     ->options($sections)
                     ->multiple()
+                    // Устанавливаем выбранные значения
+                    ->default(fn($user) => $user->exists ? $user->sections->pluck('id')->toArray() : [])
+                    // Обработка сохранения
+                    ->onApply(function ($user, $value) {
+                        $user->sections()->sync($value ?? []);
+                    })
                     ->disabled(function () {
                         $id = $this->getItemID();
-
-                        // Если ID есть - получаем модель из БД
                         if ($id) {
                             $user = User::with('roles')->find($id);
                             return !$user || !$user->hasRole('expert');
                         }
-
-                        // Для нового пользователя поле не disabled
                         return false;
                     })
                     ->nullable(),
