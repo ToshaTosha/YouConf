@@ -5,21 +5,49 @@
     <div class="max-w-md w-full space-y-8">
       <div>
         <h2 class="mt-6 text-center text-3xl font-extrabold text-gray-900">
-          Вход в аккаунт
+          Создать аккаунт
         </h2>
-        <p
-          v-if="message"
-          class="mt-2 text-center text-sm"
-          :class="{
-            'text-green-600': status === 'success',
-            'text-red-600': status === 'error',
-          }"
-        >
-          {{ message }}
-        </p>
       </div>
       <form class="mt-8 space-y-6" @submit.prevent="submit">
         <div class="rounded-md shadow-sm space-y-4">
+          <div>
+            <label
+              for="first_name"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Имя
+            </label>
+            <input
+              id="first_name"
+              v-model="form.first_name"
+              type="text"
+              required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p v-if="errors.first_name" class="mt-2 text-sm text-red-600">
+              {{ errors.first_name }}
+            </p>
+          </div>
+
+          <div>
+            <label
+              for="last_name"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Фамилия
+            </label>
+            <input
+              id="last_name"
+              v-model="form.last_name"
+              type="text"
+              required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
+            <p v-if="errors.last_name" class="mt-2 text-sm text-red-600">
+              {{ errors.last_name }}
+            </p>
+          </div>
+
           <div>
             <label for="email" class="block text-sm font-medium text-gray-700">
               Email
@@ -30,7 +58,6 @@
               type="email"
               required
               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              :class="{ 'border-red-500': errors.email }"
             />
             <p v-if="errors.email" class="mt-2 text-sm text-red-600">
               {{ errors.email }}
@@ -50,23 +77,26 @@
               type="password"
               required
               class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
-              :class="{ 'border-red-500': errors.password }"
             />
             <p v-if="errors.password" class="mt-2 text-sm text-red-600">
-              {{ errors.password }}
+              {{ errors.password[0] }}
             </p>
           </div>
 
-          <div class="flex items-center">
-            <input
-              id="remember"
-              v-model="form.remember"
-              type="checkbox"
-              class="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-            />
-            <label for="remember" class="ml-2 block text-sm text-gray-900">
-              Запомнить меня
+          <div>
+            <label
+              for="password_confirmation"
+              class="block text-sm font-medium text-gray-700"
+            >
+              Подтвердите пароль
             </label>
+            <input
+              id="password_confirmation"
+              v-model="form.password_confirmation"
+              type="password"
+              required
+              class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+            />
           </div>
         </div>
 
@@ -74,19 +104,19 @@
           <button
             type="submit"
             class="w-full flex justify-center py-2 px-4 border border-transparent rounded-md shadow-sm text-sm font-medium text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
-            :disabled="form.processing"
+            :disabled="processing"
           >
-            <span v-if="form.processing">Вход...</span>
-            <span v-else>Войти</span>
+            <span v-if="processing">Регистрация...</span>
+            <span v-else>Зарегистрироваться</span>
           </button>
         </div>
 
         <div class="text-center">
           <router-link
-            to="/register"
+            to="/login"
             class="text-sm text-blue-600 hover:text-blue-500"
           >
-            Нет аккаунта? Зарегистрируйтесь
+            Уже есть аккаунт? Войдите
           </router-link>
         </div>
         <div class="mt-6">
@@ -116,24 +146,17 @@ import { Inertia } from '@inertiajs/inertia'
 import VkAuthButton from '@/Components/VkAuthButton.vue'
 
 export default {
-  props: {
-    errors: Object,
-    message: String,
-    status: String,
-    user_data: Object,
-  },
-  components: {
-    VkAuthButton,
-  },
-  setup(props) {
+  setup() {
     const form = useForm({
+      first_name: '',
+      last_name: '',
       email: '',
       password: '',
-      remember: props.user_data?.remember || false,
+      password_confirmation: '',
     })
 
     const submit = () => {
-      Inertia.post('/login', form, {
+      Inertia.post('/register', form, {
         onSuccess: (page) => {
           console.log('page')
           // Если есть ошибки, они будут автоматически обновлены в form.errors
@@ -153,9 +176,16 @@ export default {
 
     return { form, submit }
   },
+  components: {
+    VkAuthButton,
+  },
   computed: {
     processing() {
       return this.form.processing
+    },
+    errors() {
+      console.log(this.form)
+      return this.form.errors
     },
   },
 }

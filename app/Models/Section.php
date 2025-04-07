@@ -20,4 +20,9 @@ class Section extends Model
     {
         return $this->hasMany(Performance::class);
     }
+
+    public function users()
+    {
+        return $this->belongsToMany(User::class, 'section_user');
+    }
 }

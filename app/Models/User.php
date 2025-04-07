@@ -18,6 +18,7 @@ class User extends Authenticatable
         'last_name',
         'avatar',
         'email',
+        'password'
     ];
 
     public function getRoleIdAttribute()
@@ -28,5 +29,10 @@ class User extends Authenticatable
     public function setRoleIdAttribute($value)
     {
         $this->syncRoles(Role::find($value));
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class, 'section_user');
     }
 }
