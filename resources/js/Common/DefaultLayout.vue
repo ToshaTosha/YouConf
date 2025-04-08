@@ -68,7 +68,6 @@
 
     <!-- Основной контент -->
     <main class="flex-grow container mx-auto p-4">
-      {{ $page.props }}
       <slot></slot>
     </main>
 

@@ -9,27 +9,36 @@
         </div>
 
         <!-- Список сообщений -->
-        <div v-for="message in messages" :key="message.id" class="mb-4">
-          <!-- Сообщение текущего пользователя -->
-          <div
-            v-if="message.user.id === $page.props.user_data.id"
-            class="flex justify-end"
-          >
-            <div class="bg-blue-500 text-white rounded-lg p-3 max-w-md">
-              <p class="text-sm">{{ message.message }}</p>
-              <span class="text-xs text-blue-200">
-                {{ message.user.first_name }}
-              </span>
-            </div>
+        <div v-for="(group, index) in groupedMessages" :key="index">
+          <div class="text-center text-gray-400 mb-2">
+            <strong>{{ formatDate(group.date) }}</strong>
           </div>
+          <div v-for="message in group.messages" :key="message.id" class="mb-4">
+            <div
+              v-if="message.user.id === $page.props.user_data.id"
+              class="flex justify-end"
+            >
+              <div class="bg-blue-500 text-white rounded-lg p-3 max-w-md">
+                <p class="text-sm">{{ message.message }}</p>
+                <span class="text-xs text-blue-200">
+                  {{ message.user.first_name }}
+                </span>
+                <span class="text-xs text-blue-200">
+                  {{ formatTime(message.created_at) }}
+                </span>
+              </div>
+            </div>
 
-          <!-- Сообщение собеседника -->
-          <div v-else class="flex justify-start">
-            <div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-md">
-              <p class="text-sm">{{ message.message }}</p>
-              <span class="text-xs text-gray-500">
-                {{ message.user.first_name }}
-              </span>
+            <div v-else class="flex justify-start">
+              <div class="bg-gray-200 text-gray-800 rounded-lg p-3 max-w-md">
+                <p class="text-sm">{{ message.message }}</p>
+                <span class="text-xs text-gray-500">
+                  {{ message.user.first_name }}
+                </span>
+                <span class="text-xs text-gray-500">
+                  {{ formatTime(message.created_at) }}
+                </span>
+              </div>
             </div>
           </div>
         </div>
@@ -74,6 +83,7 @@
 </template>
 
 <script>
+import moment from 'moment-timezone'
 export default {
   name: 'Chat',
   props: {
@@ -87,7 +97,30 @@ export default {
   data() {
     return {
       newMessage: '',
+      userTimezone: Intl.DateTimeFormat().resolvedOptions().timeZone,
     }
+  },
+  computed: {
+    groupedMessages() {
+      const groups = []
+      let currentDate = null
+
+      this.messages.forEach((message) => {
+        const messageDate = moment
+          .utc(message.created_at)
+          .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+          .format('YYYY-MM-DD')
+
+        if (messageDate !== currentDate) {
+          currentDate = messageDate
+          groups.push({ date: currentDate, messages: [] })
+        }
+
+        groups[groups.length - 1].messages.push(message)
+      })
+
+      return groups
+    },
   },
   methods: {
     sendMessage() {
@@ -105,6 +138,15 @@ export default {
           },
         },
       )
+    },
+    formatTime(date) {
+      return moment
+        .utc(date)
+        .tz(Intl.DateTimeFormat().resolvedOptions().timeZone)
+        .format('HH:mm') // Форматируем время как HH:mm
+    },
+    formatDate(date) {
+      return moment(date).format('DD.MM.YY') // Форматируем дату как DD.MM.YY
     },
   },
 }
