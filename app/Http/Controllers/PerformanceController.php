@@ -112,9 +112,11 @@ class PerformanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        DB::transaction(function () use ($request, $id) {
-            // Находим текущую заявку
-            $performance = Performance::findOrFail($id);
+        $performance = Performance::findOrFail($id);
+        if (in_array($performance->status_id, [2, 4])) {
+            return response()->json(['error' => 'Редактирование выступления невозможно, так как статус не позволяет это.'], 403);
+        }
+        DB::transaction(function () use ($request, $performance) {
 
             // Обновляем основную заявку
             $performance->update($request->only(['title', 'description', 'status_id']));

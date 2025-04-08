@@ -63,6 +63,7 @@
       <!-- Иконка для открытия чата -->
       <button
         @click="toggleChat"
+        :disabled="isDisabled"
         class="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200"
       >
         <svg
@@ -84,6 +85,8 @@
       <!-- Кнопка для редактирования -->
       <Link
         v-if="isPerformanceOwner"
+        as="button"
+        :disabled="isDisabled"
         :href="`/performances/${performance.id}/edit`"
         class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
       >
@@ -141,6 +144,13 @@ export default {
     // Проверка, является ли текущий пользователь владельцем заявки
     isPerformanceOwner() {
       return this.$page.props.user_data.id === this.performance.user.id
+    },
+    isDisabled() {
+      console.log(
+        this.performance.status_id,
+        this.performance.status_id === 2 || 4,
+      )
+      return this.performance.status_id === 2 || 4
     },
   },
   methods: {
