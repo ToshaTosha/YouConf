@@ -10,7 +10,7 @@ use App\Models\Section;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use Illuminate\Support\Facades\Log;
+use App\Notifications\PerformanceStatusChanged;
 
 
 
@@ -48,17 +48,32 @@ class PerformanceController extends Controller
 
         $user = User::findOrFail(Auth::user()->id);
 
-        // Проверяем, является ли пользователь экспертом
         if (!$user->hasRole('expert')) {
             return response()->json(['message' => 'Доступ запрещен.'], 403);
         }
 
-        // Обновляем статус заявки
-        $performance = Performance::findOrFail($id);
+        // Получаем заявку со связанными данными
+        $performance = Performance::with(['status', 'user'])->findOrFail($id);
+
+        // Сохраняем старый статус перед изменением
+        $oldStatus = $performance->status;
+
+        // Обновляем статус
         $performance->status_id = $request->status_id;
         $performance->save();
 
-        return redirect()->back();
+        // Получаем новый статус после обновления
+        $newStatus = $performance->fresh()->status;
+
+        // Проверяем, что статус действительно изменился
+        if ($oldStatus->id !== $newStatus->id) {
+            // Отправляем уведомление (передаём объекты Performance и Status)
+            $performance->user->notify(
+                new PerformanceStatusChanged($performance, $oldStatus, $newStatus)
+            );
+        }
+
+        return redirect()->back()->with('success', 'Статус заявки успешно обновлён');
     }
 
     public function apply(Request $request)

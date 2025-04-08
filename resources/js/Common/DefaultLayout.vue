@@ -25,12 +25,9 @@
             </Link>
           </template>
           <template v-else>
-            <Link
-              href="/login"
-              class="bg-white text-blue-600 px-4 py-2 rounded"
-            >
+            <a href="/login" class="bg-white text-blue-600 px-4 py-2 rounded">
               Войти
-            </Link>
+            </a>
           </template>
         </div>
       </div>
@@ -56,7 +53,7 @@
       </div>
     </nav>
 
-    <!-- <button
+    <button
       @click="switchUser(11)"
       class="bg-blue-500 text-white p-2 rounded-lg"
     >
@@ -67,10 +64,11 @@
       class="bg-green-500 text-white p-2 rounded-lg"
     >
       Переключиться на эксперта
-    </button> -->
+    </button>
 
     <!-- Основной контент -->
     <main class="flex-grow container mx-auto p-4">
+      {{ $page.props }}
       <slot></slot>
     </main>
 
