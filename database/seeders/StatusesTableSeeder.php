@@ -17,6 +17,7 @@ class StatusesTableSeeder extends Seeder
         $statuses = [
             ['name' => 'На рассмотрении'],
             ['name' => 'Принято'],
+            ['name' => 'На доработку'],
             ['name' => 'Отклонено'],
         ];
 
