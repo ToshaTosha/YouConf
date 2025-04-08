@@ -32,6 +32,8 @@ Route::post('/logout', [LoginController::class, 'logout'])->name('logout');
 
 Route::middleware(['web', 'auth'])->group(function () {
     Route::get('/user/{id}', [UserController::class, 'show'])->name('user.show');
+    Route::get('/user/{id}/edit', [UserController::class, 'edit'])->name('user.edit');
+    Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
 
     Route::get('/performances/create/{section_id}', [PerformanceController::class, 'create'])->name('performances.create');
     Route::post('/performances/{section_id}/apply', [PerformanceController::class, 'apply'])->name('performances.apply');
