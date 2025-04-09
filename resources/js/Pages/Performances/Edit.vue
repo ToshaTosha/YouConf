@@ -39,7 +39,7 @@
 </template>
 
 <script>
-import PerformancesForm from '@/Components/PerformanceForm.vue'
+import PerformancesForm from '@/Components/PerformancesForm.vue'
 
 export default {
   components: {
