@@ -9,7 +9,6 @@ env:
   SERVER_HOST: 89.169.171.236
   SERVER_USER: user
   SERVER_PATH: /var/www/you-conf
-  GIT_REPO: https://github.com/your-username/your-repo.git
 
 jobs:
   deploy:
@@ -18,23 +17,23 @@ jobs:
       - name: Checkout code
         uses: actions/checkout@v3
 
-      # Настройка SSH
-      - name: Set up SSH
+      - name: Setup SSH
         run: |
           mkdir -p ~/.ssh
           echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          # Убедитесь, что нет лишних пробелов/переносов
+          sed -i 's/\\n/\n/g' ~/.ssh/id_rsa
           chmod 600 ~/.ssh/id_rsa
           echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
           chmod 644 ~/.ssh/known_hosts
 
-      # Deploy via Git pull
-      - name: Update server via Git
+      - name: Test SSH connection
+        run: ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "echo 'SSH successful!'"
+
+      - name: Deploy via Git
         run: |
-          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
-          ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} \
-          "cd ${{ env.SERVER_PATH }} && \
-          git fetch origin && \
-          git reset --hard origin/master && \
-          git clean -fd && \
-          # Добавьте здесь команды для перезапуска сервисов если нужно
-          echo 'Deployment successful'"
+          ssh -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
+            cd ${{ env.SERVER_PATH }} && 
+            git fetch origin && 
+            git reset --hard origin/master
+          "
