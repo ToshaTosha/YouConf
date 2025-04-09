@@ -9,31 +9,32 @@ env:
   SERVER_HOST: 89.169.171.236
   SERVER_USER: user
   SERVER_PATH: /var/www/you-conf
+  GIT_REPO: https://github.com/your-username/your-repo.git
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
 
       # Настройка SSH
       - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.MY_KEY }}" > ~/.ssh/id_conf
-          chmod 600 ~/.ssh/id_conf
-          eval "$(ssh-agent -s)"
-          ssh-add ~/.ssh/id_conf
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
+          chmod 644 ~/.ssh/known_hosts
 
-      # Deploy
-      - name: Deploy to server
+      # Deploy via Git pull
+      - name: Update server via Git
         run: |
-          set -x
-          # Копирование файлов на сервер
-          rsync -avz --delete --exclude='.git' --exclude='node_modules' --exclude='*.log' -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no -v" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH }}
-
-      # Перезапуск сервиса (пример для Node.js)
-      - name: Restart application
-        run: |
-          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "cd ${SERVER_PATH} && pm2 restart all" # или другой способ перезапуска вашего приложения
+          ssh -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no \
+          ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} \
+          "cd ${{ env.SERVER_PATH }} && \
+          git fetch origin && \
+          git reset --hard origin/master && \
+          git clean -fd && \
+          # Добавьте здесь команды для перезапуска сервисов если нужно
+          echo 'Deployment successful'"
