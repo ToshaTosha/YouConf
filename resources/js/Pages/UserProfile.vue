@@ -30,7 +30,7 @@
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
-import PerformancesTable from '@/components/PerformancesTable.vue'
+import PerformancesTable from '@/Components/PerformancesTable.vue'
 
 const formatDate = (dateString, formatType) => {
   const date = new Date(dateString)

@@ -10,8 +10,8 @@
 </template>
 
 <script>
-import DateTabs from '@/components/DateTabs.vue'
-import ScheduleTable from '@/components/ScheduleTable.vue'
+import DateTabs from '@/Components/DateTabs.vue'
+import ScheduleTable from '@/Components/ScheduleTable.vue'
 
 export default {
   components: {

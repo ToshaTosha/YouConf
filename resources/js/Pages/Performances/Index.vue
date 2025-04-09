@@ -11,7 +11,7 @@
 
 <script>
 import { Link, router } from '@inertiajs/inertia-vue3'
-import PerformancesTable from '@/components/PerformancesTable.vue'
+import PerformancesTable from '@/Components/PerformancesTable.vue'
 export default {
   props: {
     performances: Array,
