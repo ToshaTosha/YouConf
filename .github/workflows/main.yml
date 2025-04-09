@@ -15,25 +15,33 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - name: Checkout code
-        uses: actions/checkout@v3
+        uses: actions/checkout@v2
 
-      - name: Setup SSH
+      # Настройка SSH
+      - name: Set up SSH
         run: |
           mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          # Убедитесь, что нет лишних пробелов/переносов
-          sed -i 's/\\n/\n/g' ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          echo "${{ secrets.KNOWN_HOSTS }}" > ~/.ssh/known_hosts
-          chmod 644 ~/.ssh/known_hosts
+          echo "${{ secrets.MY_KEY }}" > ~/.ssh/id_conf
+          chmod 600 ~/.ssh/id_conf
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/id_conf
 
-      - name: Test SSH connection
-        run: ssh -v -i ~/.ssh/id_rsa -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "echo 'SSH successful!'"
-
-      - name: Deploy via Git
+      # Deploy
+      - name: Deploy to server
         run: |
-          ssh -i ~/.ssh/id_rsa ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
-            cd ${{ env.SERVER_PATH }} && 
-            git fetch origin && 
-            git reset --hard origin/master
+          set -x
+          # Копирование файлов на сервер с исключением ненужных директорий
+          rsync -avz --delete --exclude='node_modules' --exclude='vendor' --exclude='.env' --exclude='storage' -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH}}
+
+          # Выполнение команд обновления на сервере
+          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
+            cd ${{ env.SERVER_PATH }} && \
+            # Обновление зависимостей
+            if [ -f composer.json ]; then
+              composer install --no-dev --optimize-autoloader
+            fi && \
+            if [ -f package.json ]; then
+              yarn install && \
+              yarn build
+            fi
           "
