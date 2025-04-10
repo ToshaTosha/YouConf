@@ -18,8 +18,8 @@ class HandleAuth
                     'id' => $request->user()->id,
                     'first_name' => $request->user()->name,
                     'avatar' => $request->user()->avatar,
-                    'unread_notifications' => $request->user()->unreadNotifications,
-                    'notifications_count' => $request->user()->unreadNotifications->count(),
+                    'unread_notifications_count' => $request->user()->unreadNotifications->count(),
+                    'notifications' => $request->user()->notifications()->latest()->take(5)->get(),
                 ] : null,
             ];
         });

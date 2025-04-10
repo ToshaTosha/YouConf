@@ -48,25 +48,4 @@ class User extends Authenticatable
     {
         return $this->hasMany(Performance::class);
     }
-
-    // Количество непрочитанных уведомлений
-    public function getUnreadNotificationsCountAttribute()
-    {
-        return $this->unreadNotifications()->count();
-    }
-
-    // Полное имя пользователя
-    public function getFullNameAttribute()
-    {
-        return trim($this->first_name . ' ' . $this->last_name);
-    }
-
-    // Последние уведомления (для удобства)
-    public function recentNotifications($limit = 5)
-    {
-        return $this->notifications()
-            ->orderBy('created_at', 'desc')
-            ->take($limit)
-            ->get();
-    }
 }

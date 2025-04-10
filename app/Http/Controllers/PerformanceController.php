@@ -11,8 +11,7 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Notifications\PerformanceStatusChanged;
-
-
+use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 
@@ -64,13 +63,26 @@ class PerformanceController extends Controller
 
         // Получаем новый статус после обновления
         $newStatus = $performance->fresh()->status;
+        $performance->user->notify(
+            new PerformanceStatusChanged($performance, $oldStatus, $newStatus)
+        );
+        $recipient = $performance->user;
+
+        $notificationCheck = DB::table('notifications')
+            ->where('notifiable_id', $recipient->id)
+            ->where('notifiable_type', get_class($recipient))
+            ->orderBy('created_at', 'desc')
+            ->first();
 
         // Проверяем, что статус действительно изменился
         if ($oldStatus->id !== $newStatus->id) {
             // Отправляем уведомление (передаём объекты Performance и Status)
-            $performance->user->notify(
-                new PerformanceStatusChanged($performance, $oldStatus, $newStatus)
-            );
+
+            return redirect()->back()->with('success', [
+                'title' => 'Статус изменен',
+                'message' => "Статус выступления '{$performance->title}' изменен на '{$newStatus}'",
+                'performance_id' => $performance->id
+            ]);
         }
 
         return redirect()->back()->with('success', 'Статус заявки успешно обновлён');
