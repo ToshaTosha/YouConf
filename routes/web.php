@@ -37,6 +37,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::put('/user/{id}', [UserController::class, 'update'])->name('user.update');
 
     Route::get('/notifications', [NotificationController::class, 'index'])->name('notifications.index');
+    Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
+    Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
     Route::get('/performances/create/{section_id}', [PerformanceController::class, 'create'])->name('performances.create');
     Route::post('/performances/{section_id}/apply', [PerformanceController::class, 'apply'])->name('performances.apply');

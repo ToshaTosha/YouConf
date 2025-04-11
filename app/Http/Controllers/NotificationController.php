@@ -19,7 +19,7 @@ class NotificationController extends Controller
             );
         }
         return inertia('Notifications/Index', [
-            // 'notifications' => Auth::user()->notifications()->paginate(10),
+            'notifications' => Auth::user()->notifications()->paginate(10),
             'unreadCount' => Auth::user()->unreadNotifications->count(),
         ]);
     }

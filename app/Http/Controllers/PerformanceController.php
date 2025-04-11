@@ -68,12 +68,6 @@ class PerformanceController extends Controller
         );
         $recipient = $performance->user;
 
-        $notificationCheck = DB::table('notifications')
-            ->where('notifiable_id', $recipient->id)
-            ->where('notifiable_type', get_class($recipient))
-            ->orderBy('created_at', 'desc')
-            ->first();
-
         // Проверяем, что статус действительно изменился
         if ($oldStatus->id !== $newStatus->id) {
             // Отправляем уведомление (передаём объекты Performance и Status)

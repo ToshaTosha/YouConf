@@ -9,8 +9,12 @@
           <span class="text-lg font-semibold">Удивительный Мир</span>
         </div>
 
-        <!-- Кнопка входа или профиль -->
-        <div>
+        <!-- Правая часть шапки -->
+        <div class="flex items-center space-x-4">
+          <!-- Компонент уведомлений -->
+          <NotificationsDropdown v-if="$page.props?.user_data" />
+
+          <!-- Кнопка входа или профиль -->
           <template v-if="$page.props?.user_data">
             <Link
               :href="'/user/' + $page.props.user_data.id"
@@ -82,10 +86,12 @@
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
+import NotificationsDropdown from '@/Components/NotificationsDropdown.vue'
 export default {
   name: 'DefaultLayout',
   components: {
     Link,
+    NotificationsDropdown,
   },
   props: {
     sections: Array,
