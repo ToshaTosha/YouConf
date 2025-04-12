@@ -31,7 +31,7 @@ jobs:
         run: |
           set -x
           # Копирование файлов на сервер с исключением ненужных директорий
-          rsync -avz --delete --exclude='node_modules' --exclude='vendor' --exclude='.env' --exclude='storage' -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH}}
+          rsync -avz --delete --no-perms --no-owner --no-group --exclude='node_modules' --exclude='vendor' --exclude='.env' --exclude='storage' -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH}}
 
           # Выполнение команд обновления на сервере
           ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
