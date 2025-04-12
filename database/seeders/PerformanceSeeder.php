@@ -10,6 +10,10 @@ class PerformanceSeeder extends Seeder
 {
     public function run(): void
     {
+        if (app()->isProduction()) {
+            return;
+        }
+
         Performance::factory()
             ->count(20)
             ->create();
