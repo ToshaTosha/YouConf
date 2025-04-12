@@ -16,7 +16,10 @@ class ConferenceSessionSeeder extends Seeder
      */
     public function run(): void
     {
-        // Получаем только заявки со статусом "Принято" (status_id = 2)
+        if (app()->isProduction()) {
+            return;
+        }
+
         $performances = Performance::where('status_id', 2)->get();
         $locations = Location::all();
 

@@ -20,7 +20,7 @@ class PerformanceFactory extends Factory
         return [
             'title' => $this->generateRandomTitle(),
             'description' => $this->generateRandomDescription(),
-            'user_id' => $this->faker->numberBetween(1, 10),
+            'user_id' => rand(1, 10),
             'status_id' => Status::inRandomOrder()->first()->id,
             'section_id' => Section::inRandomOrder()->first()->id,
         ];
