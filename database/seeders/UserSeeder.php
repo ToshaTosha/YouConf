@@ -11,6 +11,14 @@ class UserSeeder extends Seeder
 {
     public function run(): void
     {
+        if (!app()->isProduction()) {
+            $this->seedDevUsers();
+        } else {
+            $this->seedProductionUsers();
+        }
+    }
+    protected function seedDevUsers(): void
+    {
         // Получаем роли
         $expertRole = Role::where('name', 'expert')->first();
         $participantRole = Role::where('name', 'participant')->first();
@@ -30,14 +38,20 @@ class UserSeeder extends Seeder
             ->each(function ($user) use ($participantRole) {
                 $user->assignRole($participantRole);
             });
+    }
 
-        // Выводим информацию о созданных пользователях и их ролях
-        foreach ($experts as $user) {
-            $this->command->info("Пользователь: {$user->id}, Роль: Expert");
-        }
+    protected function seedProductionUsers(): void
+    {
+        $expertRole = Role::where('name', 'expert')->first();
+        $admin = User::firstOrCreate([
+            'email' => 'admin@example.com'
+        ], [
+            'first_name' => 'Admin',
+            'last_name' => 'System',
+            'vk_id' => rand(100000000, 999999999),
+            'avatar' => 'https://i.pravatar.cc/300?u=admin'
+        ]);
 
-        foreach ($participants as $user) {
-            $this->command->info("Пользователь: {$user->id}, Роль: Participant");
-        }
+        $admin->assignRole($expertRole);
     }
 }
