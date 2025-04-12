@@ -63,7 +63,7 @@ class PerformanceFactory extends Factory
             'Влияние света на поведение животных'
         ];
 
-        return $this->faker->randomElement($titles);
+        return $titles[array_rand($titles)];
     }
 
     private function generateRandomDescription()
@@ -92,6 +92,6 @@ class PerformanceFactory extends Factory
             'Исследование влияния света на поведение животных и их адаптацию к окружающей среде.'
         ];
 
-        return $this->faker->randomElement($descriptions);
+        return $descriptions[array_rand($descriptions)];
     }
 }
