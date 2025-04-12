@@ -25,23 +25,42 @@ jobs:
           chmod 600 ~/.ssh/id_conf
           eval "$(ssh-agent -s)"
           ssh-add ~/.ssh/id_conf
+          ssh-keyscan -H ${{ env.SERVER_HOST }} >> ~/.ssh/known_hosts
+
+      # Исправление прав перед деплоем
+      - name: Fix permissions on server
+        run: |
+          ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
+            sudo chown -R ${{ env.SERVER_USER }}:${{ env.SERVER_USER }} ${{ env.SERVER_PATH}}
+            sudo chmod -R 775 ${{ env.SERVER_PATH}}
+          "
 
       # Deploy
       - name: Deploy to server
         run: |
           set -x
-          # Копирование файлов на сервер с исключением ненужных директорий
-          rsync -avz --delete --no-perms --no-owner --no-group --exclude='node_modules' --exclude='vendor' --exclude='.env' --exclude='storage' -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no" . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH}}
+          # Копирование файлов с игнорированием прав
+          rsync -avz --delete \
+            --no-perms --no-owner --no-group \
+            --exclude='node_modules' \
+            --exclude='vendor' \
+            --exclude='.env' \
+            --exclude='storage' \
+            -e "ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no" \
+            . ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }}:${{ env.SERVER_PATH}}
 
-          # Выполнение команд обновления на сервере
+          # Выполнение команд обновления
           ssh -i ~/.ssh/id_conf -o StrictHostKeyChecking=no ${{ env.SERVER_USER }}@${{ env.SERVER_HOST }} "
             cd ${{ env.SERVER_PATH }} && \
-            # Обновление зависимостей
+            # Установка зависимостей
             if [ -f composer.json ]; then
               composer install --no-dev --optimize-autoloader
             fi && \
             if [ -f package.json ]; then
               yarn install && \
               yarn build
-            fi
+            fi && \
+            # Фикс прав после деплоя
+            sudo chown -R www-data:www-data ${{ env.SERVER_PATH}}/storage
+            sudo chown -R www-data:www-data ${{ env.SERVER_PATH}}/bootstrap/cache
           "
