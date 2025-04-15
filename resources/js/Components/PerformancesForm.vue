@@ -20,6 +20,31 @@
           placeholder="Введите описание"
           rows="4"
         ></textarea>
+        <label class="block text-gray-700 font-semibold mb-1 mt-4">
+          Соавторы
+        </label>
+        <div
+          v-for="(coAuthor, index) in form.co_authors"
+          :key="index"
+          class="flex items-center mb-2"
+        >
+          <input
+            v-model="form.co_authors[index]"
+            type="text"
+            class="w-full p-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 transition"
+            placeholder="Введите имя соавтора"
+          />
+          <button
+            type="button"
+            @click="removeCoAuthor(index)"
+            class="ml-2 text-red-500"
+          >
+            Удалить
+          </button>
+        </div>
+        <button type="button" @click="addCoAuthor" class="text-blue-500">
+          Добавить соавтора
+        </button>
       </div>
       <div class="flex-none mb-4 md:ml-4 w-2/5">
         <FileUpload
@@ -59,6 +84,10 @@ export default {
       form: {
         title: this.performance ? this.performance.title : '',
         description: this.performance ? this.performance.description : '',
+        co_authors:
+          this.performance && this.performance.co_authors
+            ? this.performance.co_authors.split(',')
+            : [''],
         files: [],
       },
       isEditMode: !!this.performance,
@@ -72,6 +101,7 @@ export default {
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
       formData.append('section_id', this.sectionId)
+      formData.append('co_authors', this.form.co_authors.join(','))
       this.form.files.forEach((file, index) => {
         if (file instanceof File) {
           // Новый файл
@@ -112,6 +142,12 @@ export default {
     },
     updateFiles(files) {
       this.form.files = files
+    },
+    addCoAuthor() {
+      this.form.co_authors.push('') // Добавляем пустую строку для нового соавтора
+    },
+    removeCoAuthor(index) {
+      this.form.co_authors.splice(index, 1) // Удаляем соавтора по индексу
     },
   },
 }

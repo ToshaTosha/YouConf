@@ -96,6 +96,7 @@ class PerformanceController extends Controller
             $performance = Performance::create([
                 'title' => $request->title,
                 'description' => $request->description,
+                'co_authors' => $request->co_authors,
                 'user_id' => Auth::id(),
                 'status_id' => 1, // Статус "на рассмотрении"
                 'section_id' => $request->section_id,
@@ -125,7 +126,7 @@ class PerformanceController extends Controller
         DB::transaction(function () use ($request, $performance) {
 
             // Обновляем основную заявку
-            $performance->update($request->only(['title', 'description', 'status_id']));
+            $performance->update($request->only(['title', 'description', 'status_id', 'co_authors']));
 
             // Загружаем новые файлы, если они есть
             $files = $request->input('files'); // Получаем массив файлов (существующие файлы)
