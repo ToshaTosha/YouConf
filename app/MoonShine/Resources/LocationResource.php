@@ -13,6 +13,9 @@ use MoonShine\UI\Fields\Text;
 use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
+use MoonShine\UI\Components\ActionButton;
+
+use MoonShine\Support\ListOf;
 
 /**
  * @extends ModelResource<Location>
@@ -22,6 +25,12 @@ class LocationResource extends ModelResource
     protected string $model = Location::class;
 
     protected string $title = 'Места проведения';
+
+    protected function indexButtons(): ListOf
+    {
+        return parent::indexButtons()
+            ->except(fn(ActionButton $btn) => $btn->getName() === 'resource-detail-button');
+    }
 
     /**
      * @return list<FieldContract>
@@ -42,6 +51,7 @@ class LocationResource extends ModelResource
         return [
             Box::make([
                 ID::make(),
+                Text::make('Название', 'name'),
             ])
         ];
     }

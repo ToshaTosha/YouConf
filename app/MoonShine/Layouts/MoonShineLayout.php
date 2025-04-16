@@ -47,8 +47,8 @@ final class MoonShineLayout extends CompactLayout
             MenuItem::make('Заявки', PerformanceResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
             MenuItem::make('PerformanceKanbans', PerformanceKanbanResource::class),
-            MenuItem::make('Sections', SectionResource::class),
-            MenuItem::make('Statuses', StatusResource::class),
+            MenuItem::make('Секции', SectionResource::class),
+            // MenuItem::make('Statuses', StatusResource::class),
         ];
     }
     protected function getFooterComponent(): Footer
