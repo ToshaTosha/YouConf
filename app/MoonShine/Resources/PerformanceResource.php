@@ -38,7 +38,7 @@ class PerformanceResource extends ModelResource
         return [
             ID::make()->sortable(),
             Text::make('Название', 'title'),
-            Text::make('Описание', 'description'),
+            // Text::make('Описание', 'description'),
             BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name),
             Text::make('Соавторы', 'co_authors', fn($value) => $value->co_authors ?: '-'),
             BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
@@ -66,7 +66,13 @@ class PerformanceResource extends ModelResource
     protected function detailFields(): iterable
     {
         return [
-            ID::make(),
+            ID::make()->sortable(),
+            Text::make('Название', 'title'),
+            Text::make('Описание', 'description'),
+            BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name),
+            Text::make('Соавторы', 'co_authors', fn($value) => $value->co_authors ?: '-'),
+            BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
+            BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
         ];
     }
 
