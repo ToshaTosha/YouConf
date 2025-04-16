@@ -11,6 +11,7 @@
         "laravel/socialite": "^5.16",
         "laravel/tinker": "^2.9",
         "lee-to/moonshine-kanban-board-resource": "^2.0",
+        "moonshine/easymde": "^1.0",
         "moonshine/moonshine": "^3.5",
         "moonshine/ru": "^1.0",
         "socialiteproviders/vkontakte": "^5.0",

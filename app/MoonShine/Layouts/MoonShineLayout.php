@@ -28,6 +28,7 @@ use MoonShine\UI\Components\When;
 use App\MoonShine\Resources\PerformanceKanbanResource;
 use App\MoonShine\Resources\SectionResource;
 use App\MoonShine\Resources\StatusResource;
+use App\MoonShine\Resources\StaticPageResource;
 
 final class MoonShineLayout extends CompactLayout
 {
@@ -49,6 +50,7 @@ final class MoonShineLayout extends CompactLayout
             MenuItem::make('PerformanceKanbans', PerformanceKanbanResource::class),
             MenuItem::make('Секции', SectionResource::class),
             // MenuItem::make('Statuses', StatusResource::class),
+            MenuItem::make('StaticPages', StaticPageResource::class),
         ];
     }
     protected function getFooterComponent(): Footer
