@@ -39,9 +39,10 @@ class PerformanceResource extends ModelResource
             ID::make()->sortable(),
             Text::make('Название', 'title'),
             Text::make('Описание', 'description'),
-            BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name), // Связь с пользователем
-            // BelongsTo::make('Статус', 'status', new StatusResource()), // Связь со статусом
+            BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name),
+            Text::make('Соавторы', 'co_authors', fn($value) => $value->co_authors ?: '-'),
             BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
+            BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
         ];
     }
 
@@ -53,8 +54,8 @@ class PerformanceResource extends ModelResource
         return [
             Box::make([
                 ID::make(),
-                Text::make('Название', 'title'),
                 BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
+                BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
             ])
         ];
     }

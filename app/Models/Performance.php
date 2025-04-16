@@ -14,6 +14,7 @@ class Performance extends Model
         'user_id',
         'status_id',
         'section_id',
+        'co_authors'
     ];
 
     public function section()

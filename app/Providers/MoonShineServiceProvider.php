@@ -17,6 +17,7 @@ use App\MoonShine\Resources\PerformanceResource;
 use App\MoonShine\Resources\LocationResource;
 use App\MoonShine\Resources\PerformanceKanbanResource;
 use App\MoonShine\Resources\SectionResource;
+use App\MoonShine\Resources\StatusResource;
 
 class MoonShineServiceProvider extends ServiceProvider
 {
@@ -39,6 +40,7 @@ class MoonShineServiceProvider extends ServiceProvider
                 LocationResource::class,
                 PerformanceKanbanResource::class,
                 SectionResource::class,
+                StatusResource::class,
             ])
             ->pages([
                 ...$config->getPages(),
