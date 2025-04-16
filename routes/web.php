@@ -10,6 +10,7 @@ use App\Http\Controllers\NotificationController;
 use App\Http\Controllers\SectionController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\ChatController;
+use App\Http\Controllers\StaticPageController;
 
 
 Route::get('/about', function () {
@@ -74,3 +75,6 @@ use App\Http\Controllers\ScheduleController;
 Route::get('/schedules', [ScheduleController::class, 'show'])->name('schedules.show');
 
 Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getPerformancesBySection']);
+
+Route::get('/pages/{slug}', [StaticPageController::class, 'show'])
+    ->name('static-pages.show');
