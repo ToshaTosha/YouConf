@@ -7,10 +7,15 @@ use Spatie\LaravelMarkdown\MarkdownRenderer;
 
 class StaticPage extends Model
 {
+    protected $casts = [
+        'files' => 'array'
+    ];
+
     protected $fillable = [
         'slug',
         'title',
         'markdown_content',
+        'files'
     ];
 
     public function getHtmlContentAttribute()
