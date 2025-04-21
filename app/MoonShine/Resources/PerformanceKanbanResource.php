@@ -15,18 +15,21 @@ use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use Leeto\MoonShineKanBan\Resources\KanBanResource;
-use App\Models\Performance;
+use App\Models\Schedule;
 use App\Models\Section;
 use Illuminate\Support\Collection;
 use MoonShine\UI\Fields\Text;
 use App\MoonShine\Components\CustomKanban;
+use Illuminate\Support\Facades\Log;
+use App\Models\Performance;
+
 
 /**
  * @extends ModelResource<PerformanceKanban>
  */
 class PerformanceKanbanResource extends KanBanResource
 {
-    protected string $model = Performance::class;
+    protected string $model = Schedule::class;
     protected string $title = 'Расписание выступлений';
 
     protected bool $createInModal = true;
@@ -37,10 +40,9 @@ class PerformanceKanbanResource extends KanBanResource
 
     public function foreignKey(): string
     {
-        return 'section_id';
+        return 'performance.section_id';
     }
 
-    // Возвращаем список секций (колонок Kanban)
     public function statuses(): Collection
     {
         return Section::all()->mapWithKeys(function (Section $section) {
@@ -52,24 +54,14 @@ class PerformanceKanbanResource extends KanBanResource
 
     public function modifyListComponent(ComponentContract $component): ComponentContract
     {
-        return CustomKanban::make($this, $this->getItems());
-    }
-
-    public function getItems(): Collection
-    {
-        return Performance::where('status_id', 2)->get(); // Фильтруем по статусу
+        $schedules = Schedule::with('performance')->get();
+        return CustomKanban::make($this, $schedules);
     }
 
     public function fields(): array
     {
         return [
             ID::make(),
-            Box::make([
-                Text::make('Название', 'title')->required(),
-                BelongsTo::make('Секция', 'section', 'name')->required(),
-                Text::make('Описание', 'description'),
-                BelongsTo::make('Автор', 'user', 'last_name')->searchable(),
-            ])
         ];
     }
 

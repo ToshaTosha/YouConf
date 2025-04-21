@@ -6,41 +6,73 @@
 'data' => [],
 ])
 <x-moonshine::layout.grid>
-    @foreach($statuses as $key => $title)
+    @php
+    // Преобразуем и группируем данные
+    $groupedPerformances = [];
+
+    foreach ($data->first() as $schedule) {
+    // Пропускаем записи без выступления
+    if (!isset($schedule['performance'])) {
+    logger()->warning('Пропущено расписание без выступления', ['schedule' => $schedule]);
+    continue;
+    }
+
+    $sectionId = $schedule['performance']['section_id'];
+
+    if (!isset($groupedPerformances[$sectionId])) {
+    $groupedPerformances[$sectionId] = [];
+    }
+
+    $groupedPerformances[$sectionId][] = [
+    'id' => $schedule['performance']['id'],
+    'title' => $schedule['performance']['title'],
+    'description' => $schedule['performance']['description'],
+    'section_id' => $sectionId,
+    'user' => [
+    'id' => $schedule['performance']['user_id'],
+    'full_name' => 'Автор' // Замените на реальное поле, если есть
+    ],
+    'schedule' => [
+    'id' => $schedule['id'],
+    'date' => $schedule['date'],
+    'start_time' => $schedule['start_time'],
+    'end_time' => $schedule['end_time'],
+    'location_id' => $schedule['location_id']
+    ]
+    ];
+    }
+
+    logger()->info('Сгруппированные данные:', $groupedPerformances);
+    @endphp
+
+    @foreach($statuses as $sectionId => $title)
     <x-moonshine::layout.column colSpan="4">
         <x-moonshine::layout.box :title="$title">
-            <ul x-data="kbSortable" data-parent_key="{{ $key }}">
-                @if(isset($data[$key]))
-                @foreach($data[$key] as $item)
-                <li data-id="{{ $item->getKey() }}">
-                    <x-moonshine::card
-                        class="handle"
-                        :title="$item->title">
-
-                        <!-- Время выступления -->
-                        @if($item->schedule)
+            <ul x-data="kbSortable" data-parent_key="{{ $sectionId }}">
+                @if(isset($groupedPerformances[$sectionId]))
+                @foreach($groupedPerformances[$sectionId] as $performance)
+                <li data-id="{{ $performance['id'] }}">
+                    <x-moonshine::card class="handle" :title="$performance['title']">
                         <div class="p-4">
-                            <div class="flex items-center gap-1 text-sm font-medium text-gray-700">
-                                <span>
-                                    {{ $item->schedule->date }}
-                                    {{ $item->schedule->start_time }} - {{ $item->schedule->end_time }}
-                                </span>
+                            <div class="text-sm text-gray-600 mb-2">
+                                {{ $performance['schedule']['date'] }}
+                                {{ $performance['schedule']['start_time'] }} -
+                                {{ $performance['schedule']['end_time'] }}
                             </div>
+                            <p class="text-sm text-gray-500">
+                                {{ Str::limit($performance['description'], 100) }}
+                            </p>
                         </div>
-                        @endif
 
-                        <!-- Автор выступления -->
-                        @if($item->user)
                         <div class="px-4 pb-4">
                             <span class="text-xs bg-purple-100 px-2 py-1 rounded">
-                                {{ $item->user->last_name }} {{ $item->user->first_name }}
+                                {{ $performance['user']['full_name'] }}
                             </span>
                         </div>
-                        @endif
 
                         <x-slot:actions>
                             <div class="flex items-center justify-end gap-2">
-                                {!! $buttons($item) !!}
+                                {!! $buttons($data->first()->firstWhere('performance.id', $performance['id'])) !!}
                             </div>
                         </x-slot:actions>
                     </x-moonshine::card>
