@@ -55,6 +55,11 @@ class PerformanceKanbanResource extends KanBanResource
         return CustomKanban::make($this, $this->getItems());
     }
 
+    public function getItems(): Collection
+    {
+        return Performance::where('status_id', 2)->get(); // Фильтруем по статусу
+    }
+
     public function fields(): array
     {
         return [

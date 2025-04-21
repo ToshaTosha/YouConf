@@ -15,23 +15,28 @@
                 <li data-id="{{ $item->getKey() }}">
                     <x-moonshine::card
                         class="handle"
-                        :title="$item->title"> <!-- Заголовок выступления -->
+                        :title="$item->title">
 
-                        <!-- Описание выступления -->
+                        <!-- Время выступления -->
+                        @if($item->schedule)
                         <div class="p-4">
-                            <p class="text-sm text-gray-600 mb-2">
-                                {{ Str::limit($item->description, 100) }}
-                            </p>
-
-                            <!-- Автор выступления -->
-                            @if($item->user)
-                            <div class="flex items-center mt-2">
-                                <span class="text-xs bg-purple-100 px-2 py-1 rounded">
-                                    {{ $item->user->last_name }} {{ $item->user->first_name }}
+                            <div class="flex items-center gap-1 text-sm font-medium text-gray-700">
+                                <span>
+                                    {{ $item->schedule->date }}
+                                    {{ $item->schedule->start_time }} - {{ $item->schedule->end_time }}
                                 </span>
                             </div>
-                            @endif
                         </div>
+                        @endif
+
+                        <!-- Автор выступления -->
+                        @if($item->user)
+                        <div class="px-4 pb-4">
+                            <span class="text-xs bg-purple-100 px-2 py-1 rounded">
+                                {{ $item->user->last_name }} {{ $item->user->first_name }}
+                            </span>
+                        </div>
+                        @endif
 
                         <x-slot:actions>
                             <div class="flex items-center justify-end gap-2">
