@@ -14,6 +14,7 @@ use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\UI\Fields\Text;
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
+use MoonShine\UI\Fields\Preview;
 
 /**
  * @extends ModelResource<Performance>
@@ -41,6 +42,13 @@ class PerformanceResource extends ModelResource
             BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name),
             BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
             BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
+            Preview::make('Статус', 'status_id')
+                ->badge(fn($status) => match ($status) {
+                    1 => 'green',
+                    2 => 'yellow',
+                    3 => 'red',
+                    default => 'gray',
+                }),
         ];
     }
 
@@ -71,6 +79,7 @@ class PerformanceResource extends ModelResource
             Text::make('Соавторы', 'co_authors', fn($value) => $value->co_authors ?: '-'),
             BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
             BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
+            Preview::make('Связанные файлы', 'files')->morphTo('fileable'),
         ];
     }
 
