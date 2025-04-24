@@ -20,6 +20,8 @@ use App\Models\Section;
 use Illuminate\Support\Collection;
 use MoonShine\UI\Fields\Text;
 use App\MoonShine\Components\CustomKanban;
+use Carbon\Carbon;
+use MoonShine\UI\Fields\Select;
 use Illuminate\Support\Facades\Log;
 use App\Models\Performance;
 
@@ -40,7 +42,7 @@ class PerformanceKanbanResource extends KanBanResource
 
     public function foreignKey(): string
     {
-        return 'performance.section_id';
+        return 'section_id';
     }
 
     public function statuses(): Collection
@@ -52,9 +54,16 @@ class PerformanceKanbanResource extends KanBanResource
         });
     }
 
+    public function sortKey(): string
+    {
+        return 'start_time'; // или любое другое поле
+    }
+
     public function modifyListComponent(ComponentContract $component): ComponentContract
     {
-        $schedules = Schedule::with('performance')->get();
+        $schedules = Schedule::with('performance')
+            ->orderBy('start_time', 'asc') // или другая сортировка
+            ->get();
         return CustomKanban::make($this, $schedules);
     }
 
@@ -84,9 +93,20 @@ class PerformanceKanbanResource extends KanBanResource
      */
     protected function formFields(): iterable
     {
+        $timeOptions = [];
+        $startTime = Carbon::createFromTime(8, 0); // Начало в 8:00
+        $endTime = Carbon::createFromTime(20, 0); // Конец в 20:00
+
+        while ($startTime <= $endTime) {
+            $timeOptions[$startTime->format('H:i')] = $startTime->format('H:i');
+            $startTime->addMinutes(15); // Шаг 15 минут
+        }
         return [
             Box::make([
                 ID::make(),
+                Select::make('Время начала', 'start_time')
+                    ->options($timeOptions) // Варианты времени
+                    ->required(),
             ])
         ];
     }
