@@ -22,9 +22,8 @@ use MoonShine\UI\Fields\Text;
 use App\MoonShine\Components\CustomKanban;
 use Carbon\Carbon;
 use MoonShine\UI\Fields\Select;
-use Illuminate\Support\Facades\Log;
-use App\Models\Performance;
-
+use MoonShine\UI\Fields\Date;
+use App\Models\Location;
 
 /**
  * @extends ModelResource<PerformanceKanban>
@@ -93,22 +92,55 @@ class PerformanceKanbanResource extends KanBanResource
      */
     protected function formFields(): iterable
     {
-        $timeOptions = [];
-        $startTime = Carbon::createFromTime(8, 0); // Начало в 8:00
-        $endTime = Carbon::createFromTime(20, 0); // Конец в 20:00
-
-        while ($startTime <= $endTime) {
-            $timeOptions[$startTime->format('H:i')] = $startTime->format('H:i');
-            $startTime->addMinutes(15); // Шаг 15 минут
-        }
         return [
             Box::make([
                 ID::make(),
-                Select::make('Время начала', 'start_time')
-                    ->options($timeOptions) // Варианты времени
+                Select::make('Тип события', 'event_type')
+                    ->options(Schedule::EVENT_TYPES)
+                    ->required()
+                    ->reactive(),
+
+                Text::make('Название', 'title')
                     ->required(),
+
+                BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
+                Date::make('Дата', 'date')
+                    ->format('Y-m-d')
+                    ->required(),
+
+                Select::make('Продолжительность (мин)', 'duration')
+                    ->options([
+                        15 => '15 минут',
+                        30 => '30 минут',
+                        45 => '45 минут',
+                        60 => '60 минут',
+                    ])
+                    ->required(),
+
+                Select::make('Время начала', 'start_time')
+                    ->options($this->getTimeOptions())
+                    ->required(),
+
+                Select::make('Место проведения', 'location_id')
+                    ->options(Location::pluck('name', 'id')->toArray())
+                    ->required()
+                    ->searchable(),
             ])
         ];
+    }
+
+    private function getTimeOptions(): array
+    {
+        $options = [];
+        $start = Carbon::createFromTime(8, 0);
+        $end = Carbon::createFromTime(20, 0);
+
+        while ($start <= $end) {
+            $options[$start->format('H:i')] = $start->format('H:i');
+            $start->addMinutes(15);
+        }
+
+        return $options;
     }
 
     /**

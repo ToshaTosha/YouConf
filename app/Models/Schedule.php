@@ -19,7 +19,29 @@ class Schedule extends Model
         'duration',
         'end_time',
         'location_id',
+        'event_type',
+        'title',
+        'description'
     ];
+
+    const EVENT_TYPES = [
+        'performance' => 'Выступление',
+        'break' => 'Перерыв',
+        'coffee' => 'Кофе-брейк',
+        'lunch' => 'Обед',
+        'announcement' => 'Объявление'
+    ];
+
+    public function isPerformance(): bool
+    {
+        return $this->event_type === 'performance';
+    }
+
+    public function section()
+    {
+        return $this->belongsTo(Section::class);
+    }
+
 
     public function performance()
     {

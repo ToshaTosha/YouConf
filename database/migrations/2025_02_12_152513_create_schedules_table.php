@@ -20,6 +20,9 @@ return new class extends Migration
             $table->integer('duration')->nullable()->default(15); // Добавляем поле duration
             $table->time('end_time')->nullable(); // Добавляем поле end_time
             $table->foreignId('location_id')->nullable()->constrained('locations')->onDelete('set null');
+            $table->string('event_type')->default('performance');
+            $table->string('title')->nullable();
+            $table->text('description')->nullable();
             $table->timestamps();
         });
     }
