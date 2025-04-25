@@ -4,10 +4,14 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Spatie\MediaLibrary\HasMedia;
+use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Performance extends Model
+class Performance extends Model implements HasMedia
 {
     use HasFactory;
+    use InteractsWithMedia;
+
     protected $fillable = [
         'title',
         'description',
@@ -16,6 +20,18 @@ class Performance extends Model
         'section_id',
         'co_authors'
     ];
+
+    public function registerMediaCollections(): void
+    {
+        $this->addMediaCollection('attachments')
+            ->acceptsMimeTypes([
+                'image/jpeg',
+                'image/png',
+                'application/pdf',
+                'application/msword'
+            ])
+            ->useDisk('public');
+    }
 
     public function section()
     {
@@ -30,11 +46,6 @@ class Performance extends Model
     public function status()
     {
         return $this->belongsTo(Status::class);
-    }
-
-    public function files()
-    {
-        return $this->morphMany(File::class, 'fileable');
     }
 
     public function chat()

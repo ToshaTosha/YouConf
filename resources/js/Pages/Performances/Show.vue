@@ -30,7 +30,7 @@
     </h2>
     <div class="grid grid-cols-4 gap-4">
       <div
-        v-for="file in performance.files"
+        v-for="file in mediaFiles"
         :key="file.id"
         class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg cursor-pointer"
         @click="downloadFile(file.path)"
@@ -63,7 +63,6 @@
       <!-- Иконка для открытия чата -->
       <button
         @click="toggleChat"
-        :disabled="isDisabled"
         class="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200"
       >
         <svg
@@ -85,7 +84,6 @@
       <!-- Кнопка для редактирования -->
       <Link
         v-if="isPerformanceOwner"
-        as="button"
         :disabled="isDisabled"
         :href="`/performances/${performance.id}/edit`"
         class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
@@ -130,10 +128,9 @@ export default {
     Link,
   },
   props: {
-    performance: {
-      type: Object,
-      required: true,
-    },
+    performance: Object,
+    messages: Array,
+    mediaFiles: Array,
   },
   data() {
     return {
@@ -156,6 +153,7 @@ export default {
   methods: {
     // Переключение видимости чата
     toggleChat() {
+      console.log('toggleChat')
       this.isChatOpen = !this.isChatOpen
     },
     // Проверка, является ли файл изображением

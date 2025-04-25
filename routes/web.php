@@ -11,6 +11,7 @@ use App\Http\Controllers\SectionController;
 use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\StaticPageController;
+use App\Http\Controllers\FileController;
 
 
 Route::get('/about', function () {
@@ -48,8 +49,12 @@ Route::middleware(['web', 'auth'])->group(function () {
         Route::get('/performances/{id}', [PerformanceController::class, 'show'])->name('performances.show');
         Route::get('/performances/{id}/edit', [PerformanceController::class, 'edit'])->name('performances.edit');
         Route::post('/performances/{id}/update', [PerformanceController::class, 'update'])->name('performances.update');
+        Route::delete('performances/{performance}/media/{media}', [PerformanceController::class, 'deleteMedia'])->name('performances.media.destroy');
     });
     Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
+
+    Route::post('/performances/{performance}/files', [FileController::class, 'store']);
+    Route::delete('/performances/{performance}/files/{media}', [FileController::class, 'destroy']);
 });
 
 Route::get('/', function () {

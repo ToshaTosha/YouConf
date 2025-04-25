@@ -11,6 +11,7 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Notifications\PerformanceStatusChanged;
+use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
@@ -82,36 +83,28 @@ class PerformanceController extends Controller
         return redirect()->back()->with('success', 'Статус заявки успешно обновлён');
     }
 
-    public function apply(Request $request)
+    public function apply(Request $request, $section_id)
     {
-        // $request->validate([
-        //     'title' => 'required|string|max:255',
-        //     'description' => 'required|string',
-        //     'section_id' => 'required|exists:sections,id',
-        //     'files.*' => 'file|mimes:jpg,png,pdf|max:2048',
-        // ]);
 
-        DB::transaction(function () use ($request) {
-            // Создаем новую заявку
+        DB::transaction(function () use ($request, $section_id) {
             $performance = Performance::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'co_authors' => $request->co_authors,
                 'user_id' => Auth::id(),
                 'status_id' => 1, // Статус "на рассмотрении"
-                'section_id' => $request->section_id,
+                'section_id' => $section_id,
             ]);
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $performance->addMedia($file)->toMediaCollection('attachments');
+                }
+            }
 
-            // Создаем чат для заявки
             Chat::create([
                 'chatable_type' => Performance::class, // Указываем тип модели
                 'chatable_id' => $performance->id,
             ]);
-
-            // Загружаем файлы, если они есть
-            if ($request->hasFile('files')) {
-                $this->storeFiles($request->file('files'), $performance); // Сохраняем файлы, связанные с Performance 
-            }
         });
 
         return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
@@ -124,38 +117,14 @@ class PerformanceController extends Controller
             return response()->json(['error' => 'Редактирование выступления невозможно, так как статус не позволяет это.'], 403);
         }
         DB::transaction(function () use ($request, $performance) {
-
-            // Обновляем основную заявку
-            $performance->update($request->only(['title', 'description', 'status_id', 'co_authors']));
-
-            // Загружаем новые файлы, если они есть
-            $files = $request->input('files'); // Получаем массив файлов (существующие файлы)
-            $newFiles = $request->file('files'); // Получаем новые файлы
-
-            // Обрабатываем существующие файлы
-            if ($files) {
-                foreach ($files as $file) {
-                    $fileData = json_decode($file, true); // Декодируем JSON
-                    if (is_array($fileData)) {
-                        // Это существующий файл, обновляем его связь
-                        $existingFile = File::find($fileData['id']);
-                        if ($existingFile) {
-                            $existingFile->update([
-                                'fileable_id' => $performance->id,
-                                'fileable_type' => get_class($performance),
-                            ]);
-                        }
-                    }
-                }
-            }
-
-            // Обрабатываем новые файлы
-            if ($newFiles) {
-                foreach ($newFiles as $file) {
-                    if ($file instanceof \Illuminate\Http\UploadedFile) {
-                        // Это новый файл, загружаем его
-                        $this->storeFiles([$file], $performance);
-                    }
+            $performance->update([
+                'title' => $request->title,
+                'description' => $request->description,
+                'co_authors' => $request->co_authors,
+            ]);
+            if ($request->hasFile('attachments')) {
+                foreach ($request->file('attachments') as $file) {
+                    $performance->addMedia($file)->toMediaCollection('attachments');
                 }
             }
         });
@@ -163,17 +132,32 @@ class PerformanceController extends Controller
         return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
     }
 
+    public function deleteMedia($performanceId, $mediaId)
+    {
+        $performance = Performance::findOrFail($performanceId);
+        $media = $performance->getMedia('attachments')->find($mediaId);
+
+        if ($media) {
+            $media->delete();
+            return response()->json(['success' => 'Файл успешно удален.']);
+        }
+
+        return response()->json(['error' => 'Файл не найден.'], 404);
+    }
+
     public function show($id)
     {
-        $performance = Performance::with(['files', 'section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
+        $performance = Performance::with(['section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
 
         // Получаем сообщения из чата
-        $chat = $performance->chat; // Получаем чат, связанный с заявкой
-        $messages = $chat ? $chat->messages : []; // Получаем сообщения, если чат существует
+        $chat = $performance->chat;
+        $messages = $chat ? $chat->messages : [];
+        $mediaFiles = $performance->getMedia('attachments');
 
         return inertia('Performances/Show', [
             'performance' => $performance,
             'messages' => $messages, // Передаем сообщения в представление
+            'mediaFiles' => $mediaFiles, // Передаем медиафайлы в представление
         ]);
     }
 
@@ -190,24 +174,12 @@ class PerformanceController extends Controller
 
     public function edit($id)
     {
-        $performance = Performance::with(['files', 'section', 'user', 'status',])->findOrFail($id);
+        $performance = Performance::with(['section', 'user', 'status',])->findOrFail($id);
+        $mediaFiles = $performance->getMedia('attachments');
 
         return inertia('Performances/PerformanceFormPage', [
             'performance' => $performance,
+            'mediaFiles' => $mediaFiles,
         ]);
-    }
-
-    protected function storeFiles($files, $fileable)
-    {
-        foreach ($files as $file) {
-            $path = $file->store('uploads');
-
-            File::create([
-                'path' => $path,
-                'name' => $file->getClientOriginalName(),
-                'fileable_type' => get_class($fileable),
-                'fileable_id' => $fileable->id,
-            ]);
-        }
     }
 }

@@ -17,6 +17,7 @@
         "socialiteproviders/vkontakte": "^5.0",
         "spatie/laravel-html": "^3.12",
         "spatie/laravel-markdown": "^2.7",
+        "spatie/laravel-medialibrary": "^11.12",
         "spatie/laravel-permission": "^6.16"
     },
     "require-dev": {

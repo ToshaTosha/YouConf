@@ -46,12 +46,6 @@
           Добавить соавтора
         </button>
       </div>
-      <div class="flex-none mb-4 md:ml-4 w-2/5">
-        <FileUpload
-          @input="updateFiles"
-          :initialFiles="performance ? performance.files : []"
-        />
-      </div>
     </div>
     <div class="flex justify-end mt-4">
       <button
@@ -64,6 +58,13 @@
       </button>
     </div>
   </form>
+  <div class="flex-none mb-4 md:ml-4 w-2/5">
+    <FileUpload
+      :initialFiles="performance?.media || []"
+      @files-updated="handleFilesUpdate"
+      @file-removed="handleFileRemove"
+    />
+  </div>
 </template>
 
 <script>
@@ -88,8 +89,8 @@ export default {
           this.performance && this.performance.co_authors
             ? this.performance.co_authors.split(',')
             : [''],
-        files: [],
       },
+      newFiles: [],
       isEditMode: !!this.performance,
       isSubmitting: false,
     }
@@ -97,41 +98,26 @@ export default {
   methods: {
     async submit() {
       this.isSubmitting = true
+
       const formData = new FormData()
       formData.append('title', this.form.title)
       formData.append('description', this.form.description)
-      formData.append('section_id', this.sectionId)
-      formData.append('co_authors', this.form.co_authors.join(','))
-      this.form.files.forEach((file, index) => {
-        if (file instanceof File) {
-          // Новый файл
-          formData.append(`files[${index}]`, file)
-        } else {
-          // Существующий файл
-          formData.append(`files[${index}]`, JSON.stringify(file))
-        }
+      formData.append('co_authors', JSON.stringify(this.form.co_authors))
+
+      this.newFiles.forEach((file) => {
+        formData.append('attachments[]', file)
       })
 
       try {
         if (this.isEditMode) {
-          await Inertia.post(
+          await this.$inertia.post(
             `/performances/${this.performance.id}/update`,
             formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            },
           )
         } else {
-          await Inertia.post(
+          await this.$inertia.post(
             `/performances/${this.sectionId}/apply`,
             formData,
-            {
-              headers: {
-                'Content-Type': 'multipart/form-data',
-              },
-            },
           )
         }
       } catch (error) {
@@ -140,8 +126,21 @@ export default {
         this.isSubmitting = false
       }
     },
-    updateFiles(files) {
-      this.form.files = files
+    handleFilesUpdate(files) {
+      this.newFiles = files.filter((file) => file instanceof File)
+    },
+
+    handleFileRemove(fileId) {
+      // Отправляем запрос на удаление файла, если он уже загружен
+      this.$inertia
+        .delete(`/performances/${this.performance.id}/media/${fileId}`)
+        .then(() => {
+          // Успешно удалено, можно обновить состояние или уведомить пользователя
+          console.log(`Файл с ID ${fileId} успешно удален.`)
+        })
+        .catch((error) => {
+          console.error(`Ошибка при удалении файла с ID ${fileId}:`, error)
+        })
     },
     addCoAuthor() {
       this.form.co_authors.push('') // Добавляем пустую строку для нового соавтора
