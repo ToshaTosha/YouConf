@@ -16,6 +16,14 @@
           label="Дата регистрации"
           :value="formatDate(user_data.created_at, 'long')"
         />
+        <Link
+          v-if="isPerformanceOwner"
+          :disabled="isDisabled"
+          :href="`/user/${user_data.id}/edit`"
+          class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
+        >
+          Редактировать
+        </Link>
       </div>
     </div>
     <PerformancesTable

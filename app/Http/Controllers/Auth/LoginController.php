@@ -33,7 +33,7 @@ class LoginController extends Controller
 
             if (Auth::attempt($validated, $request->remember)) {
                 $request->session()->regenerate();
-                return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
+                return Inertia::location(route('user.show', ['id' => Auth::user()->id]));
             }
 
             throw ValidationException::withMessages([

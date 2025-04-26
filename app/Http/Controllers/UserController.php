@@ -31,8 +31,9 @@ class UserController extends Controller
 
         // Проверяем, является ли текущий пользователь владельцем профиля
         if (Auth::user()->id !== $user->id) {
-            return response()->json(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
+            return redirect()->back()->withErrors(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
         }
+
 
         return Inertia::render('EditUserProfile', [
             'user_data' => $user,
@@ -45,7 +46,7 @@ class UserController extends Controller
 
         // Проверяем, является ли текущий пользователь владельцем профиля
         if (Auth::user()->id !== $user->id) {
-            return response()->json(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
+            return redirect()->back()->withErrors(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
         }
 
         // Валидация данных
