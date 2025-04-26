@@ -8,6 +8,7 @@ use App\Models\Performance;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
+use Illuminate\Validation\ValidationException;
 
 class UserController extends Controller
 {
@@ -42,25 +43,22 @@ class UserController extends Controller
 
     public function update(Request $request, $id)
     {
-        $user = User::findOrFail($id);
+        try {
+            $validated = $request->validate([
+                'first_name' => 'required|string|alpha|max:255',
+                'last_name' => 'required|string|alpha|max:255',
+            ]);
+            $user = User::findOrFail($id);
+            $user->update($validated);
 
-        // Проверяем, является ли текущий пользователь владельцем профиля
-        if (Auth::user()->id !== $user->id) {
-            return redirect()->back()->withErrors(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
+            return redirect()->route('user.show', ['id' => $user->id]);
+        } catch (ValidationException $e) {
+            return Inertia::render('EditUserProfile', [
+                'errors' => $e->validator->errors(),
+            ]);
         }
-
-        // Валидация данных
-        $request->validate([
-            'first_name' => 'required|string|max:255',
-            'last_name' => 'required|string|max:255',
-            'email' => 'required|email|max:255|unique:users,email,' . $user->id,
-        ]);
-
-        // Обновляем данные пользователя
-        $user->update($request->only(['first_name', 'last_name', 'email']));
-
-        return redirect()->route('user.show', ['id' => $user->id]);
     }
+
 
     public function switchUser($userId)
     {
