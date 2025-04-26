@@ -22,7 +22,7 @@
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
           <p v-if="errors.first_name" class="mt-2 text-sm text-red-600">
-            {{ errors.first_name }}
+            {{ getErrorMessage(errors.first_name) }}
           </p>
         </div>
 
@@ -41,7 +41,7 @@
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
           <p v-if="errors.last_name" class="mt-2 text-sm text-red-600">
-            {{ errors.last_name }}
+            {{ getErrorMessage(errors.last_name) }}
           </p>
         </div>
 
@@ -57,7 +57,7 @@
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
           <p v-if="errors.email" class="mt-2 text-sm text-red-600">
-            {{ errors.email }}
+            {{ getErrorMessage(errors.email) }}
           </p>
         </div>
 
@@ -73,7 +73,7 @@
             class="mt-1 block w-full border border-gray-300 rounded-md shadow-sm py-2 px-3 focus:outline-none focus:ring-blue-500 focus:border-blue-500"
           />
           <p v-if="errors.password" class="mt-2 text-sm text-red-600">
-            {{ errors.password[0] }}
+            {{ getErrorMessage(errors.password) }}
           </p>
         </div>
 
@@ -106,12 +106,12 @@
       </div>
 
       <div class="text-center">
-        <router-link
-          to="/login"
+        <Link
+          :href="'/login'"
           class="text-sm text-blue-600 hover:text-blue-500"
         >
           Уже есть аккаунт? Войдите
-        </router-link>
+        </Link>
       </div>
       <div class="mt-6">
         <div class="relative">
@@ -138,6 +138,7 @@ import { useForm } from '@inertiajs/inertia-vue3'
 import { Inertia } from '@inertiajs/inertia'
 import VkAuthButton from '@/Components/VkAuthButton.vue'
 import AuthLayout from '@/Common/AuthLayout.vue'
+import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
   setup() {
@@ -168,7 +169,14 @@ export default {
       })
     }
 
-    return { form, submit }
+    const getErrorMessage = (errorArray) => {
+      if (Array.isArray(errorArray)) {
+        return errorArray.join(', ') // Объединяем массив ошибок в строку
+      }
+      return errorArray // Если это не массив, возвращаем его как есть
+    }
+
+    return { form, submit, getErrorMessage }
   },
   props: {
     errors: Object,
@@ -178,6 +186,7 @@ export default {
   },
   components: {
     VkAuthButton,
+    Link,
   },
   meta: {
     layout: AuthLayout,

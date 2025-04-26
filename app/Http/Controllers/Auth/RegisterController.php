@@ -24,8 +24,8 @@ class RegisterController extends Controller
     {
         try {
             $validated = $request->validate([
-                'first_name' => 'required|string|max:255',
-                'last_name' => 'required|string|max:255',
+                'first_name' => 'required|string|alpha|max:255',
+                'last_name' => 'required|string|alpha|max:255',
                 'email' => 'required|string|email|max:255|unique:users',
                 'password' => 'required|string|min:8|confirmed',
             ]);
@@ -40,12 +40,10 @@ class RegisterController extends Controller
             $participantRole = Role::where('name', 'participant')->first();
             $user->assignRole($participantRole);
 
-            event(new Registered($user));
+            Auth::login($user);
 
-            return redirect()->route('verification.notice')->with([
-                'message' => 'Регистрация успешна! Пожалуйста, проверьте вашу почту для подтверждения.',
-                'status' => 'success'
-            ]);
+            // Редиректим на страницу пользователя
+            return redirect()->intended(route('user.show', ['user' => $user->id]));
         } catch (ValidationException $e) {
             return Inertia::render('Auth/Register', [
                 'errors' => $e->validator->errors(),

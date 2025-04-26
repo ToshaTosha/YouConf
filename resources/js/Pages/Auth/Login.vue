@@ -30,7 +30,7 @@
             :class="{ 'border-red-500': errors.email }"
           />
           <p v-if="errors.email" class="mt-2 text-sm text-red-600">
-            {{ errors.email }}
+            {{ errors.email[0] }}
           </p>
         </div>
 
@@ -76,12 +76,12 @@
       </div>
 
       <div class="text-center">
-        <router-link
-          to="/register"
+        <Link
+          :href="'/register'"
           class="text-sm text-blue-600 hover:text-blue-500"
         >
           Нет аккаунта? Зарегистрируйтесь
-        </router-link>
+        </Link>
       </div>
       <div class="mt-6">
         <div class="relative">
@@ -107,6 +107,7 @@
 import { useForm } from '@inertiajs/inertia-vue3'
 import { Inertia } from '@inertiajs/inertia'
 import VkAuthButton from '@/Components/VkAuthButton.vue'
+import { Link } from '@inertiajs/inertia-vue3'
 import AuthLayout from '@/Common/AuthLayout.vue'
 
 export default {
@@ -118,6 +119,7 @@ export default {
   },
   components: {
     VkAuthButton,
+    Link,
   },
   meta: {
     layout: AuthLayout,
