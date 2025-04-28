@@ -1,6 +1,10 @@
 <template>
   <div class="flex">
-    <form @submit.prevent="submit" class="flex-1 md:flex-col md:items-start">
+    <form
+      @submit.prevent="submit"
+      class="flex-1 md:flex-col md:items-start"
+      :class="{ 'pointer-events-none opacity-50': isSubmitting }"
+    >
       <div class="flex flex-row w-full">
         <div class="flex-1 mb-4 md:mr-4 w-3/5">
           <label class="block text-gray-700 font-semibold mb-1">Название</label>
@@ -54,7 +58,29 @@
           type="submit"
           :disabled="isSubmitting"
         >
-          <span v-if="isSubmitting">Отправка...</span>
+          <span v-if="isSubmitting">
+            <svg
+              class="animate-spin h-5 w-5 mr-3 text-white inline-block"
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+            >
+              <circle
+                class="opacity-25"
+                cx="12"
+                cy="12"
+                r="10"
+                stroke="currentColor"
+                stroke-width="4"
+              ></circle>
+              <path
+                class="opacity-75"
+                fill="currentColor"
+                d="M4 12a8 8 0 018-8v4a4 4 0 00-4 4H4z"
+              ></path>
+            </svg>
+            Отправка...
+          </span>
           <span v-else>{{ isEditMode ? 'Обновить' : 'Создать' }}</span>
         </button>
       </div>
@@ -62,6 +88,7 @@
     <div class="flex-1 mb-4 md:ml-4 w-2/5">
       <FileUpload
         :initialFiles="performance?.media || []"
+        :disabled="isSubmitting"
         @files-updated="handleFilesUpdate"
         @file-removed="handleFileRemove"
       />
@@ -131,7 +158,6 @@ export default {
     handleFilesUpdate(files) {
       this.newFiles = files.filter((file) => file instanceof File)
     },
-
     handleFileRemove(fileId) {
       // Отправляем запрос на удаление файла, если он уже загружен
       this.$inertia
@@ -153,3 +179,7 @@ export default {
   },
 }
 </script>
+
+<style scoped>
+/* Добавьте стили для спиннера, если необходимо */
+</style>

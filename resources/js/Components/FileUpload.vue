@@ -6,6 +6,7 @@
       @drop.prevent="handleDrop"
       @click="$refs.fileInput.click()"
       class="border-2 border-dashed border-gray-300 p-4 text-center cursor-pointer hover:bg-gray-100"
+      :class="{ 'pointer-events-none opacity-50': disabled }"
     >
       <p class="text-gray-500">
         Перетащите файлы сюда или нажмите, чтобы выбрать
@@ -48,8 +49,11 @@
 export default {
   name: 'FileUpload',
   props: {
-    performanceId: Number,
     initialFiles: { type: Array, default: () => [] },
+    disabled: {
+      type: Boolean,
+      default: false,
+    },
   },
 
   data() {

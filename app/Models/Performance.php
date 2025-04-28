@@ -25,10 +25,19 @@ class Performance extends Model implements HasMedia
     {
         $this->addMediaCollection('attachments')
             ->acceptsMimeTypes([
-                'image/jpeg',
-                'image/png',
-                'application/pdf',
-                'application/msword'
+                'image/jpeg', // JPEG изображения
+                'image/png',  // PNG изображения
+                'application/pdf', // PDF файлы
+                'application/msword', // DOC файлы
+                'application/vnd.openxmlformats-officedocument.wordprocessingml.document', // DOCX файлы
+                'application/vnd.ms-excel', // XLS файлы
+                'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet', // XLSX файлы
+                'text/plain', // TXT файлы
+                'application/rtf', // RTF файлы
+                'application/vnd.ms-powerpoint', // PPT файлы
+                'application/vnd.openxmlformats-officedocument.presentationml.presentation', // PPTX файлы
+                'application/zip', // ZIP файлы (если нужно)
+                'application/x-zip-compressed', // ZIP файлы (другой тип)
             ])
             ->useDisk('public');
     }
