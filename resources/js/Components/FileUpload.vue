@@ -1,38 +1,52 @@
 <template>
   <div class="file-upload">
-    <!-- Поле загрузки -->
-    <input
-      type="file"
-      @change="handleFileUpload"
-      multiple
-      class="hidden"
-      ref="fileInput"
-      accept="image/*, .pdf, .doc, .docx"
-    />
-    <button @click="$refs.fileInput.click()">Выбрать файлы</button>
+    <!-- Поле загрузки с поддержкой drag-and-drop -->
+    <div
+      @dragover.prevent
+      @drop.prevent="handleDrop"
+      @click="$refs.fileInput.click()"
+      class="border-2 border-dashed border-gray-300 p-4 text-center cursor-pointer hover:bg-gray-100"
+    >
+      <p class="text-gray-500">
+        Перетащите файлы сюда или нажмите, чтобы выбрать
+      </p>
+      <input
+        type="file"
+        @change="handleFileUpload"
+        multiple
+        class="hidden"
+        ref="fileInput"
+        accept="image/*, .pdf, .doc, .docx"
+      />
+    </div>
 
     <!-- Список файлов с превью -->
-    <div v-for="(file, index) in allFiles" :key="file.id || file.name">
+    <div
+      v-for="(file, index) in allFiles"
+      :key="file.id || file.name"
+      class="flex items-center justify-between mt-2"
+    >
       <!-- Превью для изображений -->
       <img
         v-if="isImage(file)"
         :src="getPreviewUrl(file)"
-        class="preview-image"
+        class="preview-image mr-2"
       />
 
       <!-- Иконка для документов -->
-      <div v-else class="file-icon">
+      <div v-else class="file-icon mr-2">
         {{ getFileIcon(file) }}
       </div>
 
-      <span>{{ file.name || file.file_name }}</span>
-      <button @click="removeFile(index)">×</button>
+      <span class="flex-1">{{ file.name || file.file_name }}</span>
+      <button @click="removeFile(index)" class="text-red-500">×</button>
     </div>
   </div>
 </template>
 
 <script>
 export default {
+  name: 'FileUpload',
   props: {
     performanceId: Number,
     initialFiles: { type: Array, default: () => [] },
@@ -81,6 +95,12 @@ export default {
 
     handleFileUpload(e) {
       this.newFiles = [...this.newFiles, ...Array.from(e.target.files)]
+      this.$emit('files-updated', this.allFiles) // Обновляем список файлов
+    },
+
+    handleDrop(e) {
+      const files = Array.from(e.dataTransfer.files)
+      this.newFiles = [...this.newFiles, ...files]
       this.$emit('files-updated', this.allFiles) // Обновляем список файлов
     },
 
