@@ -134,9 +134,6 @@ export default {
     const submit = () => {
       Inertia.post('/login', form, {
         onSuccess: (page) => {
-          console.log('page')
-          // Если есть ошибки, они будут автоматически обновлены в form.errors
-          // Если нет ошибок, вы можете сбросить форму или выполнить другие действия
           if (!page.props.errors) {
             form.reset() // Сброс формы, если нет ошибок
           }

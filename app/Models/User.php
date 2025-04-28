@@ -38,15 +38,14 @@ class User extends Authenticatable
     {
         $this->syncRoles(Role::find($value));
     }
-
-    public function sections()
-    {
-        return $this->belongsToMany(Section::class, 'section_user');
-    }
-
     public function performances()
     {
         return $this->hasMany(Performance::class);
+    }
+
+    public function sections()
+    {
+        return $this->belongsToMany(Section::class);
     }
 
     public function getFullNameAttribute()

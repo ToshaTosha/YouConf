@@ -20,6 +20,12 @@ return new class extends Migration
             $table->date('end_date');
             $table->timestamps();
         });
+
+        Schema::create('section_user', function (Blueprint $table) {
+            $table->id();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('section_id')->constrained()->onDelete('cascade');
+        });
     }
 
     /**

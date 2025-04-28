@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use App\Models\Section;
 
 class UserSeeder extends Seeder
 {
@@ -23,12 +24,16 @@ class UserSeeder extends Seeder
         $expertRole = Role::where('name', 'expert')->first();
         $participantRole = Role::where('name', 'participant')->first();
 
-        // Создаем 5 экспертов
+        $sections = Section::all();
         $experts = User::factory()
             ->count(5)
             ->create()
-            ->each(function ($user) use ($expertRole) {
+            ->each(function ($user) use ($expertRole, $sections) {
                 $user->assignRole($expertRole);
+                // Назначаем случайные секции (1-3 секции на эксперта)
+                $user->sections()->attach(
+                    $sections->random(rand(1, 3))->pluck('id')->toArray()
+                );
             });
 
         // Создаем 5 участников
@@ -39,6 +44,7 @@ class UserSeeder extends Seeder
                 $user->assignRole($participantRole);
             });
     }
+
 
     protected function seedProductionUsers(): void
     {

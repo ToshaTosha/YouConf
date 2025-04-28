@@ -22,23 +22,31 @@ class PerformanceController extends Controller
     {
         $user = User::findOrFail(Auth::user()->id);
         $statuses = Status::all();
+        $userSections = $user->sections()->get();
+        Log::info('Секции пользователя:', $userSections->toArray());
 
-        if ($user && $user->hasRole('participant')) {
-            // Если пользователь участник, показываем только его заявки
+        if ($user->hasRole('participant')) {
             $performances = Performance::where('user_id', $user->id)
-                ->with(['files', 'section', 'status'])
+                ->with(['section', 'user', 'status'])
                 ->get();
-        } else {
-            // Если пользователь эксперт или администратор, показываем все заявки
-            $performances = Performance::with(['files', 'section', 'user', 'status'])
+        } elseif ($user->hasRole('expert')) {
+            // Если пользователь эксперт, показываем заявки только из его секций
+            $sectionIds = $user->sections()->pluck('sections.id');
+            $performances = Performance::whereIn('section_id', $sectionIds)
+                ->with(['section', 'user', 'status'])
                 ->get();
         }
+        // else {
+        //     $performances = Performance::with(['section', 'user', 'status'])->get();
+        // }
 
         return inertia('Performances/Index', [
             'performances' => $performances,
             'statuses' => $statuses,
         ]);
     }
+
+
 
     public function updateStatus(Request $request, $id)
     {
@@ -80,7 +88,7 @@ class PerformanceController extends Controller
             ]);
         }
 
-        return redirect()->back()->with('success', 'Статус заявки успешно обновлён');
+        return redirect('/performances')->with('success', 'Статус заявки успешно обновлён');
     }
 
     public function apply(Request $request, $section_id)
@@ -142,7 +150,7 @@ class PerformanceController extends Controller
             return response()->json(['success' => 'Файл успешно удален.']);
         }
 
-        return response()->json(['error' => 'Файл не найден.'], 404);
+        return redirect()->back();
     }
 
     public function show($id)
@@ -153,11 +161,13 @@ class PerformanceController extends Controller
         $chat = $performance->chat;
         $messages = $chat ? $chat->messages : [];
         $mediaFiles = $performance->getMedia('attachments');
+        $statuses = Status::all();
 
         return inertia('Performances/Show', [
             'performance' => $performance,
             'messages' => $messages, // Передаем сообщения в представление
-            'mediaFiles' => $mediaFiles, // Передаем медиафайлы в представление
+            'mediaFiles' => $mediaFiles,
+            'statuses' => $statuses,
         ]);
     }
 

@@ -56,7 +56,21 @@
 
     <!-- Кнопки действий -->
     <div class="flex items-center justify-end space-x-4 mt-6">
-      <!-- Иконка для открытия чата -->
+      <div v-if="isExpert" class="border px-4 py-2">
+        <select
+          v-model="performance.status_id"
+          @change="updateStatus(performance.id, performance.status_id)"
+          class="border rounded p-1"
+        >
+          <option
+            v-for="status in statuses"
+            :key="status.id"
+            :value="status.id"
+          >
+            {{ status.name }}
+          </option>
+        </select>
+      </div>
       <button
         @click="toggleChat"
         class="p-2 bg-blue-500 text-white rounded-full hover:bg-blue-600 transition duration-200"
@@ -100,7 +114,7 @@
           :chat="performance.chat"
           :messages="performance.chat.messages"
           :performance="performance"
-          :isActive="isDisabled"
+          :isActive="!isDisabled"
         />
         <!-- Кнопка закрытия чата -->
         <button
@@ -127,6 +141,7 @@ export default {
     performance: Object,
     messages: Array,
     mediaFiles: Array,
+    statuses: Array,
   },
   data() {
     return {
@@ -139,6 +154,9 @@ export default {
     },
     isDisabled() {
       return [2, 4].includes(this.performance.status_id)
+    },
+    isExpert() {
+      return this.$page.props.role === 'expert'
     },
   },
   methods: {
@@ -167,6 +185,16 @@ export default {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+    },
+    async updateStatus(performanceId, statusId) {
+      try {
+        await this.$inertia.post(`/performances/${performanceId}/status`, {
+          status_id: statusId,
+        })
+        this.$emit('status-updated')
+      } catch (error) {
+        console.error('Ошибка при обновлении статуса:', error)
+      }
     },
   },
 }

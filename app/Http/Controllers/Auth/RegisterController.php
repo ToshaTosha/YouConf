@@ -41,7 +41,9 @@ class RegisterController extends Controller
             $user->assignRole($participantRole);
 
             Auth::login($user);
-            return Inertia::location(route('user.show', ['user' => $user->id]));
+            Log::info('User logged in: ' . $user->id); // Логируем успешный вход
+
+            return Inertia::location(route('user.show', ['id' => $user->id]));
         } catch (ValidationException $e) {
             return Inertia::render('Auth/Register', [
                 'errors' => $e->validator->errors(),
