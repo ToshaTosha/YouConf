@@ -44,12 +44,6 @@
         </div>
       </div>
 
-      <!-- Сообщение о завершении чата -->
-      <div v-if="!isActive" class="text-center text-gray-500 mb-4">
-        Этот чат завершён.
-      </div>
-
-      <!-- Поле ввода сообщения и кнопка отправки -->
       <div v-if="isActive" class="flex items-center gap-2">
         <input
           v-model="newMessage"
