@@ -23,7 +23,7 @@ Route::post('/login', [LoginController::class, 'login']);
 Route::get('/auth/vk', function () {
     return Socialite::driver('vkontakte')->redirect();
 })->name('auth.vk');
-Route::get('vk/auth/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
+Route::get('/auth/vk/callback', [LoginController::class, 'handleProviderCallback'])->name('auth.vk.callback');
 
 use App\Http\Controllers\Auth\RegisterController;
 

@@ -32,7 +32,7 @@ class UserController extends Controller
 
         // Проверяем, является ли текущий пользователь владельцем профиля
         if (Auth::user()->id !== $user->id) {
-            return redirect()->back()->withErrors(['error' => 'У вас нет прав для редактирования этого профиля.'], 403);
+            abort(403, 'У вас нет прав для редактирования этого профиля.');
         }
 
 

@@ -46,8 +46,6 @@ class PerformanceController extends Controller
         ]);
     }
 
-
-
     public function updateStatus(Request $request, $id)
     {
         $request->validate([
