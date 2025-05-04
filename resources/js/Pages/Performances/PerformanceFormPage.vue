@@ -2,7 +2,7 @@
   <div class="p-4">
     {{ section_name }}
     <h1 class="text-2xl font-bold mb-4">
-      {{ isEditMode ? 'Редактировать заявку' : 'Создать заявку' }}
+      {{ isEditMode ? 'Редактировать тезис' : 'Создать тезис' }}
     </h1>
     <PerformancesForm :section-id="section_id" :performance="performance" />
   </div>

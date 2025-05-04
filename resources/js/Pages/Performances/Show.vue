@@ -1,14 +1,11 @@
 <template>
   <div class="p-4 bg-white rounded-lg shadow-md">
-    <!-- Заголовок заявки -->
     <h1 class="text-2xl font-bold mb-4 text-gray-800">
       {{ performance.title }}
     </h1>
 
-    <!-- Описание заявки -->
     <p class="text-gray-600 mb-4">{{ performance.description }}</p>
 
-    <!-- Детали заявки -->
     <div class="space-y-2 text-sm text-gray-600">
       <p>
         <strong>Статус:</strong>

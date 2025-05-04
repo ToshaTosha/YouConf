@@ -48,7 +48,7 @@ final class MoonShineLayout extends CompactLayout
                 MenuItem::make('Таблица', ScheduleResource::class),
                 MenuItem::make('Доска', PerformanceKanbanResource::class),
             ]),
-            MenuItem::make('Заявки', PerformanceResource::class),
+            MenuItem::make('Тезисы', PerformanceResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
             MenuItem::make('Секции', SectionResource::class),
             // MenuItem::make('Statuses', StatusResource::class),

@@ -23,7 +23,7 @@ class PerformanceResource extends ModelResource
 {
     protected string $model = Performance::class;
 
-    protected string $title = 'Выступления';
+    protected string $title = 'Тезисы';
 
     protected bool $createInModal = true;
 
@@ -50,7 +50,7 @@ class PerformanceResource extends ModelResource
                     'Отклонено' => 'red',
                     default => 'gray',
                 }),
-        ];
+        ]
     }
 
     /**

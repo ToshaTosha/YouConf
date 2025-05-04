@@ -52,7 +52,7 @@
           href="/performances"
           class="text-gray-700 hover:text-blue-600"
         >
-          Заявки
+          Тезисы
         </a>
       </div>
     </nav>

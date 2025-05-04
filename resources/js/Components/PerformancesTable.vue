@@ -10,7 +10,7 @@
           <th class="py-2 border-b">Секция</th>
           <th class="py-2 border-b">Дата</th>
           <th class="py-2 border-b">Статус</th>
-          <th v-if="isExpert" class="py-2 border-b">Автор заявки</th>
+          <th v-if="isExpert" class="py-2 border-b">Автор тезиса</th>
           <!-- Новая колонка -->
           <th v-if="isExpert" class="py-2 border-b">Изменить статус</th>
         </tr>
@@ -37,7 +37,6 @@
           <td class="border px-4 py-2">{{ performance.status.name }}</td>
           <td v-if="isExpert" class="border px-4 py-2">
             {{ performance.user.first_name }} {{ performance.user.last_name }}
-            <!-- Имя автора заявки -->
           </td>
           <td v-if="isExpert" class="border px-4 py-2">
             <select
