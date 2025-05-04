@@ -42,7 +42,6 @@ class ScheduleResource extends ModelResource
             ID::make()->sortable(),
             BelongsTo::make('Заявка', 'performance', 'title', resource: PerformanceResource::class),
             Text::make('Секция', '', fn($schedule) => $schedule->performance->section->name),
-            Date::make('Дата', 'date')->format('Y-m-d'),
             Text::make('Время начала', 'start_time'),
             Text::make('Продолжительность (мин)', 'duration'),
             Text::make('Место проведения', '', fn($schedule) => $schedule->location->name),

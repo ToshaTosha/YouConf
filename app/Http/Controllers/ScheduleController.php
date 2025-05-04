@@ -39,7 +39,7 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function getPerformanceBySection($sectionId)
+    public function getPerformancesBySection($sectionId)
     {
         // Получаем все расписания, относящиеся к заявкам выбранной секции
         $schedules = Schedule::with(['performance.user', 'performance.section'])
