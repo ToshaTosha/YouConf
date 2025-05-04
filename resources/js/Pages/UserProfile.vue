@@ -5,17 +5,18 @@
         Информация о пользователе
       </h1>
       <div class="space-y-3">
-        <UserInfo label="Имя" :value="user_data.first_name" />
-        <UserInfo label="Фамилия" :value="user_data.last_name" />
-        <UserInfo
-          v-if="user_data.email"
-          label="Email"
-          :value="user_data.email"
-        />
-        <UserInfo
-          label="Дата регистрации"
-          :value="formatDate(user_data.created_at, 'long')"
-        />
+        <p class="text-gray-700">
+          <strong class="font-semibold">{{ Имя }}:</strong>
+          {{ user_data.first_name }}
+        </p>
+        <p class="text-gray-700">
+          <strong class="font-semibold">{{ Фамилия }}:</strong>
+          {{ user_data.last_name }}
+        </p>
+        <p v-if="user_data.email" class="text-gray-700">
+          <strong class="font-semibold">{{ Email }}:</strong>
+          {{ user_data.email }}
+        </p>
         <p class="mb-8"></p>
         <Link
           :disabled="isDisabled"
