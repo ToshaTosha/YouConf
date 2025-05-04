@@ -27,7 +27,7 @@ use MoonShine\UI\Components\Layout\Menu;
 use MoonShine\UI\Components\When;
 use App\MoonShine\Resources\PerformanceKanbanResource;
 use App\MoonShine\Resources\SectionResource;
-use App\MoonShine\Resources\StatusResource;
+use MoonShine\MenuManager\MenuGroup;
 use App\MoonShine\Resources\StaticPageResource;
 
 final class MoonShineLayout extends CompactLayout
@@ -44,13 +44,15 @@ final class MoonShineLayout extends CompactLayout
         return [
             // ...parent::menu(),
             MenuItem::make('Пользователи', UserResource::class),
-            MenuItem::make('Расписание', ScheduleResource::class),
+            MenuGroup::make('Расписание', [
+                MenuItem::make('Таблица', ScheduleResource::class),
+                MenuItem::make('Доска', PerformanceKanbanResource::class),
+            ]),
             MenuItem::make('Заявки', PerformanceResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
-            MenuItem::make('PerformanceKanbans', PerformanceKanbanResource::class),
             MenuItem::make('Секции', SectionResource::class),
             // MenuItem::make('Statuses', StatusResource::class),
-            MenuItem::make('StaticPages', StaticPageResource::class),
+            MenuItem::make('Пользовательские страницы', StaticPageResource::class),
         ];
     }
     protected function getFooterComponent(): Footer

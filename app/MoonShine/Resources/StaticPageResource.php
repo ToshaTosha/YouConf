@@ -14,8 +14,6 @@ use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
 use MoonShine\EasyMde\Fields\Markdown;
 use MoonShine\UI\Fields\Text;
-use MoonShine\UI\Fields\File;
-use MoonShine\UI\Fields\Preview;
 
 /**
  * @extends ModelResource<StaticPage>
@@ -35,20 +33,6 @@ class StaticPageResource extends ModelResource
             ID::make()->sortable(),
             Text::make('Slug')->required(),
             Text::make('Title')->required(),
-            // Preview::make('Files')
-            //     ->badge('gray')
-            //     ->changeFill(function ($item) {
-            //         if (!$item->files) return 'No files';
-
-            //         $images = collect($item->files)
-            //             ->filter(fn($file) => str($file['mime'])->contains('image'))
-            //             ->count();
-
-            //         $docs = count($item->files) - $images;
-
-            //         return ($images ? "$images images" : "")
-            //             . ($docs ? ($images ? ", $docs docs" : "$docs docs") : "");
-            //     }),
         ];
     }
 
@@ -62,14 +46,7 @@ class StaticPageResource extends ModelResource
                 ID::make()->sortable(),
                 Text::make('Slug')->required(),
                 Text::make('Title')->required(),
-                File::make('Files')
-                    ->multiple()
-                    ->removable()
-                    ->allowedExtensions(['jpg', 'png', 'pdf', 'docx'])
-                    ->dir('static_pages') // Папка в storage
-                    ->keepOriginalFileName(),
-
-                Markdown::make('markdown_content')
+                Markdown::make('markdown_content')->required()
             ])
         ];
     }

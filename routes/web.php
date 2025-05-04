@@ -57,9 +57,8 @@ Route::middleware(['web', 'auth'])->group(function () {
     ////Route::delete('/performances/{performance}/media/{media}', [FileController::class, 'destroy']);
 });
 
-Route::get('/', function () {
-    return Inertia::render('Home');
-});
+Route::get('/', [StaticPageController::class, 'show'])
+    ->defaults('slug', '');
 Route::get('/sections', [SectionController::class, 'index']);
 Route::get('/sections/{section}', [SectionController::class, 'show']);
 
