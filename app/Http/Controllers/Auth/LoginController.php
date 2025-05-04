@@ -11,6 +11,7 @@ use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Validation\ValidationException;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Redirect;
 
 class LoginController extends Controller
 {
@@ -76,7 +77,7 @@ class LoginController extends Controller
 
             Auth::login($authUser, true);
 
-            return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
+            return Redirect::to(session()->get('url.intended', route('user.show', ['id' => Auth::user()->id])));
         } catch (\Exception $e) {
             Log::error('VK auth error: ' . $e->getMessage());
             return redirect('/login')->withErrors(['error' => 'Ошибка авторизации: ' . $e->getMessage()]);

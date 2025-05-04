@@ -5,7 +5,7 @@
       class="p-1 rounded-full text-gray-400 hover:text-gray-500 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 relative"
     >
       <svg
-        class="w-6 h-6 text-gray-800 dark:text-white"
+        class="w-6 h-6 text-white"
         aria-hidden="true"
         xmlns="http://www.w3.org/2000/svg"
         width="24"
