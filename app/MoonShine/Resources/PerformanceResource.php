@@ -34,6 +34,7 @@ class PerformanceResource extends ModelResource
     /**
      * @return list<FieldContract>
      */
+
     protected function indexFields(): iterable
     {
         return [
@@ -41,12 +42,12 @@ class PerformanceResource extends ModelResource
             Text::make('Название', 'title'),
             BelongsTo::make('Пользователь', 'user', fn($user) => $user->first_name . ' ' . $user->last_name),
             BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
-            BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
-            Preview::make('Статус', 'status_id')
+            // BelongsTo::make('Статус', 'status', resource: StatusResource::class, formatted: 'name'),
+            Preview::make('Статус', 'status.name')
                 ->badge(fn($status) => match ($status) {
-                    1 => 'green',
-                    2 => 'yellow',
-                    3 => 'red',
+                    'Принято' => 'green',       // Замените на реальные названия статусов
+                    'На доработку' => 'yellow',
+                    'Отклонено' => 'red',
                     default => 'gray',
                 }),
         ];

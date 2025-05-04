@@ -31,7 +31,7 @@ class PerformanceStatusChanged extends Notification
 
         $data = [
             'performance_id' => $this->performance->id,
-            'message' => "Status changed for {$this->performance->title}",
+            'message' => "Статус заявки {$this->performance->title} изменён",
             'custom_data' => [
                 'old' => $this->oldStatus->name,
                 'new' => $this->newStatus->name

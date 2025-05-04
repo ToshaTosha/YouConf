@@ -15,7 +15,6 @@ return new class extends Migration
             $table->id();
             $table->foreignId('performance_id')->constrained()->onDelete('cascade'); // Связь с заявкой
             $table->foreignId('section_id')->nullable()->constrained()->onDelete('set null');
-            $table->date('date')->nullable(); // Добавляем поле date
             $table->time('start_time')->nullable(); // Добавляем поле start_time
             $table->integer('duration')->nullable()->default(15); // Добавляем поле duration
             $table->time('end_time')->nullable(); // Добавляем поле end_time

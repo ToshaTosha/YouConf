@@ -17,7 +17,6 @@ class ScheduleController extends Controller
             return [
                 'id' => $schedule->id,
                 'performance_id' => $schedule->performance_id,
-                'date' => $schedule->date,
                 'start_time' => $schedule->start_time,
                 'duration' => $schedule->duration,
                 'end_time' => $schedule->end_time,
@@ -46,14 +45,12 @@ class ScheduleController extends Controller
             ->whereHas('performance', function ($query) use ($sectionId) {
                 $query->where('section_id', $sectionId);
             })
-            ->orderBy('date')
             ->orderBy('start_time')
             ->get();
 
         // Форматируем данные для ответа
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
-                'date' => $schedule->date,
                 'start_time' => $schedule->start_time,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
@@ -63,6 +60,15 @@ class ScheduleController extends Controller
                     'first_name' => $schedule->performance->user->first_name,
                     'last_name' => $schedule->performance->user->last_name,
                 ],
+                'attachments' => $schedule->performance->media->map(function ($media) {
+                    return [
+                        'id' => $media->id,
+                        'name' => $media->file_name,
+                        'original_url' => $media->original_url,
+                        'mime_type' => $media->mime_type,
+                        'size' => $media->size,
+                    ];
+                }),
             ];
         });
 

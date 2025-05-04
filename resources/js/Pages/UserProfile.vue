@@ -16,6 +16,7 @@
           label="Дата регистрации"
           :value="formatDate(user_data.created_at, 'long')"
         />
+        <p class="mb-8"></p>
         <Link
           :disabled="isDisabled"
           :href="`/user/${user_data.id}/edit`"

@@ -23,15 +23,11 @@ class ConferenceSessionSeeder extends Seeder
         $performances = Performance::where('status_id', 2)->get();
         $locations = Location::all();
 
-        // Устанавливаем диапазон дат для расписания
-        $startDate = Carbon::now()->startOfDay();
-        $endDate = Carbon::now()->addDays(2);
         $durations = [15, 30, 45, 60];
 
         // Проходим по каждой заявке
         foreach ($performances as $performance) {
             $location = $locations->random();
-            $date = Carbon::createFromTimestamp(rand($startDate->timestamp, $endDate->timestamp));
 
             // Генерация времени начала и продолжительности
             $start_time = null;
@@ -55,7 +51,6 @@ class ConferenceSessionSeeder extends Seeder
                 $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($performance) {
                     $query->where('section_id', $performance->section_id); // Проверяем по section_id
                 })
-                    ->where('date', $date->toDateString())
                     ->where(function ($query) use ($start_time, $end_time) {
                         $query->where(function ($q) use ($start_time, $end_time) {
                             $q->where('start_time', '<', $end_time->format('H:i'))
@@ -77,7 +72,6 @@ class ConferenceSessionSeeder extends Seeder
             try {
                 Schedule::create([
                     'performance_id' => $performance->id,
-                    'date' => $date->toDateString(),
                     'start_time' => $start_time->format('H:i'),
                     'duration' => $duration,
                     'end_time' => $end_time->format('H:i'),

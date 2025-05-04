@@ -95,18 +95,8 @@ class PerformanceKanbanResource extends KanBanResource
         return [
             Box::make([
                 ID::make(),
-                Select::make('Тип события', 'event_type')
-                    ->options(Schedule::EVENT_TYPES)
-                    ->required()
-                    ->reactive(),
-
-                Text::make('Название', 'title')
-                    ->required(),
 
                 BelongsTo::make('Секция', 'section', resource: SectionResource::class, formatted: 'name'),
-                Date::make('Дата', 'date')
-                    ->format('Y-m-d')
-                    ->required(),
 
                 Select::make('Продолжительность (мин)', 'duration')
                     ->options([

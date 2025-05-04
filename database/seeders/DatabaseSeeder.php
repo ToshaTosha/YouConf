@@ -22,6 +22,7 @@ class DatabaseSeeder extends Seeder
             LocationSeeder::class,
             PerformanceSeeder::class,
             ConferenceSessionSeeder::class,
+            StaticPageSeeder::class,
         ]);
     }
 }

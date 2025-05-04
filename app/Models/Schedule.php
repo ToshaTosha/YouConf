@@ -23,6 +23,21 @@ class Schedule extends Model
         'description'
     ];
 
+    protected $casts = [
+        'start_time' => 'string',
+        'end_time' => 'string',
+    ];
+
+    public function setStartTimeAttribute($value)
+    {
+        $this->attributes['start_time'] = is_string($value) ? $value : $value->format('H:i:s');
+    }
+
+    public function setEndTimeAttribute($value)
+    {
+        $this->attributes['end_time'] = is_string($value) ? $value : $value->format('H:i:s');
+    }
+
     public function isPerformance(): bool
     {
         return $this->event_type === 'performance';

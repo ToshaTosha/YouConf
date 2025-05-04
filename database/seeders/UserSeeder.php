@@ -6,6 +6,7 @@ use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 use App\Models\User;
 use Spatie\Permission\Models\Role;
+use Illuminate\Support\Facades\Hash;
 use App\Models\Section;
 
 class UserSeeder extends Seeder
@@ -43,6 +44,19 @@ class UserSeeder extends Seeder
             ->each(function ($user) use ($participantRole) {
                 $user->assignRole($participantRole);
             });
+
+        $expertUser = User::create([
+            'password' => Hash::make('12345'), // Хешируем пароль
+            'email' => 'exp@example.com',
+            'first_name' => 'Эксперт',
+            'last_name' => 'Эксперт',
+        ]);
+
+        // Назначаем роль "эксперт" этому пользователю
+        $expertUser->assignRole($expertRole);
+        $expertUser->sections()->attach(
+            $sections->random(rand(1, 3))->pluck('id')->toArray()
+        );
     }
 
 

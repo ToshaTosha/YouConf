@@ -1,10 +1,10 @@
 <template>
   <div>
-    <DateTabs
+    <!-- <DateTabs
       :dateKeys="dateKeys"
       :selectedDate="selectedDate"
       @date-selected="selectDate"
-    />
+    /> -->
     <ScheduleTable :sections="sections" :events="processedEvents" />
   </div>
 </template>

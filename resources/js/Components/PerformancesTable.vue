@@ -7,6 +7,7 @@
       <thead>
         <tr>
           <th class="py-2 border-b">Название</th>
+          <th class="py-2 border-b">Секция</th>
           <th class="py-2 border-b">Дата</th>
           <th class="py-2 border-b">Статус</th>
           <th v-if="isExpert" class="py-2 border-b">Автор заявки</th>
@@ -23,6 +24,11 @@
           <td class="border px-4 py-2">
             <Link :href="`/performances/${performance.id}`">
               {{ performance.title }}
+            </Link>
+          </td>
+          <td class="border px-4 py-2">
+            <Link :href="`/performances/${performance.id}`">
+              {{ performance.section.name }}
             </Link>
           </td>
           <td class="border px-4 py-2">

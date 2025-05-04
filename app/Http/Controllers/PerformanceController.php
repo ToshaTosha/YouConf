@@ -11,9 +11,10 @@ use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
 use App\Notifications\PerformanceStatusChanged;
-use Spatie\MediaLibrary\MediaCollections\Models\Media;
+use App\Models\Schedule;
 use Illuminate\Support\Facades\Log;
 
+use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
 class PerformanceController extends Controller
@@ -23,7 +24,6 @@ class PerformanceController extends Controller
         $user = User::findOrFail(Auth::user()->id);
         $statuses = Status::all();
         $userSections = $user->sections()->get();
-        Log::info('Секции пользователя:', $userSections->toArray());
 
         if ($user->hasRole('participant')) {
             $performances = Performance::where('user_id', $user->id)
@@ -58,27 +58,84 @@ class PerformanceController extends Controller
             return response()->json(['message' => 'Доступ запрещен.'], 403);
         }
 
-        // Получаем заявку со связанными данными
-        $performance = Performance::with(['status', 'user'])->findOrFail($id);
-
-        // Сохраняем старый статус перед изменением
+        $performance = Performance::with(['status', 'user', 'section'])->findOrFail($id);
         $oldStatus = $performance->status;
 
-        // Обновляем статус
         $performance->status_id = $request->status_id;
         $performance->save();
 
-        // Получаем новый статус после обновления
         $newStatus = $performance->fresh()->status;
+
+        if ($newStatus->id == 2) {
+            DB::beginTransaction();
+            try {
+                // Исправлено: сортируем по end_time, чтобы получить последнее мероприятие
+                $lastSchedule = Schedule::where('section_id', $performance->section_id)
+                    ->orderBy('end_time', 'desc') // Изменено с start_time на end_time
+                    ->first();
+
+                $calculateTime = function ($time, $addMinutes = 0) {
+                    $time = $time ?: '10:00:00';
+                    list($h, $m, $s) = explode(':', $time);
+
+                    $minutes = (int)$m + $addMinutes;
+                    $hours = (int)$h + floor($minutes / 60);
+                    $minutes = $minutes % 60;
+                    $hours = $hours % 24;
+
+                    return sprintf('%02d:%02d:00', $hours, $minutes);
+                };
+
+                $newStartTime = $lastSchedule
+                    ? $lastSchedule->end_time // Берем end_time напрямую без преобразования
+                    : '10:00:00';
+
+                // Проверяем, не позже ли 18:00
+                if (explode(':', $newStartTime)[0] >= 20) {
+                    $newStartTime = '10:00:00';
+                }
+
+                // Вычисляем время окончания
+                $newEndTime = $calculateTime($newStartTime, 15);
+                Log::info($newStartTime);
+
+                // Создаем запись в расписании
+                DB::insert('INSERT INTO schedules (
+                performance_id, 
+                section_id, 
+                start_time, 
+                duration, 
+                end_time, 
+                event_type, 
+                title, 
+                description, 
+                created_at, 
+                updated_at
+            ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())', [
+                    $performance->id,
+                    $performance->section_id,
+                    $newStartTime,
+                    15,
+                    $newEndTime,
+                    'performance',
+                    $performance->title,
+                    $performance->description
+                ]);
+
+                DB::commit();
+            } catch (\Exception $e) {
+                DB::rollBack();
+                Log::error('Schedule creation error: ' . $e->getMessage());
+                Log::error('Trace: ' . $e->getTraceAsString());
+                return redirect()->back()->with('error', 'Произошла ошибка при создании расписания');
+            }
+        }
+
         $performance->user->notify(
             new PerformanceStatusChanged($performance, $oldStatus, $newStatus)
         );
-        $recipient = $performance->user;
 
-        // Проверяем, что статус действительно изменился
         if ($oldStatus->id !== $newStatus->id) {
-            // Отправляем уведомление (передаём объекты Performance и Status)
-
             return redirect()->back()->with('success', [
                 'title' => 'Статус изменен',
                 'message' => "Статус выступления '{$performance->title}' изменен на '{$newStatus}'",
@@ -88,7 +145,6 @@ class PerformanceController extends Controller
 
         return redirect('/performances')->with('success', 'Статус заявки успешно обновлён');
     }
-
     public function apply(Request $request, $section_id)
     {
 

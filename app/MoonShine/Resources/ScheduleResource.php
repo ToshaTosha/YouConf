@@ -64,7 +64,7 @@ class ScheduleResource extends ModelResource
         $scheduledPerformanceIds = Schedule::pluck('performance_id')->toArray();
         return [
             Box::make([
-                BelongsTo::make('Заявка', 'performance', 'title', resource: PerformanceResource::class)
+                BelongsTo::make('Тезис', 'performance', 'title', resource: PerformanceResource::class)
                     ->required()
                     // ->asyncSearch('title') // Включаем асинхронный поиск
                     ->valuesQuery(
@@ -72,9 +72,6 @@ class ScheduleResource extends ModelResource
                             ->where('status_id', 2) // Только принятые заявки
                             ->whereNotIn('id', Schedule::pluck('performance_id')->filter()->toArray()) // Не в расписании
                     ),
-                Date::make('Дата', 'date')
-                    ->format('Y-m-d')
-                    ->required(),
                 Select::make('Время начала', 'start_time')
                     ->options($timeOptions) // Варианты времени
                     ->required(),
@@ -119,7 +116,6 @@ class ScheduleResource extends ModelResource
         $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($item) {
             $query->where('section_id', $item->performance->section_id);
         })
-            ->where('date', $item->date)
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->where(function ($q) use ($startTime, $endTime) {
                     $q->where('start_time', '<', $endTime->format('H:i'))
