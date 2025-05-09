@@ -1,0 +1,37 @@
+version: '3.8'
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: laravel-vue-app
+    container_name: laravel-vue-app
+    ports:
+      - "8000:80"
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+
+  db:
+    image: mysql:5.7
+    container_name: mysql
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_DATABASE: your_database_name  # Укажите имя базы данных
+      MYSQL_USER: your_username             # Укажите имя пользователя
+      MYSQL_PASSWORD: your_password         # Укажите пароль
+      MYSQL_ROOT_PASSWORD: your_root_password # Укажите корневой пароль
+    volumes:
+      - db_data:/var/lib/mysql
+    networks:
+      - app-network
+
+volumes:
+  db_data:
+
+networks:
+  app-network:
+    driver: bridge
