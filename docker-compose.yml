@@ -32,6 +32,23 @@ services:
     networks:
       - app-network
 
+  composer:
+    image: composer:latest
+    volumes:
+      - .:/app
+    working_dir: /app
+    networks:
+      - app-network
+
+  artisan:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - .:/var/www
+    networks:
+      - app-network
+
 networks:
   app-network:
     driver: bridge
