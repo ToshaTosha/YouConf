@@ -19,14 +19,11 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Установка рабочей директории
 WORKDIR /var/www
 
-# Копирование только файлов для установки зависимостей
-COPY composer.json composer.lock ./
+# Копирование всех файлов приложения
+COPY . .
 
 # Установка зависимостей PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# Копирование всех остальных файлов приложения
-COPY . .
 
 # Установка Node.js
 RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
