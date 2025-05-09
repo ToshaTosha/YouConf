@@ -1,8 +1,8 @@
-# Используем образ PHP с поддержкой FPM
 FROM php:8.2-fpm
 
-# Установка необходимых пакетов
+# Установка Nginx и зависимостей
 RUN apt-get update && apt-get install -y \
+    nginx \
     libpng-dev \
     libjpeg-dev \
     libfreetype6-dev \
@@ -15,6 +15,9 @@ RUN apt-get update && apt-get install -y \
 
 # Копирование Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+# Копирование конфигурации Nginx
+COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
 # Установка рабочей директории
 WORKDIR /var/www
@@ -35,14 +38,8 @@ RUN npm install --no-cache
 # Сборка Vue-приложения
 RUN npm run build
 
-# Копирование конфигурации Nginx
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
-
 # Генерация ключа приложения Laravel
 RUN php artisan key:generate
 
-# Открытие порта
-EXPOSE 9000
-
-# Запуск PHP-FPM
-CMD ["php-fpm"]
+# Запуск Nginx и PHP-FPM
+CMD sh -c "php-fpm && nginx -g 'daemon off;'"
