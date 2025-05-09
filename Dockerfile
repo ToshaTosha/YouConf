@@ -1,3 +1,4 @@
+# Используем образ PHP с поддержкой FPM
 FROM php:8.2-fpm
 
 # Установка необходимых пакетов
@@ -8,6 +9,7 @@ RUN apt-get update && apt-get install -y \
     libzip-dev \
     unzip \
     git \
+    curl \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd zip bcmath exif
 
@@ -23,7 +25,7 @@ COPY composer.json composer.lock ./
 # Установка зависимостей PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Копирование файлов приложения
+# Копирование всех остальных файлов приложения
 COPY . .
 
 # Установка Node.js
@@ -31,7 +33,7 @@ RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
     apt-get install -y nodejs
 
 # Установка зависимостей Node.js
-RUN npm install
+RUN npm install --no-cache
 
 # Сборка Vue-приложения
 RUN npm run build
