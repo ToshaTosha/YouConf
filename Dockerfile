@@ -27,6 +27,10 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Рабочая директория
 WORKDIR /var/www
 
+COPY composer.json composer.lock ./
+
+# Установка PHP зависимостей
+RUN composer install --no-dev --optimize-autoloader
 # Копирование проекта
 COPY . .
 
