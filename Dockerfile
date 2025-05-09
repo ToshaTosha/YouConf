@@ -1,8 +1,15 @@
 FROM php:8.1-fpm
 
 # Установка необходимых расширений
-RUN docker-php-ext-install pdo pdo_mysql
-
+RUN apt-get update && apt-get install -y \
+    libpng-dev \
+    libjpeg-dev \
+    libfreetype6-dev \
+    libzip-dev \
+    unzip \
+    && docker-php-ext-configure gd --with-freetype --with-jpeg \
+    && docker-php-ext-install gd pdo pdo_mysql zip bcmath exif
+    
 # Установка Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
