@@ -2,36 +2,41 @@ version: '3.8'
 
 services:
   app:
-    build: .
-    volumes:
-      - .:/var/www
+    build:
+      context: .
+      args:
+        - NODE_ENV=production
     environment:
+      - APP_ENV=production
+      - APP_KEY=base64:...
       - DB_HOST=mysql
       - DB_DATABASE=laravel
       - DB_USERNAME=root
       - DB_PASSWORD=secret
-    depends_on:
-      - mysql
+    volumes:
+      - ./:/var/www
     networks:
       - laravel-network
+    depends_on:
+      - mysql
 
   webserver:
     image: nginx:alpine
     ports:
       - "80:80"
     volumes:
-      - .:/var/www
+      - ./:/var/www
       - ./nginx.conf:/etc/nginx/conf.d/default.conf
-    depends_on:
-      - app
     networks:
       - laravel-network
+    depends_on:
+      - app
 
   mysql:
     image: mysql:8.0
     environment:
-      MYSQL_DATABASE: laravel
       MYSQL_ROOT_PASSWORD: secret
+      MYSQL_DATABASE: laravel
     volumes:
       - mysql-data:/var/lib/mysql
     networks:
@@ -42,4 +47,3 @@ volumes:
 
 networks:
   laravel-network:
-    driver: bridge

@@ -9,8 +9,11 @@ RUN apt-get update && apt-get install -y \
     libxml2-dev \
     zip \
     unzip \
-    nodejs \
-    npm
+    ca-certificates
+
+# Установка Node.js 18.x
+RUN curl -fsSL https://deb.nodesource.com/setup_18.x | bash - && \
+    apt-get install -y nodejs
 
 # Очистка кеша
 RUN apt-get clean && rm -rf /var/lib/apt/lists/*
@@ -27,11 +30,15 @@ WORKDIR /var/www
 # Копирование проекта
 COPY . .
 
-# Установка зависимостей
+# Установка PHP зависимостей
 RUN composer install --no-dev --optimize-autoloader
-RUN npm install
-RUN npm run build
+
+# Удаление возможных конфликтующих файлов
+RUN rm -f package-lock.json && rm -rf node_modules
+
+# Установка и сборка фронтенда
+RUN npm install --force && npm run build
 
 # Настройка прав
-RUN chown -R www-data:www-data /var/www/storage
-RUN chown -R www-data:www-data /var/www/bootstrap/cache
+RUN chown -R www-data:www-data /var/www/storage \
+    && chown -R www-data:www-data /var/www/bootstrap/cache
