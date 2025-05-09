@@ -1,23 +1,27 @@
-# Этап 1: Сборка фронтенда (Vue)
+# Этап 1: Сборка фронтенда (Vue) с фиксом для rollup
 FROM node:18 AS frontend-builder
 
 WORKDIR /var/www
 
-# Копируем только файлы, необходимые для установки зависимостей
-COPY package*.json ./
+# 1. Сначала копируем только package.json
+COPY package.json package-lock.json* ./
+
+# 2. Чистка кеша и установка зависимостей с явным указанием архитектуры
+RUN npm ci --no-cache --force \
+    && npm rebuild --arch=x64 --platform=linux --libc=glibc sharp
+
+# 3. Копируем остальные файлы фронтенда
 COPY vite.config.js ./
+COPY resources ./resources
 
-# Чистая установка зависимостей (без кеша и с обходом багов npm)
-RUN npm install --no-cache --legacy-peer-deps
-
-# Копируем всё остальное и собираем фронтенд
-COPY . .
+# 4. Сборка с явным указанием target
+ENV NODE_ENV=production
 RUN npm run build
 
 # Этап 2: Основной образ с PHP и Nginx
 FROM php:8.2-fpm
 
-# Устанавливаем Nginx и системные зависимости
+# Установка Nginx и зависимостей
 RUN apt-get update && apt-get install -y \
     nginx \
     libpng-dev \
@@ -33,29 +37,22 @@ RUN apt-get update && apt-get install -y \
 # Копируем Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Настраиваем Nginx
+# Настройка Nginx
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
 
-# Рабочая директория
 WORKDIR /var/www
 
-# Копируем бэкенд (Laravel)
+# Копируем только файлы Laravel (исключая node_modules)
 COPY . .
-
-# Копируем собранный фронтенд из первого этапа
 COPY --from=frontend-builder /var/www/public/build /var/www/public/build
 
-# Устанавливаем зависимости PHP
+# Установка зависимостей PHP
 RUN composer install --no-interaction --prefer-dist --optimize-autoloader
 
-# Генерируем ключ приложения
-RUN php artisan key:generate
-
-# Настраиваем права
+# Настройка прав
 RUN chown -R www-data:www-data /var/www/storage /var/www/bootstrap/cache
 
-# Запуск Nginx и PHP-FPM
-CMD sh -c "php-fpm && nginx -g 'daemon off;'"
+# Запуск сервисов
+CMD ["sh", "-c", "php-fpm && nginx -g 'daemon off;'"]
 
-# Открываем порты
 EXPOSE 80
