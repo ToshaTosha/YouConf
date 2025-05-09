@@ -26,14 +26,17 @@ COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 # Установка рабочей директории
 WORKDIR /var/www
 
-# Копирование только файлов composer
+# Копирование только файлов composer (без artisan)
 COPY composer.json composer.lock ./
 
-# Установка PHP зависимостей
-RUN composer install --no-dev --optimize-autoloader
+# Установка PHP зависимостей без выполнения скриптов
+RUN composer install --no-dev --optimize-autoloader --no-scripts
 
 # Копирование остальных файлов проекта
 COPY . .
+
+# Теперь выполняем скрипты, когда все файлы на месте
+RUN composer run-script post-autoload-dump
 
 # Удаление возможных конфликтующих файлов
 RUN rm -f package-lock.json && rm -rf node_modules
@@ -44,9 +47,6 @@ RUN npm install --force && npm run build
 # Настройка прав
 RUN chown -R www-data:www-data /var/www/storage \
     && chown -R www-data:www-data /var/www/bootstrap/cache
-
-# Установка рабочей директории для Nginx
-WORKDIR /var/www/public
 
 # Команда по умолчанию
 CMD ["php-fpm"]
