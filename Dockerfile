@@ -9,18 +9,22 @@ RUN apt-get update && apt-get install -y \
     unzip \
     && docker-php-ext-configure gd --with-freetype --with-jpeg \
     && docker-php-ext-install gd pdo pdo_mysql zip bcmath exif
-    
-# Установка Composer
+
+# Clear cache
+RUN apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Install PHP extensions
+RUN docker-php-ext-install pdo_mysql mbstring exif pcntl bcmath gd
+
+# Get latest Composer
 COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
 
-# Установка рабочей директории
+# Create system user to run Composer and Artisan Commands
+RUN useradd -G www-data,root -u $uid -d /home/$user $user
+RUN mkdir -p /home/$user/.composer && \
+    chown -R $user:$user /home/$user
+
+# Set working directory
 WORKDIR /var/www
 
-# Копирование файлов приложения
-COPY . .
-
-# Установка зависимостей
-RUN composer install --no-interaction --prefer-dist --optimize-autoloader
-
-# Копирование конфигурации Nginx
-COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
+USER $user

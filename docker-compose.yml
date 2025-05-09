@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - .:/var/www
+      - /var/www/vendor
     networks:
       - app-network
 
@@ -31,21 +32,13 @@ services:
       - mysql_data:/var/lib/mysql
     networks:
       - app-network
-
-  composer:
-    image: composer:latest
+  dozzle:
+    container_name: dozzle
+    image: amir20/dozzle:latest
     volumes:
-      - .:/app
-    working_dir: /app
-    networks:
-      - app-network
-
-  artisan:
-    build:
-      context: .
-      dockerfile: Dockerfile
-    volumes:
-      - .:/var/www
+      - /var/run/docker.sock:/var/run/docker.sock
+    ports:
+      - 8080:8080
     networks:
       - app-network
 
