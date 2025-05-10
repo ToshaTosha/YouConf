@@ -3,13 +3,19 @@ version: '3.8'
 services:
   app:
     build:
-      context: .
-      dockerfile: Dockerfile
+      args:
+        user: user
+        uid: 1000
+      context: ./
+      dockerfile: dockerfile
+    image: travellist
+    container_name: travel-app
+    restart: unless-stopped
+    working_dir: /var/www/
     volumes:
-      - .:/var/www
-      - /var/www/vendor
+      - ./:/var/www
     networks:
-      - app-network
+      - travel
 
   nginx:
     image: nginx:alpine
