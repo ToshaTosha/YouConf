@@ -15,7 +15,6 @@ class StaticPage extends Model
         'slug',
         'title',
         'markdown_content',
-        'files'
     ];
 
     public function getHtmlContentAttribute()

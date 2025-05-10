@@ -14,6 +14,14 @@ final class QuillEditor extends MoonShineComponent
 {
     protected string $view = 'admin.components.quill-editor';
 
+    public function __construct(
+        string $label,
+        ?string $column = null,
+        ?Closure $formatted = null
+    ) {
+        parent::__construct($label, $column, $formatted);
+    }
+
     protected function viewData(): array
     {
         return [];

@@ -48,7 +48,7 @@ class StaticPageResource extends ModelResource
                 Text::make('Slug')->required(),
                 Text::make('Title')->required(),
                 // Markdown::make('markdown_content')->required(),
-                QuillEditor::make('Content', 'content')
+                QuillEditor::make('markdown_content')
             ])
         ];
     }
