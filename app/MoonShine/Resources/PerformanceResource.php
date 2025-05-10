@@ -50,7 +50,7 @@ class PerformanceResource extends ModelResource
                     'Отклонено' => 'red',
                     default => 'gray',
                 }),
-        ]
+        ];
     }
 
     /**

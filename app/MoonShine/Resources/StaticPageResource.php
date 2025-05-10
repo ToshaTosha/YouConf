@@ -9,6 +9,7 @@ use App\Models\StaticPage;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
+use App\MoonShine\Components\QuillEditor;
 use MoonShine\UI\Fields\ID;
 use MoonShine\Contracts\UI\FieldContract;
 use MoonShine\Contracts\UI\ComponentContract;
@@ -46,7 +47,8 @@ class StaticPageResource extends ModelResource
                 ID::make()->sortable(),
                 Text::make('Slug')->required(),
                 Text::make('Title')->required(),
-                Markdown::make('markdown_content')->required()
+                // Markdown::make('markdown_content')->required(),
+                QuillEditor::make('Content', 'content')
             ])
         ];
     }
