@@ -7,16 +7,14 @@ services:
         user: user
         uid: 1000
       context: ./
-      dockerfile: dockerfile
-    image: travellist
-    container_name: travel-app
+      dockerfile: Dockerfile
+    container_name: laravel-app
     restart: unless-stopped
     working_dir: /var/www/
     volumes:
       - ./:/var/www
     networks:
-      - travel
-
+      - app-network
   nginx:
     image: nginx:alpine
     ports:
