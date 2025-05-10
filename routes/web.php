@@ -12,6 +12,7 @@ use App\Http\Controllers\PerformanceController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\FileController;
+use App\Http\Controllers\QuillUploadController;
 
 
 Route::get('/about', function () {
@@ -82,3 +83,7 @@ Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getPer
 
 Route::get('/pages/{slug}', [StaticPageController::class, 'show'])
     ->name('static-pages.show');
+
+
+Route::post('/quill/upload', [QuillUploadController::class, 'upload'])
+    ->name('moonshine.quill.upload');
