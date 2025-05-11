@@ -49,7 +49,6 @@
             >
               {{ page.title }}
             </a>
-            <!-- Добавляем разделитель между ссылками -->
           </template>
         </template>
         <a href="/sections" class="text-gray-700 hover:text-blue-600">Секции</a>
