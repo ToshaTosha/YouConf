@@ -60,6 +60,9 @@ Route::middleware(['web', 'auth'])->group(function () {
 
 Route::get('/', [StaticPageController::class, 'show'])
     ->defaults('slug', '');
+
+Route::get('/api/pages', [StaticPageController::class, 'getAllPages']);
+
 Route::get('/sections', [SectionController::class, 'index']);
 Route::get('/sections/{section}', [SectionController::class, 'show']);
 
@@ -81,9 +84,10 @@ Route::get('/schedules', [ScheduleController::class, 'show'])->name('schedules.s
 
 Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getPerformancesBySection']);
 
-Route::get('/pages/{slug}', [StaticPageController::class, 'show'])
-    ->name('static-pages.show');
-
 
 Route::post('/quill/upload', [QuillUploadController::class, 'upload'])
     ->name('moonshine.quill.upload');
+
+
+Route::get('/{slug}', [StaticPageController::class, 'show'])
+    ->name('static-pages.show');

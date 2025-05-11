@@ -107,7 +107,6 @@ const markAsRead = (notification) => {
   }
 }
 
-// Отметить все как прочитанные
 const markAllAsRead = () => {
   if ($page.props.unreadNotificationsCount > 0) {
     router.post(

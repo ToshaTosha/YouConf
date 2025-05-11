@@ -23,7 +23,7 @@ class StaticPageResource extends ModelResource
 {
     protected string $model = StaticPage::class;
 
-    protected string $title = 'StaticPages';
+    protected string $title = 'Пользовательские страницы';
 
     /**
      * @return list<FieldContract>
@@ -45,7 +45,12 @@ class StaticPageResource extends ModelResource
         return [
             Box::make([
                 ID::make()->sortable(),
-                Text::make('Slug')->required(),
+                Text::make('Slug')
+                    ->required()
+                    ->readonly(function () {
+                        $item = $this->getItem();
+                        return $item && $item->id === 1;
+                    }),
                 Text::make('Title')->required(),
                 // Markdown::make('markdown_content')->required(),
                 QuillEditor::make('markdown_content')

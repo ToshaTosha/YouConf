@@ -5,6 +5,7 @@ use Illuminate\Foundation\Configuration\Exceptions;
 use Illuminate\Foundation\Configuration\Middleware;
 use App\Http\Middleware\HandleInertiaRequests;
 use App\Http\Middleware\CheckPerformanceOwner;
+use App\Http\Middleware\LoadStaticPages;
 use App\Http\Middleware\HandleAuth;
 
 return Application::configure(basePath: dirname(__DIR__))
@@ -15,6 +16,7 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->append(HandleInertiaRequests::class);
+        $middleware->append(LoadStaticPages::class);
         $middleware->alias([
             'check.performance.owner' => CheckPerformanceOwner::class,
             'role' => \Spatie\Permission\Middleware\RoleMiddleware::class

@@ -40,10 +40,19 @@
     <!-- Меню -->
     <nav class="sticky top-0 bg-white shadow z-50">
       <div class="container mx-auto flex justify-center space-x-4 p-2">
-        <a href="/" class="text-gray-700 hover:text-blue-600">Главная</a>
-        <a href="/sections" class="text-gray-700 hover:text-blue-600">
-          Секции
-        </a>
+        <!-- Встраиваем все страницы в меню -->
+        <template v-if="$page.props?.allPages">
+          <template v-for="page in $page.props.allPages" :key="page.slug">
+            <a
+              :href="`/${page.slug}`"
+              class="text-gray-700 hover:text-blue-600"
+            >
+              {{ page.title }}
+            </a>
+            <!-- Добавляем разделитель между ссылками -->
+          </template>
+        </template>
+        <a href="/sections" class="text-gray-700 hover:text-blue-600">Секции</a>
         <a href="/schedules" class="text-gray-700 hover:text-blue-600">
           Раписание
         </a>
