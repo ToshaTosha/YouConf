@@ -19,7 +19,7 @@
             Подробнее
           </Link>
           <Link
-            :href="`/performances/create/${section.id}`"
+            :href="`/theses/create/${section.id}`"
             class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600"
           >
             Подать тезис

@@ -15,7 +15,7 @@
                 <li data-id="{{ $item->getKey() }}">
                     <x-moonshine::card
                         class="handle"
-                        :title="$item->performance->title"> <!-- Заголовок выступления -->
+                        :title="$item->thesis->title"> <!-- Заголовок выступления -->
 
                         <!-- Описание выступления -->
                         {{ $item->start_time }}

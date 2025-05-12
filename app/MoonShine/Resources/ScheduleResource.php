@@ -40,8 +40,8 @@ class ScheduleResource extends ModelResource
     {
         return [
             ID::make()->sortable(),
-            BelongsTo::make('Заявка', 'performance', 'title', resource: PerformanceResource::class),
-            Text::make('Секция', '', fn($schedule) => $schedule->performance->section->name),
+            BelongsTo::make('Заявка', 'thesis', 'title', resource: ThesisResource::class),
+            Text::make('Секция', '', fn($schedule) => $schedule->thesis->section->name),
             Text::make('Время начала', 'start_time'),
             Text::make('Продолжительность (мин)', 'duration'),
             Text::make('Место проведения', '', fn($schedule) => $schedule->location->name),
@@ -61,16 +61,16 @@ class ScheduleResource extends ModelResource
             $timeOptions[$startTime->format('H:i')] = $startTime->format('H:i');
             $startTime->addMinutes(15); // Шаг 15 минут
         }
-        $scheduledPerformanceIds = Schedule::pluck('performance_id')->toArray();
+        $scheduledThesisIds = Schedule::pluck('thesis_id')->toArray();
         return [
             Box::make([
-                BelongsTo::make('Тезис', 'performance', 'title', resource: PerformanceResource::class)
+                BelongsTo::make('Тезис', 'thesis', 'title', resource: ThesisResource::class)
                     ->required()
                     // ->asyncSearch('title') // Включаем асинхронный поиск
                     ->valuesQuery(
                         fn($query) => $query
                             ->where('status_id', 2) // Только принятые заявки
-                            ->whereNotIn('id', Schedule::pluck('performance_id')->filter()->toArray()) // Не в расписании
+                            ->whereNotIn('id', Schedule::pluck('thesis_id')->filter()->toArray()) // Не в расписании
                     ),
                 Select::make('Время начала', 'start_time')
                     ->options($timeOptions) // Варианты времени
@@ -102,19 +102,19 @@ class ScheduleResource extends ModelResource
 
         // Проверяем, что заявка принята и не в расписании
         if (
-            $item->performance->status_id !== 2 ||
-            Schedule::where('performance_id', $item->performance_id)->exists()
+            $item->thesis->status_id !== 2 ||
+            Schedule::where('thesis_id', $item->thesis_id)->exists()
         ) {
             throw ValidationException::withMessages([
-                'performance' => 'Можно выбирать только принятые заявки, которых нет в расписании'
+                'thesis' => 'Можно выбирать только принятые заявки, которых нет в расписании'
             ]);
         }
 
         // Проверка на пересечение времени
         $endTime = $startTime->copy()->addMinutes($item->duration);
 
-        $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($item) {
-            $query->where('section_id', $item->performance->section_id);
+        $conflictingSchedules = Schedule::whereHas('thesis', function ($query) use ($item) {
+            $query->where('section_id', $item->thesis->section_id);
         })
             ->where(function ($query) use ($startTime, $endTime) {
                 $query->where(function ($q) use ($startTime, $endTime) {

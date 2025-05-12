@@ -8,7 +8,7 @@ use App\Http\Controllers\UserController;
 use App\Http\Controllers\NotificationController;
 
 use App\Http\Controllers\SectionController;
-use App\Http\Controllers\PerformanceController;
+use App\Http\Controllers\ThesisController;
 use App\Http\Controllers\ChatController;
 use App\Http\Controllers\StaticPageController;
 use App\Http\Controllers\FileController;
@@ -43,19 +43,19 @@ Route::middleware(['web', 'auth'])->group(function () {
     Route::post('/notifications/{notification}/mark-as-read', [NotificationController::class, 'markAsRead'])->name('notifications.markAsRead');
     Route::post('/notifications/mark-all-as-read', [NotificationController::class, 'markAllAsRead'])->name('notifications.markAllAsRead');
 
-    Route::get('/performances/create/{section_id}', [PerformanceController::class, 'create'])->name('performances.create');
-    Route::post('/performances/{section_id}/apply', [PerformanceController::class, 'apply'])->name('performances.apply');
+    Route::get('/theses/create/{section_id}', [ThesisController::class, 'create'])->name('theses.create');
+    Route::post('/theses/{section_id}/apply', [ThesisController::class, 'apply'])->name('theses.apply');
 
-    Route::middleware('check.performance.owner')->group(function () {
-        Route::get('/performances/{id}', [PerformanceController::class, 'show'])->name('performances.show');
-        Route::get('/performances/{id}/edit', [PerformanceController::class, 'edit'])->name('performances.edit');
-        Route::post('/performances/{id}/update', [PerformanceController::class, 'update'])->name('performances.update');
+    Route::middleware('check.thesis.owner')->group(function () {
+        Route::get('/theses/{id}', [ThesisController::class, 'show'])->name('theses.show');
+        Route::get('/theses/{id}/edit', [ThesisController::class, 'edit'])->name('theses.edit');
+        Route::post('/theses/{id}/update', [ThesisController::class, 'update'])->name('theses.update');
     });
-    Route::delete('/performances/{performance}/media/{media}', [PerformanceController::class, 'deleteMedia']);
+    Route::delete('/theses/{thesis}/media/{media}', [ThesisController::class, 'deleteMedia']);
     Route::post('/chats/{chat}/messages', [ChatController::class, 'storeMessage']);
 
-    Route::post('/performances/{performance}/files', [FileController::class, 'store']);
-    ////Route::delete('/performances/{performance}/media/{media}', [FileController::class, 'destroy']);
+    Route::post('/theses/{thesis}/files', [FileController::class, 'store']);
+    ////Route::delete('/theses/{thesis}/media/{media}', [FileController::class, 'destroy']);
 });
 
 Route::get('/', [StaticPageController::class, 'show'])
@@ -67,8 +67,8 @@ Route::get('/sections', [SectionController::class, 'index']);
 Route::get('/sections/{section}', [SectionController::class, 'show']);
 
 Route::middleware(['auth'])->group(function () {
-    Route::get('/performances', [PerformanceController::class, 'index'])->name('performances.index');
-    Route::post('/performances/{id}/status', [PerformanceController::class, 'updateStatus'])->name('performances.updateStatus');
+    Route::get('/theses', [ThesisController::class, 'index'])->name('theses.index');
+    Route::post('/theses/{id}/status', [ThesisController::class, 'updateStatus'])->name('theses.updateStatus');
 });
 
 
@@ -82,7 +82,7 @@ use App\Http\Controllers\ScheduleController;
 
 Route::get('/schedules', [ScheduleController::class, 'show'])->name('schedules.show');
 
-Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getPerformancesBySection']);
+Route::get('/schedules/section/{sectionId}', [ScheduleController::class, 'getThesesBySection']);
 
 
 Route::post('/quill/upload', [QuillUploadController::class, 'upload'])

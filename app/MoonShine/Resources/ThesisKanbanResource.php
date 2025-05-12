@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MoonShine\Resources;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\PerformanceKanban;
+use App\Models\ThesisKanban;
 
 use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 
@@ -26,9 +26,9 @@ use MoonShine\UI\Fields\Date;
 use App\Models\Location;
 
 /**
- * @extends ModelResource<PerformanceKanban>
+ * @extends ModelResource<ThesisKanban>
  */
-class PerformanceKanbanResource extends KanBanResource
+class ThesisKanbanResource extends KanBanResource
 {
     protected string $model = Schedule::class;
     protected string $title = 'Расписание выступлений';
@@ -60,7 +60,7 @@ class PerformanceKanbanResource extends KanBanResource
 
     public function modifyListComponent(ComponentContract $component): ComponentContract
     {
-        $schedules = Schedule::with('performance')
+        $schedules = Schedule::with('thesis')
             ->orderBy('start_time', 'asc') // или другая сортировка
             ->get();
         return CustomKanban::make($this, $schedules);
@@ -145,7 +145,7 @@ class PerformanceKanbanResource extends KanBanResource
     }
 
     /**
-     * @param PerformanceKanban $item
+     * @param ThesisKanban $item
      *
      * @return array<string, string[]|string>
      * @see https://laravel.com/docs/validation#available-validation-rules

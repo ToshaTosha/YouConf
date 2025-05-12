@@ -57,7 +57,7 @@
         </a>
         <a
           v-if="$page.props?.role === 'expert'"
-          href="/performances"
+          href="/theses"
           class="text-gray-700 hover:text-blue-600"
         >
           Тезисы

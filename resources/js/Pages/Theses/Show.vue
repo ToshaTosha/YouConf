@@ -1,23 +1,23 @@
 <template>
   <div class="p-4 bg-white rounded-lg shadow-md">
     <h1 class="text-2xl font-bold mb-4 text-gray-800">
-      {{ performance.title }}
+      {{ thesis.title }}
     </h1>
 
-    <p class="text-gray-600 mb-4">{{ performance.description }}</p>
+    <p class="text-gray-600 mb-4">{{ thesis.description }}</p>
 
     <div class="space-y-2 text-sm text-gray-600">
       <p>
         <strong>Статус:</strong>
-        {{ performance.status.name }}
+        {{ thesis.status.name }}
       </p>
       <p>
         <strong>Раздел:</strong>
-        {{ performance.section.name }}
+        {{ thesis.section.name }}
       </p>
       <p>
         <strong>Пользователь:</strong>
-        {{ performance.user.first_name }}
+        {{ thesis.user.first_name }}
       </p>
     </div>
 
@@ -55,8 +55,8 @@
     <div class="flex items-center justify-end space-x-4 mt-6">
       <div v-if="isExpert" class="border px-4 py-2">
         <select
-          v-model="performance.status_id"
-          @change="updateStatus(performance.id, performance.status_id)"
+          v-model="thesis.status_id"
+          @change="updateStatus(thesis.id, thesis.status_id)"
           class="border rounded p-1"
         >
           <option
@@ -90,9 +90,9 @@
 
       <!-- Кнопка для редактирования -->
       <Link
-        v-if="isPerformanceOwner"
+        v-if="isThesisOwner"
         :disabled="isDisabled"
-        :href="`/performances/${performance.id}/edit`"
+        :href="`/theses/${thesis.id}/edit`"
         class="px-4 py-2 bg-green-500 text-white rounded-lg hover:bg-green-600 transition duration-200"
       >
         Редактировать
@@ -107,10 +107,10 @@
       <div class="bg-white rounded-lg shadow-lg w-11/12 md:w-1/2 p-6">
         <!-- Компонент чата -->
         <Chat
-          v-if="performance.chat"
-          :chat="performance.chat"
-          :messages="performance.chat.messages"
-          :performance="performance"
+          v-if="thesis.chat"
+          :chat="thesis.chat"
+          :messages="thesis.chat.messages"
+          :thesis="thesis"
           :isActive="!isDisabled"
         />
         <!-- Кнопка закрытия чата -->
@@ -135,7 +135,7 @@ export default {
     Link,
   },
   props: {
-    performance: Object,
+    thesis: Object,
     messages: Array,
     mediaFiles: Array,
     statuses: Array,
@@ -146,11 +146,11 @@ export default {
     }
   },
   computed: {
-    isPerformanceOwner() {
-      return this.$page.props.user_data.id === this.performance.user.id
+    isThesisOwner() {
+      return this.$page.props.user_data.id === this.thesis.user.id
     },
     isDisabled() {
-      return [2, 4].includes(this.performance.status_id)
+      return [2, 4].includes(this.thesis.status_id)
     },
     isExpert() {
       return this.$page.props.role === 'expert'
@@ -183,9 +183,9 @@ export default {
       link.click()
       document.body.removeChild(link)
     },
-    async updateStatus(performanceId, statusId) {
+    async updateStatus(thesisId, statusId) {
       try {
-        await this.$inertia.post(`/performances/${performanceId}/status`, {
+        await this.$inertia.post(`/theses/${thesisId}/status`, {
           status_id: statusId,
         })
         this.$emit('status-updated')

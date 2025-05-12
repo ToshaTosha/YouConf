@@ -4,7 +4,7 @@ namespace App\Http\Controllers;
 
 use Inertia\Inertia;
 use App\Models\User;
-use App\Models\Performance;
+use App\Models\Thesis;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Http\Request;
@@ -18,11 +18,11 @@ class UserController extends Controller
 
         $user = User::with('roles')->findOrFail($id);
 
-        $performances = Performance::where('user_id', $user->id)
+        $theses = Thesis::where('user_id', $user->id)
             ->with(['status:id,name', 'section:id,name'])
             ->get();
         return Inertia::render('UserProfile', [
-            'performances' => $performances,
+            'theses' => $theses,
         ]);
     }
 

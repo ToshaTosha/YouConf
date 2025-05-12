@@ -87,7 +87,7 @@
     </form>
     <div class="flex-1 mb-4 md:ml-4 w-2/5">
       <FileUpload
-        :initialFiles="performance?.media || []"
+        :initialFiles="thesis?.media || []"
         :disabled="isSubmitting"
         @files-updated="handleFilesUpdate"
         @file-removed="handleFileRemove"
@@ -106,21 +106,21 @@ export default {
     FileUpload,
   },
   props: {
-    performance: Object,
+    thesis: Object,
     sectionId: Number,
   },
   data() {
     return {
       form: {
-        title: this.performance ? this.performance.title : '',
-        description: this.performance ? this.performance.description : '',
+        title: this.thesis ? this.thesis.title : '',
+        description: this.thesis ? this.thesis.description : '',
         co_authors:
-          this.performance && this.performance.co_authors
-            ? this.performance.co_authors.split(',')
+          this.thesis && this.thesis.co_authors
+            ? this.thesis.co_authors.split(',')
             : [''],
       },
       newFiles: [],
-      isEditMode: !!this.performance,
+      isEditMode: !!this.thesis,
       isSubmitting: false,
     }
   },
@@ -139,15 +139,9 @@ export default {
 
       try {
         if (this.isEditMode) {
-          await this.$inertia.post(
-            `/performances/${this.performance.id}/update`,
-            formData,
-          )
+          await this.$inertia.post(`/theses/${this.thesis.id}/update`, formData)
         } else {
-          await this.$inertia.post(
-            `/performances/${this.sectionId}/apply`,
-            formData,
-          )
+          await this.$inertia.post(`/theses/${this.sectionId}/apply`, formData)
         }
       } catch (error) {
         console.error('Ошибка при отправке формы:', error)
@@ -161,7 +155,7 @@ export default {
     handleFileRemove(fileId) {
       // Отправляем запрос на удаление файла, если он уже загружен
       this.$inertia
-        .delete(`/performances/${this.performance.id}/media/${fileId}`)
+        .delete(`/theses/${this.thesis.id}/media/${fileId}`)
         .then(() => {
           // Успешно удалено, можно обновить состояние или уведомить пользователя
           console.log(`Файл с ID ${fileId} успешно удален.`)

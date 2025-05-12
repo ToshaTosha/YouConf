@@ -3,17 +3,17 @@
 namespace Database\Factories;
 
 use Illuminate\Database\Eloquent\Factories\Factory;
-use App\Models\Performance;
+use App\Models\Thesis;
 use App\Models\Status;
 use App\Models\Section;
 use App\Models\Chat;
 
 /**
- * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Performance>
+ * @extends \Illuminate\Database\Eloquent\Factories\Factory<\App\Models\Thesis>
  */
-class PerformanceFactory extends Factory
+class ThesisFactory extends Factory
 {
-    protected $model = Performance::class;
+    protected $model = Thesis::class;
 
     public function definition()
     {
@@ -28,11 +28,11 @@ class PerformanceFactory extends Factory
 
     public function configure()
     {
-        return $this->afterCreating(function (Performance $performance) {
+        return $this->afterCreating(function (Thesis $thesis) {
             // Создаем чат для заявки
             Chat::create([
-                'chatable_type' => Performance::class,
-                'chatable_id' => $performance->id,
+                'chatable_type' => Thesis::class,
+                'chatable_id' => $thesis->id,
             ]);
         });
     }

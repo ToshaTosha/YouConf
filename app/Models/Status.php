@@ -12,8 +12,8 @@ class Status extends Model
     use HasFactory;
     protected $fillable = ['name'];
 
-    public function performances(): HasMany
+    public function theses(): HasMany
     {
-        return $this->hasMany(Performance::class);
+        return $this->hasMany(Thesis::class);
     }
 }

@@ -13,9 +13,9 @@ use App\MoonShine\Resources\MoonShineUserResource;
 use App\MoonShine\Resources\MoonShineUserRoleResource;
 use App\MoonShine\Resources\UserResource;
 use App\MoonShine\Resources\ScheduleResource;
-use App\MoonShine\Resources\PerformanceResource;
+use App\MoonShine\Resources\ThesisResource;
 use App\MoonShine\Resources\LocationResource;
-use App\MoonShine\Resources\PerformanceKanbanResource;
+use App\MoonShine\Resources\ThesisKanbanResource;
 use App\MoonShine\Resources\SectionResource;
 use App\MoonShine\Resources\StatusResource;
 use App\MoonShine\Resources\StaticPageResource;
@@ -37,9 +37,9 @@ class MoonShineServiceProvider extends ServiceProvider
                 MoonShineUserRoleResource::class,
                 UserResource::class,
                 ScheduleResource::class,
-                PerformanceResource::class,
+                ThesisResource::class,
                 LocationResource::class,
-                PerformanceKanbanResource::class,
+                ThesisKanbanResource::class,
                 SectionResource::class,
                 StatusResource::class,
                 StaticPageResource::class,

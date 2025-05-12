@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Spatie\MediaLibrary\HasMedia;
 use Spatie\MediaLibrary\InteractsWithMedia;
 
-class Performance extends Model implements HasMedia
+class Thesis extends Model implements HasMedia
 {
     use HasFactory;
     use InteractsWithMedia;

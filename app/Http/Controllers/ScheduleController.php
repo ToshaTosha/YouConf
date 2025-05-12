@@ -10,22 +10,22 @@ class ScheduleController extends Controller
 {
     public function show()
     {
-        $schedules = Schedule::with(['performance.section'])->get();
+        $schedules = Schedule::with(['thesis.section'])->get();
         $sections = Section::all();
 
         $formattedSchedules = $schedules->map(function ($schedule) {
             return [
                 'id' => $schedule->id,
-                'performance_id' => $schedule->performance_id,
+                'thesis_id' => $schedule->thesis_id,
                 'start_time' => $schedule->start_time,
                 'duration' => $schedule->duration,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'performance_title' => $schedule->performance->title,
-                'section_id' => $schedule->performance->section_id,
+                'thesis_title' => $schedule->thesis->title,
+                'section_id' => $schedule->thesis->section_id,
                 'user' => [
-                    'first_name' => $schedule->performance->user->first_name,
-                    'last_name' => $schedule->performance->user->last_name,
+                    'first_name' => $schedule->thesis->user->first_name,
+                    'last_name' => $schedule->thesis->user->last_name,
                 ],
             ];
         });
@@ -38,11 +38,11 @@ class ScheduleController extends Controller
         ]);
     }
 
-    public function getPerformancesBySection($sectionId)
+    public function getThesesBySection($sectionId)
     {
         // Получаем все расписания, относящиеся к заявкам выбранной секции
-        $schedules = Schedule::with(['performance.user', 'performance.section'])
-            ->whereHas('performance', function ($query) use ($sectionId) {
+        $schedules = Schedule::with(['thesis.user', 'thesis.section'])
+            ->whereHas('thesis', function ($query) use ($sectionId) {
                 $query->where('section_id', $sectionId);
             })
             ->orderBy('start_time')
@@ -54,13 +54,13 @@ class ScheduleController extends Controller
                 'start_time' => $schedule->start_time,
                 'end_time' => $schedule->end_time,
                 'location' => $schedule->location,
-                'title' => $schedule->performance->title,
-                'description' => $schedule->performance->description,
+                'title' => $schedule->thesis->title,
+                'description' => $schedule->thesis->description,
                 'user' => [
-                    'first_name' => $schedule->performance->user->first_name,
-                    'last_name' => $schedule->performance->user->last_name,
+                    'first_name' => $schedule->thesis->user->first_name,
+                    'last_name' => $schedule->thesis->user->last_name,
                 ],
-                'attachments' => $schedule->performance->media->map(function ($media) {
+                'attachments' => $schedule->thesis->media->map(function ($media) {
                     return [
                         'id' => $media->id,
                         'name' => $media->file_name,
@@ -75,7 +75,7 @@ class ScheduleController extends Controller
         $section = Section::findOrFail($sectionId);
 
         return Inertia::render('Schedules/Index', [
-            'performances' => $formattedSchedules,
+            'theses' => $formattedSchedules,
             'sectionName' => $section->name,
         ]);
     }

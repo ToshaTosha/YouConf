@@ -2,7 +2,7 @@
 
 namespace Database\Seeders;
 
-use App\Models\Performance;
+use App\Models\Thesis;
 use App\Models\Schedule;
 use App\Models\Location;
 use Carbon\Carbon;
@@ -20,13 +20,13 @@ class ConferenceSessionSeeder extends Seeder
             return;
         }
 
-        $performances = Performance::where('status_id', 2)->get();
+        $theses = Thesis::where('status_id', 2)->get();
         $locations = Location::all();
 
         $durations = [15, 30, 45, 60];
 
         // Проходим по каждой заявке
-        foreach ($performances as $performance) {
+        foreach ($theses as $thesis) {
             $location = $locations->random();
 
             // Генерация времени начала и продолжительности
@@ -48,8 +48,8 @@ class ConferenceSessionSeeder extends Seeder
                 $end_time = $start_time->copy()->addMinutes($duration);
 
                 // Проверяем, есть ли пересекающиеся расписания для этой секции
-                $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($performance) {
-                    $query->where('section_id', $performance->section_id); // Проверяем по section_id
+                $conflictingSchedules = Schedule::whereHas('thesis', function ($query) use ($thesis) {
+                    $query->where('section_id', $thesis->section_id); // Проверяем по section_id
                 })
                     ->where(function ($query) use ($start_time, $end_time) {
                         $query->where(function ($q) use ($start_time, $end_time) {
@@ -64,14 +64,14 @@ class ConferenceSessionSeeder extends Seeder
 
             // Если не удалось найти непересекающееся расписание, пропускаем заявку
             if ($attempts >= $maxAttempts) {
-                echo "Не удалось найти время для заявки ID {$performance->id}.\n";
+                echo "Не удалось найти время для заявки ID {$thesis->id}.\n";
                 continue;
             }
 
             // Пытаемся создать запись в расписании
             try {
                 Schedule::create([
-                    'performance_id' => $performance->id,
+                    'thesis_id' => $thesis->id,
                     'start_time' => $start_time->format('H:i'),
                     'duration' => $duration,
                     'end_time' => $end_time->format('H:i'),
@@ -79,7 +79,7 @@ class ConferenceSessionSeeder extends Seeder
                 ]);
             } catch (ValidationException $e) {
                 // Логируем ошибку и продолжаем выполнение
-                echo "Ошибка при создании расписания для заявки ID {$performance->id}: " . $e->getMessage() . "\n";
+                echo "Ошибка при создании расписания для заявки ID {$thesis->id}: " . $e->getMessage() . "\n";
                 continue;
             }
         }

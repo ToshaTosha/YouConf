@@ -4,19 +4,19 @@
     <h1 class="text-2xl font-bold mb-4">
       {{ isEditMode ? 'Редактировать тезис' : 'Создать тезис' }}
     </h1>
-    <PerformancesForm :section-id="section_id" :performance="performance" />
+    <ThesesForm :section-id="section_id" :thesis="thesis" />
   </div>
 </template>
 
 <script>
 import { reactive } from 'vue'
 import { Inertia } from '@inertiajs/inertia'
-import PerformancesForm from '@/Components/PerformancesForm.vue'
+import ThesesForm from '@/Components/ThesesForm.vue'
 
 export default {
-  name: 'PerformanceFormPage',
+  name: 'ThesisFormPage',
   components: {
-    PerformancesForm,
+    ThesesForm,
   },
   props: {
     section_name: String,
@@ -24,16 +24,16 @@ export default {
       type: Number,
       default: null,
     },
-    performance: Object,
+    thesis: Object,
   },
   data() {
     return {
       form: reactive({
-        title: this.performance ? this.performance.title : '',
-        description: this.performance ? this.performance.description : '',
+        title: this.thesis ? this.thesis.title : '',
+        description: this.thesis ? this.thesis.description : '',
         files: [],
       }),
-      isEditMode: !!this.performance, // Определяем режим редактирования
+      isEditMode: !!this.thesis, // Определяем режим редактирования
     }
   },
 }

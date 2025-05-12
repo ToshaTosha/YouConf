@@ -7,36 +7,36 @@
     <div v-else>
       <div class="space-y-4">
         <div
-          v-for="performance in performances"
-          :key="performance.title"
+          v-for="thesis in theses"
+          :key="thesis.title"
           class="bg-white p-6 rounded-lg shadow-md"
         >
           <h3 class="text-xl font-bold text-blue-600">
-            {{ performance.title }}
+            {{ thesis.title }}
           </h3>
 
           <p class="mt-2 text-gray-700">
             <span class="font-semibold">Участник:</span>
-            {{ performance.user.first_name }} {{ performance.user.last_name }}
+            {{ thesis.user.first_name }} {{ thesis.user.last_name }}
           </p>
 
           <p class="mt-2 text-gray-700">
             <span class="font-semibold">Описание:</span>
-            {{ performance.description }}
+            {{ thesis.description }}
           </p>
 
           <p class="mt-2 text-gray-700">
             <span class="font-semibold">Время:</span>
-            {{ performance.start_time }} - {{ performance.end_time }}
+            {{ thesis.start_time }} - {{ thesis.end_time }}
           </p>
 
           <p class="mt-2 text-gray-700">
             <span class="font-semibold">Место:</span>
-            {{ performance?.location?.name }}
+            {{ thesis?.location?.name }}
           </p>
 
           <div
-            v-for="file in performance?.attachments"
+            v-for="file in thesis?.attachments"
             :key="file.id"
             class="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg cursor-pointer"
             @click="downloadFile(file)"
@@ -70,7 +70,7 @@
 <script>
 export default {
   props: {
-    performances: {
+    theses: {
       type: Array,
       required: true,
     },

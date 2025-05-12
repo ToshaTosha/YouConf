@@ -5,7 +5,7 @@
         <label for="statusFilter" class="mr-2">Фильтр по статусу:</label>
         <select
           v-model="selectedStatus"
-          @change="filterPerformances"
+          @change="filterTheses"
           id="statusFilter"
           class="border rounded p-1"
         >
@@ -21,8 +21,8 @@
       </div>
     </div>
 
-    <PerformancesTable
-      :performances="filteredPerformances"
+    <ThesesTable
+      :theses="filteredTheses"
       :statuses="statuses"
       :role="$page.props.role"
       @status-updated="handleStatusUpdated"
@@ -32,16 +32,16 @@
 
 <script>
 import { Link } from '@inertiajs/inertia-vue3'
-import PerformancesTable from '@/Components/PerformancesTable.vue'
+import ThesesTable from '@/Components/ThesesTable.vue'
 
 export default {
   props: {
-    performances: Array,
+    theses: Array,
     statuses: Array,
   },
   components: {
     Link,
-    PerformancesTable,
+    ThesesTable,
   },
   data() {
     return {
@@ -49,25 +49,21 @@ export default {
     }
   },
   computed: {
-    filteredPerformances() {
-      return this.performances.filter((performance) => {
+    filteredTheses() {
+      return this.theses.filter((thesis) => {
         return (
-          this.selectedStatus === '' ||
-          performance.status_id === this.selectedStatus
+          this.selectedStatus === '' || thesis.status_id === this.selectedStatus
         )
       })
     },
   },
   methods: {
-    filterPerformances() {
-      // Этот метод можно оставить пустым, так как фильтрация происходит в computed
-    },
     formatDate(date) {
       return new Date(date).toLocaleDateString() // Форматирование даты
     },
-    async updateStatus(performanceId, statusId) {
+    async updateStatus(thesisId, statusId) {
       try {
-        await this.$inertia.post(`/performances/${performanceId}/status`, {
+        await this.$inertia.post(`/theses/${thesisId}/status`, {
           status_id: statusId,
         })
         this.$emit('status-updated')

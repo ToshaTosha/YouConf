@@ -5,7 +5,7 @@ declare(strict_types=1);
 namespace App\MoonShine\Resources;
 
 use Illuminate\Database\Eloquent\Model;
-use App\Models\Performance;
+use App\Models\Thesis;
 
 use MoonShine\Laravel\Resources\ModelResource;
 use MoonShine\UI\Components\Layout\Box;
@@ -17,11 +17,11 @@ use MoonShine\Laravel\Fields\Relationships\BelongsTo;
 use MoonShine\UI\Fields\Preview;
 
 /**
- * @extends ModelResource<Performance>
+ * @extends ModelResource<Thesis>
  */
-class PerformanceResource extends ModelResource
+class ThesisResource extends ModelResource
 {
-    protected string $model = Performance::class;
+    protected string $model = Thesis::class;
 
     protected string $title = 'Тезисы';
 
@@ -85,7 +85,7 @@ class PerformanceResource extends ModelResource
     }
 
     /**
-     * @param Performance $item
+     * @param Thesis $item
      *
      * @return array<string, string[]|string>
      * @see https://laravel.com/docs/validation#available-validation-rules

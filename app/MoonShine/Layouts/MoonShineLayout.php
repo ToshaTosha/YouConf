@@ -14,7 +14,7 @@ use MoonShine\UI\Components\{
 use App\MoonShine\Resources\UserResource;
 use MoonShine\MenuManager\MenuItem;
 use App\MoonShine\Resources\ScheduleResource;
-use App\MoonShine\Resources\PerformanceResource;
+use App\MoonShine\Resources\ThesisResource;
 use App\MoonShine\Resources\LocationResource;
 use MoonShine\UI\Components\Layout\Head;
 use MoonShine\UI\Components\Layout\Footer;
@@ -25,7 +25,7 @@ use MoonShine\UI\Components\Layout\Burger;
 use MoonShine\UI\Components\Layout\ThemeSwitcher;
 use MoonShine\UI\Components\Layout\Menu;
 use MoonShine\UI\Components\When;
-use App\MoonShine\Resources\PerformanceKanbanResource;
+use App\MoonShine\Resources\ThesisKanbanResource;
 use App\MoonShine\Resources\SectionResource;
 use MoonShine\MenuManager\MenuGroup;
 use App\MoonShine\Resources\StaticPageResource;
@@ -46,9 +46,9 @@ final class MoonShineLayout extends CompactLayout
             MenuItem::make('Пользователи', UserResource::class),
             MenuGroup::make('Расписание', [
                 MenuItem::make('Таблица', ScheduleResource::class),
-                MenuItem::make('Доска', PerformanceKanbanResource::class),
+                MenuItem::make('Доска', ThesisKanbanResource::class),
             ]),
-            MenuItem::make('Тезисы', PerformanceResource::class),
+            MenuItem::make('Тезисы', ThesisResource::class),
             MenuItem::make('Аудитории', LocationResource::class),
             MenuItem::make('Секции', SectionResource::class),
             // MenuItem::make('Statuses', StatusResource::class),

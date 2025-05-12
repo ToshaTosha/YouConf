@@ -38,9 +38,9 @@ class User extends Authenticatable
     {
         $this->syncRoles(Role::find($value));
     }
-    public function performances()
+    public function theses()
     {
-        return $this->hasMany(Performance::class);
+        return $this->hasMany(Thesis::class);
     }
 
     public function sections()

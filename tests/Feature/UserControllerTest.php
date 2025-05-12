@@ -6,7 +6,7 @@ use Illuminate\Foundation\Testing\RefreshDatabase;
 use Illuminate\Foundation\Testing\WithFaker;
 use Tests\TestCase;
 use App\Models\User;
-use App\Models\Performance;
+use App\Models\Thesis;
 use Spatie\Permission\Models\Role;
 use Database\Seeders\StatusesTableSeeder;
 use Database\Seeders\SectionSeeder;
@@ -28,7 +28,7 @@ class UserControllerTest extends TestCase
     public function test_show_user_profile()
     {
         $user = User::factory()->create()->assignRole('participant');
-        Performance::factory(3)->create(['user_id' => $user->id]);
+        Thesis::factory(3)->create(['user_id' => $user->id]);
 
         $response = $this->actingAs($user)
             ->get(route('user.show', $user->id));
@@ -37,7 +37,7 @@ class UserControllerTest extends TestCase
             ->assertInertia(
                 fn($page) => $page
                     ->component('UserProfile')
-                    ->has('performances', 3)
+                    ->has('theses', 3)
             );
     }
 

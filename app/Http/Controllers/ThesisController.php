@@ -3,21 +3,21 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Models\Performance;
+use App\Models\Thesis;
 use App\Models\Chat;
 use App\Models\File;
 use App\Models\Section;
 use App\Models\Status;
 use Illuminate\Support\Facades\Auth;
 use App\Models\User;
-use App\Notifications\PerformanceStatusChanged;
+use App\Notifications\ThesisStatusChanged;
 use App\Models\Schedule;
 use Illuminate\Support\Facades\Log;
 
 use Carbon\Carbon;
 use Illuminate\Support\Facades\DB;
 
-class PerformanceController extends Controller
+class ThesisController extends Controller
 {
     public function index()
     {
@@ -26,22 +26,22 @@ class PerformanceController extends Controller
         $userSections = $user->sections()->get();
 
         if ($user->hasRole('participant')) {
-            $performances = Performance::where('user_id', $user->id)
+            $theses = Thesis::where('user_id', $user->id)
                 ->with(['section', 'user', 'status'])
                 ->get();
         } elseif ($user->hasRole('expert')) {
             // Если пользователь эксперт, показываем заявки только из его секций
             $sectionIds = $user->sections()->pluck('sections.id');
-            $performances = Performance::whereIn('section_id', $sectionIds)
+            $theses = Thesis::whereIn('section_id', $sectionIds)
                 ->with(['section', 'user', 'status'])
                 ->get();
         }
         // else {
-        //     $performances = Performance::with(['section', 'user', 'status'])->get();
+        //     $theses = Thesis::with(['section', 'user', 'status'])->get();
         // }
 
-        return inertia('Performances/Index', [
-            'performances' => $performances,
+        return inertia('Theses/Index', [
+            'theses' => $theses,
             'statuses' => $statuses,
         ]);
     }
@@ -58,19 +58,19 @@ class PerformanceController extends Controller
             return response()->json(['message' => 'Доступ запрещен.'], 403);
         }
 
-        $performance = Performance::with(['status', 'user', 'section'])->findOrFail($id);
-        $oldStatus = $performance->status;
+        $thesis = Thesis::with(['status', 'user', 'section'])->findOrFail($id);
+        $oldStatus = $thesis->status;
 
-        $performance->status_id = $request->status_id;
-        $performance->save();
+        $thesis->status_id = $request->status_id;
+        $thesis->save();
 
-        $newStatus = $performance->fresh()->status;
+        $newStatus = $thesis->fresh()->status;
 
         if ($newStatus->id == 2) {
             DB::beginTransaction();
             try {
                 // Исправлено: сортируем по end_time, чтобы получить последнее мероприятие
-                $lastSchedule = Schedule::where('section_id', $performance->section_id)
+                $lastSchedule = Schedule::where('section_id', $thesis->section_id)
                     ->orderBy('end_time', 'desc') // Изменено с start_time на end_time
                     ->first();
 
@@ -101,7 +101,7 @@ class PerformanceController extends Controller
 
                 // Создаем запись в расписании
                 DB::insert('INSERT INTO schedules (
-                performance_id, 
+                thesis_id, 
                 section_id, 
                 start_time, 
                 duration, 
@@ -112,14 +112,14 @@ class PerformanceController extends Controller
                 created_at, 
                 updated_at
             ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())', [
-                    $performance->id,
-                    $performance->section_id,
+                    $thesis->id,
+                    $thesis->section_id,
                     $newStartTime,
                     15,
                     $newEndTime,
-                    'performance',
-                    $performance->title,
-                    $performance->description
+                    'thesis',
+                    $thesis->title,
+                    $thesis->description
                 ]);
 
                 DB::commit();
@@ -131,25 +131,25 @@ class PerformanceController extends Controller
             }
         }
 
-        $performance->user->notify(
-            new PerformanceStatusChanged($performance, $oldStatus, $newStatus)
+        $thesis->user->notify(
+            new ThesisStatusChanged($thesis, $oldStatus, $newStatus)
         );
 
         if ($oldStatus->id !== $newStatus->id) {
             return redirect()->back()->with('success', [
                 'title' => 'Статус изменен',
-                'message' => "Статус выступления '{$performance->title}' изменен на '{$newStatus}'",
-                'performance_id' => $performance->id
+                'message' => "Статус выступления '{$thesis->title}' изменен на '{$newStatus}'",
+                'thesis_id' => $thesis->id
             ]);
         }
 
-        return redirect('/performances')->with('success', 'Статус заявки успешно обновлён');
+        return redirect('/theses')->with('success', 'Статус заявки успешно обновлён');
     }
     public function apply(Request $request, $section_id)
     {
 
         DB::transaction(function () use ($request, $section_id) {
-            $performance = Performance::create([
+            $thesis = Thesis::create([
                 'title' => $request->title,
                 'description' => $request->description,
                 'co_authors' => $request->co_authors,
@@ -159,13 +159,13 @@ class PerformanceController extends Controller
             ]);
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
-                    $performance->addMedia($file)->toMediaCollection('attachments');
+                    $thesis->addMedia($file)->toMediaCollection('attachments');
                 }
             }
 
             Chat::create([
-                'chatable_type' => Performance::class, // Указываем тип модели
-                'chatable_id' => $performance->id,
+                'chatable_type' => Thesis::class, // Указываем тип модели
+                'chatable_id' => $thesis->id,
             ]);
         });
 
@@ -174,19 +174,19 @@ class PerformanceController extends Controller
 
     public function update(Request $request, $id)
     {
-        $performance = Performance::findOrFail($id);
-        if (in_array($performance->status_id, [2, 4])) {
+        $thesis = Thesis::findOrFail($id);
+        if (in_array($thesis->status_id, [2, 4])) {
             return response()->json(['error' => 'Редактирование выступления невозможно, так как статус не позволяет это.'], 403);
         }
-        DB::transaction(function () use ($request, $performance) {
-            $performance->update([
+        DB::transaction(function () use ($request, $thesis) {
+            $thesis->update([
                 'title' => $request->title,
                 'description' => $request->description,
                 'co_authors' => $request->co_authors,
             ]);
             if ($request->hasFile('attachments')) {
                 foreach ($request->file('attachments') as $file) {
-                    $performance->addMedia($file)->toMediaCollection('attachments');
+                    $thesis->addMedia($file)->toMediaCollection('attachments');
                 }
             }
         });
@@ -194,10 +194,10 @@ class PerformanceController extends Controller
         return redirect()->intended(route('user.show', ['id' => Auth::user()->id]));
     }
 
-    public function deleteMedia($performanceId, $mediaId)
+    public function deleteMedia($thesisId, $mediaId)
     {
-        $performance = Performance::findOrFail($performanceId);
-        $media = $performance->getMedia('attachments')->find($mediaId);
+        $thesis = Thesis::findOrFail($thesisId);
+        $media = $thesis->getMedia('attachments')->find($mediaId);
 
         if ($media) {
             $media->delete();
@@ -209,16 +209,16 @@ class PerformanceController extends Controller
 
     public function show($id)
     {
-        $performance = Performance::with(['section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
+        $thesis = Thesis::with(['section', 'user', 'status', 'chat.messages.user'])->findOrFail($id);
 
         // Получаем сообщения из чата
-        $chat = $performance->chat;
+        $chat = $thesis->chat;
         $messages = $chat ? $chat->messages : [];
-        $mediaFiles = $performance->getMedia('attachments');
+        $mediaFiles = $thesis->getMedia('attachments');
         $statuses = Status::all();
 
-        return inertia('Performances/Show', [
-            'performance' => $performance,
+        return inertia('Theses/Show', [
+            'thesis' => $thesis,
             'messages' => $messages, // Передаем сообщения в представление
             'mediaFiles' => $mediaFiles,
             'statuses' => $statuses,
@@ -229,7 +229,7 @@ class PerformanceController extends Controller
     public function create($section_id = null)
     {
         $section = Section::findOrFail($section_id);
-        return inertia('Performances/PerformanceFormPage', [
+        return inertia('Theses/ThesisFormPage', [
             'section_id' => $section_id,
             'section_name' => $section->name,
         ]);
@@ -238,11 +238,11 @@ class PerformanceController extends Controller
 
     public function edit($id)
     {
-        $performance = Performance::with(['section', 'user', 'status',])->findOrFail($id);
-        $mediaFiles = $performance->getMedia('attachments');
+        $thesis = Thesis::with(['section', 'user', 'status',])->findOrFail($id);
+        $mediaFiles = $thesis->getMedia('attachments');
 
-        return inertia('Performances/PerformanceFormPage', [
-            'performance' => $performance,
+        return inertia('Theses/ThesisFormPage', [
+            'thesis' => $thesis,
             'mediaFiles' => $mediaFiles,
         ]);
     }

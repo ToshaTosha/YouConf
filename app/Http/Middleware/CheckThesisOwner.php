@@ -5,10 +5,10 @@ namespace App\Http\Middleware;
 use Closure;
 use Illuminate\Http\Request;
 use Symfony\Component\HttpFoundation\Response;
-use App\Models\Performance;
+use App\Models\Thesis;
 use Illuminate\Support\Facades\Auth;
 
-class CheckPerformanceOwner
+class CheckThesisOwner
 {
     public function handle(Request $request, Closure $next): Response
     {
@@ -21,11 +21,11 @@ class CheckPerformanceOwner
         }
 
         // Получаем ID заявки из маршрута
-        $performanceId = $request->route('id');
-        $performance = Performance::findOrFail($performanceId);
+        $thesisId = $request->route('id');
+        $thesis = Thesis::findOrFail($thesisId);
 
         // Проверяем, является ли текущий пользователь владельцем заявки
-        if ($performance->user_id !== $user->id) {
+        if ($thesis->user_id !== $user->id) {
             abort(403, 'У вас нет доступа к этой заявке.');
         }
 

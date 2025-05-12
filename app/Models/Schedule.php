@@ -12,7 +12,7 @@ class Schedule extends Model
     use HasFactory;
 
     protected $fillable = [
-        'performance_id',
+        'thesis_id',
         'section_id',
         'start_time',
         'duration',
@@ -38,9 +38,9 @@ class Schedule extends Model
         $this->attributes['end_time'] = is_string($value) ? $value : $value->format('H:i:s');
     }
 
-    public function isPerformance(): bool
+    public function isThesis(): bool
     {
-        return $this->event_type === 'performance';
+        return $this->event_type === 'thesis';
     }
 
     public function section()
@@ -49,9 +49,9 @@ class Schedule extends Model
     }
 
 
-    public function performance()
+    public function thesis()
     {
-        return $this->belongsTo(Performance::class);
+        return $this->belongsTo(Thesis::class);
     }
 
     public function location()
@@ -64,11 +64,10 @@ class Schedule extends Model
         parent::boot();
 
         static::creating(function ($schedule) {
-            // Устанавливаем section_id на основе связанного performance
-            if ($schedule->performance_id) {
-                $performance = Performance::find($schedule->performance_id);
-                if ($performance) {
-                    $schedule->section_id = $performance->section_id;
+            if ($schedule->thesis_id) {
+                $thesis = Thesis::find($schedule->thesis_id);
+                if ($thesis) {
+                    $schedule->section_id = $thesis->section_id;
                 }
             }
         });
@@ -78,8 +77,8 @@ class Schedule extends Model
             $endTime = $startTime->copy()->addMinutes((int)$schedule->duration);
 
             // Проверяем, есть ли пересекающиеся расписания для этой секции
-            $conflictingSchedules = Schedule::whereHas('performance', function ($query) use ($schedule) {
-                $query->where('section_id', $schedule->performance->section_id); // Проверяем по section_id
+            $conflictingSchedules = Schedule::whereHas('thesis', function ($query) use ($schedule) {
+                $query->where('section_id', $schedule->thesis->section_id); // Проверяем по section_id
             })
                 ->where(function ($query) use ($startTime, $endTime) {
                     $query->where(function ($q) use ($startTime, $endTime) {

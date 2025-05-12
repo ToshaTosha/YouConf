@@ -15,7 +15,7 @@
       Полное описание тезиса
     </p>
     <Link
-      :href="`/performances/create/${$page.props.section.id}`"
+      :href="`/theses/create/${$page.props.section.id}`"
       class="inline-block px-6 py-2 bg-blue-500 text-white rounded-lg hover:bg-blue-600 transition duration-200"
     >
       Создать тезис в этой секции

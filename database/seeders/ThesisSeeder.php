@@ -4,9 +4,9 @@ namespace Database\Seeders;
 
 use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
-use App\Models\Performance;
+use App\Models\Thesis;
 
-class PerformanceSeeder extends Seeder
+class ThesisSeeder extends Seeder
 {
     public function run(): void
     {
@@ -14,7 +14,7 @@ class PerformanceSeeder extends Seeder
             return;
         }
 
-        Performance::factory()
+        Thesis::factory()
             ->count(20)
             ->create();
     }

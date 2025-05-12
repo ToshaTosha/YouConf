@@ -20,7 +20,7 @@ class DatabaseSeeder extends Seeder
             UserSeeder::class,
             StatusesTableSeeder::class,
             LocationSeeder::class,
-            PerformanceSeeder::class,
+            ThesisSeeder::class,
             ConferenceSessionSeeder::class,
             StaticPageSeeder::class,
         ]);

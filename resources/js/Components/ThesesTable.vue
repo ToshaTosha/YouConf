@@ -1,6 +1,6 @@
 <template>
   <div>
-    <div v-if="performances.length === 0" class="text-center p-4 text-gray-600">
+    <div v-if="theses.length === 0" class="text-center p-4 text-gray-600">
       У вас нет заявок.
     </div>
     <table v-else :class="tableClass">
@@ -17,31 +17,31 @@
       </thead>
       <tbody>
         <tr
-          v-for="performance in performances"
-          :key="performance.id"
+          v-for="thesis in theses"
+          :key="thesis.id"
           class="cursor-pointer hover:bg-gray-100"
         >
           <td class="border px-4 py-2">
-            <Link :href="`/performances/${performance.id}`">
-              {{ performance.title }}
+            <Link :href="`/theses/${thesis.id}`">
+              {{ thesis.title }}
             </Link>
           </td>
           <td class="border px-4 py-2">
-            <Link :href="`/performances/${performance.id}`">
-              {{ performance.section.name }}
+            <Link :href="`/theses/${thesis.id}`">
+              {{ thesis.section.name }}
             </Link>
           </td>
           <td class="border px-4 py-2">
-            {{ formatDate(performance.created_at) }}
+            {{ formatDate(thesis.created_at) }}
           </td>
-          <td class="border px-4 py-2">{{ performance.status.name }}</td>
+          <td class="border px-4 py-2">{{ thesis.status.name }}</td>
           <td v-if="isExpert" class="border px-4 py-2">
-            {{ performance.user.first_name }} {{ performance.user.last_name }}
+            {{ thesis.user.first_name }} {{ thesis.user.last_name }}
           </td>
           <td v-if="isExpert" class="border px-4 py-2">
             <select
-              v-model="performance.status_id"
-              @change="updateStatus(performance.id, performance.status_id)"
+              v-model="thesis.status_id"
+              @change="updateStatus(thesis.id, thesis.status_id)"
               class="border rounded p-1"
             >
               <option
@@ -63,9 +63,9 @@
 import { Link } from '@inertiajs/inertia-vue3'
 
 export default {
-  name: 'PerformancesTable',
+  name: 'ThesesTable',
   props: {
-    performances: Array,
+    theses: Array,
     statuses: Array,
     role: String,
   },
@@ -86,9 +86,9 @@ export default {
     formatDate(date) {
       return new Date(date).toLocaleDateString() // Форматирование даты
     },
-    async updateStatus(performanceId, statusId) {
+    async updateStatus(thesisId, statusId) {
       try {
-        await this.$inertia.post(`/performances/${performanceId}/status`, {
+        await this.$inertia.post(`/theses/${thesisId}/status`, {
           status_id: statusId,
         })
         this.$emit('status-updated')

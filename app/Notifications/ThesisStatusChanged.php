@@ -2,7 +2,7 @@
 
 namespace App\Notifications;
 
-use App\Models\Performance;
+use App\Models\Thesis;
 use App\Models\Status;
 use Illuminate\Bus\Queueable;
 use Illuminate\Contracts\Queue\ShouldQueue;
@@ -11,12 +11,12 @@ use Illuminate\Support\Facades\Log;
 
 use Illuminate\Support\Facades\DB;
 
-class PerformanceStatusChanged extends Notification
+class ThesisStatusChanged extends Notification
 {
     use Queueable;
 
     public function __construct(
-        public Performance $performance,
+        public Thesis $thesis,
         public Status $oldStatus,
         public Status $newStatus
     ) {}
@@ -30,8 +30,8 @@ class PerformanceStatusChanged extends Notification
     {
 
         $data = [
-            'performance_id' => $this->performance->id,
-            'message' => "Статус заявки {$this->performance->title} изменён",
+            'thesis_id' => $this->thesis->id,
+            'message' => "Статус заявки {$this->thesis->title} изменён",
             'custom_data' => [
                 'old' => $this->oldStatus->name,
                 'new' => $this->newStatus->name
@@ -47,11 +47,11 @@ class PerformanceStatusChanged extends Notification
             'title' => 'Статус заявки изменён',
             'message' => sprintf(
                 'Статус вашей заявки "%s" изменён с "%s" на "%s"',
-                $this->performance->title,
+                $this->thesis->title,
                 $this->oldStatus->name,
                 $this->newStatus->name
             ),
-            'performance_id' => $this->performance->id,
+            'thesis_id' => $this->thesis->id,
             'old_status' => $this->oldStatus->name,
             'new_status' => $this->newStatus->name,
         ];

@@ -2,14 +2,14 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\Performance;
+use App\Models\Thesis;
 use Illuminate\Http\Request;
 use Spatie\MediaLibrary\MediaCollections\Models\Media;
 use Illuminate\Support\Facades\Auth;
 
 class FileController extends Controller
 {
-    public function store(Request $request, Performance $performance)
+    public function store(Request $request, Thesis $thesis)
     {
         $request->validate([
             'files.*' => 'required|file|mimes:jpg,png,pdf,doc,docx|max:10240'
@@ -18,7 +18,7 @@ class FileController extends Controller
         $mediaItems = [];
 
         foreach ($request->file('files') as $file) {
-            $mediaItems[] = $performance->addMedia($file)
+            $mediaItems[] = $thesis->addMedia($file)
                 ->withCustomProperties([
                     'original_name' => $file->getClientOriginalName(),
                     'uploaded_by' => Auth::user()->id
@@ -29,7 +29,7 @@ class FileController extends Controller
         return response()->json($mediaItems);
     }
 
-    public function destroy(Performance $performance, Media $media)
+    public function destroy(Thesis $thesis, Media $media)
     {
         $media->delete();
 
