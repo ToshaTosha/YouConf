@@ -1,66 +1,174 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Инструкция по развертыванию веб-приложения на сервере
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+## 1. Подготовка сервера
 
-## About Laravel
+### 1.1. Обновление пакетов
+Выполните следующие команды для обновления списка пакетов и установки обновлений:
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+```bash
+sudo apt update
+sudo apt upgrade -y
+```
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+## 2. Установка и настройка веб-сервера Nginx
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+### 2.1. Установка Nginx
+```bash
+sudo apt install nginx -y
+```
 
-## Learning Laravel
+### 2.2. Запуск и настройка автозагрузки
+```bash
+sudo systemctl start nginx
+sudo systemctl enable nginx
+```
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Для проверки работоспособности откройте в браузере адрес сервера. Должна отобразиться стартовая страница Nginx.
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 3. Установка PHP 8.3
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### 3.1. Добавление репозитория
+```bash
+sudo apt install software-properties-common -y
+sudo add-apt-repository ppa:ondrej/php -y
+sudo apt update
+```
 
-## Laravel Sponsors
+### 3.2. Установка PHP и необходимых модулей
+```bash
+sudo apt install php8.3-fpm php8.3-mbstring php8.3-xml php8.3-mysql php8.3-curl php8.3-zip php8.3-bcmath php8.3-gd -y
+```
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+## 4. Установка и настройка MySQL
 
-### Premium Partners
+### 4.1. Установка сервера MySQL
+```bash
+sudo apt install mysql-server -y
+```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+### 4.2. Создание базы данных и пользователя
+Выполните вход в консоль MySQL:
+```bash
+sudo mysql -u root
+```
 
-## Contributing
+В консоли MySQL выполните следующие команды (замените значения на свои):
+```sql
+CREATE DATABASE your_db_name;
+CREATE USER 'your_db_user'@'localhost' IDENTIFIED BY 'strong_password';
+GRANT ALL PRIVILEGES ON your_db_name.* TO 'your_db_user'@'localhost';
+FLUSH PRIVILEGES;
+EXIT;
+```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+## 5. Установка Node.js
 
-## Code of Conduct
+```bash
+curl -fsSL https://deb.nodesource.com/setup_lts.x | sudo -E bash -
+sudo apt install -y nodejs
+```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## 6. Установка Composer
 
-## Security Vulnerabilities
+```bash
+curl -sS https://getcomposer.org/installer | sudo php -- --install-dir=/usr/local/bin --filename=composer
+```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 7. Развертывание приложения
 
-## License
+### 7.1. Клонирование репозитория
+```bash
+cd /var/www
+sudo git clone https://github.com/ToshaTosha/YouConf.git
+```
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+### 7.2. Настройка прав доступа
+```bash
+sudo chown -R $USER:www-data /var/www/YouConf
+sudo chmod -R 775 /var/www/YouConf/storage
+```
+
+## 8. Настройка окружения
+
+### 8.1. Создание файла конфигурации
+```bash
+cd /var/www/YouConf
+cp .env.example .env
+```
+
+### 8.2. Редактирование конфигурации
+Отредактируйте следующие параметры в файле .env:
+```ini
+APP_URL=http://your_domain_or_ip
+DB_DATABASE=your_db_name
+DB_USERNAME=your_db_user
+DB_PASSWORD=strong_password
+```
+
+## 9. Установка зависимостей
+
+### 9.1. PHP зависимости
+```bash
+composer install --optimize-autoloader --no-dev
+```
+
+### 9.2. JavaScript зависимости
+```bash
+npm install
+npm run build
+```
+
+## 10. Генерация ключа приложения
+
+```bash
+php artisan key:generate
+```
+
+## 11. Настройка Nginx
+
+### 11.1. Создание конфигурационного файла
+Создайте файл /etc/nginx/sites-available/your-domain.conf со следующим содержимым:
+
+```nginx
+server {
+    listen 80;
+    server_name your_domain_or_ip;
+    root /var/www/YouConf/public;
+
+    add_header X-Frame-Options "SAMEORIGIN";
+    add_header X-Content-Type-Options "nosniff";
+
+    index index.php;
+
+    charset utf-8;
+
+    location / {
+        try_files $uri $uri/ /index.php?$query_string;
+    }
+
+    location ~ \.php$ {
+        fastcgi_pass unix:/run/php/php8.3-fpm.sock;
+        fastcgi_param SCRIPT_FILENAME $realpath_root$fastcgi_script_name;
+        include fastcgi_params;
+    }
+
+    location ~ /\.(?!well-known).* {
+        deny all;
+    }
+}
+```
+
+### 11.2. Активация конфигурации
+```bash
+sudo ln -s /etc/nginx/sites-available/your-domain.conf /etc/nginx/sites-enabled/
+sudo nginx -t
+sudo systemctl reload nginx
+```
+
+## 12. Запуск миграций базы данных
+
+```bash
+php artisan migrate --force
+```
+
+После выполнения всех шагов приложение будет доступно по указанному домену или IP-адресу.
